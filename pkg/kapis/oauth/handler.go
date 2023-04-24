@@ -633,12 +633,21 @@ func (h *handler) codeGrant(req *restful.Request, response *restful.Response) {
 }
 
 func (h *handler) logout(req *restful.Request, resp *restful.Response) {
-	authenticated, ok := request.UserFrom(req.Request.Context())
-	if ok {
-		if err := h.tokenOperator.RevokeAllUserTokens(authenticated.GetName()); err != nil {
-			api.HandleInternalError(resp, req, apierrors.NewInternalError(err))
-			return
-		}
+	token := req.HeaderParameter("Authorization")
+	if token == "" {
+		api.HandleBadRequest(resp, req, apierrors.NewBadRequest("no token"))
+		return
+	}
+
+	tokenFields := strings.Fields(token)
+	if len(tokenFields) != 2 || tokenFields[0] != "Bearer" || tokenFields[1] == "" {
+		api.HandleBadRequest(resp, req, apierrors.NewBadRequest("invalid token"))
+		return
+	}
+
+	err := h.tokenOperator.Revoke(token)
+	if err != nil {
+		klog.Warningf("failed to remove token: %q, err: %v", token, err)
 	}
 
 	postLogoutRedirectURI := req.QueryParameter("post_logout_redirect_uri")
