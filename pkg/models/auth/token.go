@@ -53,6 +53,8 @@ type tokenOperator struct {
 
 func (t tokenOperator) Revoke(token string) error {
 	pattern := fmt.Sprintf("kubesphere:user:*:token:%s", token)
+	klog.Infof("revoke token pattern: %q", pattern)
+
 	if keys, err := t.cache.Keys(pattern); err != nil {
 		klog.Error(err)
 		return err
@@ -61,6 +63,8 @@ func (t tokenOperator) Revoke(token string) error {
 			klog.Error(err)
 			return err
 		}
+	} else {
+		klog.Warningf("revoke pattern %q, no keys", pattern)
 	}
 	return nil
 }

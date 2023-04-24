@@ -639,7 +639,7 @@ func (h *handler) logout(req *restful.Request, resp *restful.Response) {
 		return
 	}
 
-	klog.Info("logout: got token, %v", token)
+	klog.Infof("logout handler, got token: %q", token)
 
 	tokenFields := strings.Fields(token)
 	if len(tokenFields) != 2 || tokenFields[0] != "Bearer" || tokenFields[1] == "" {
@@ -647,14 +647,13 @@ func (h *handler) logout(req *restful.Request, resp *restful.Response) {
 		return
 	}
 
-	klog.Infof("token fields: %v", tokenFields)
-
+	token = tokenFields[1]
 	err := h.tokenOperator.Revoke(token)
 	if err != nil {
 		klog.Warningf("failed to remove token: %q, err: %v", token, err)
+	} else {
+		klog.Infof("successfully to revoke token: %q", token)
 	}
-
-	klog.Infof("revoked token: %q", tokenFields[1])
 
 	postLogoutRedirectURI := req.QueryParameter("post_logout_redirect_uri")
 	if postLogoutRedirectURI == "" {
