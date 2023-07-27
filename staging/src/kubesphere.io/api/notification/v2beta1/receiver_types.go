@@ -195,3 +195,6 @@ type ReceiverList struct {
 func init() {
 	SchemeBuilder.Register(&Receiver{}, &ReceiverList{})
 }
+
+func (_ *Receiver) Hub() {}
+

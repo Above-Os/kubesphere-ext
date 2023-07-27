@@ -159,3 +159,6 @@ type ConfigList struct {
 func init() {
 	SchemeBuilder.Register(&Config{}, &ConfigList{})
 }
+
+func (_ *Config) Hub() {}
+
