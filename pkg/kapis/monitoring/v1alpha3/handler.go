@@ -110,6 +110,16 @@ func (h handler) handleWorkspaceMetricsQuery(req *restful.Request, resp *restful
 	}
 }
 
+func (h handler) handleUserMetricsQuery(req *restful.Request, resp *restful.Response) {
+	params := parseRequestParams(req)
+	opt, err := h.makeQueryOptions(params, monitoring.LevelUser)
+	if err != nil {
+		api.HandleBadRequest(resp, nil, err)
+		return
+	}
+	h.handleNamedMetricsQuery(resp, opt)
+}
+
 func (h handler) handleNamespaceMetricsQuery(req *restful.Request, resp *restful.Response) {
 	params := parseRequestParams(req)
 	opt, err := h.makeQueryOptions(params, monitoring.LevelNamespace)

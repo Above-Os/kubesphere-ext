@@ -38,6 +38,7 @@ const (
 	LevelPVC
 	LevelComponent
 	LevelIngress
+	LevelUser
 )
 
 var MeteringLevelMap = map[string]int{
@@ -52,6 +53,7 @@ var MeteringLevelMap = map[string]int{
 	"LevelContainer":   LevelContainer,
 	"LevelPVC":         LevelPVC,
 	"LevelComponent":   LevelComponent,
+	"LevelUser":        LevelUser,
 }
 
 type QueryOption interface {
@@ -72,6 +74,7 @@ type QueryOptions struct {
 	ResourceFilter            string
 	NodeName                  string
 	WorkspaceName             string
+	UserName                  string
 	NamespaceName             string
 	WorkloadKind              string
 	WorkloadName              string
@@ -128,6 +131,21 @@ func (wo WorkspaceOption) Apply(o *QueryOptions) {
 	o.WorkspaceName = wo.WorkspaceName
 	o.PVCFilter = wo.PVCFilter
 	o.StorageClassName = wo.StorageClassName
+}
+
+type UserOption struct {
+	ResourceFilter   string
+	UserName         string
+	PVCFilter        string
+	StorageClassName string
+}
+
+func (uo UserOption) Apply(o *QueryOptions) {
+	o.Level = LevelUser
+	o.ResourceFilter = uo.ResourceFilter
+	o.UserName = uo.UserName
+	o.PVCFilter = uo.PVCFilter
+	o.StorageClassName = uo.StorageClassName
 }
 
 type NamespaceOption struct {
