@@ -140,6 +140,30 @@ var promQLTemplates = map[string]string{
 	"workspace_secret_count":               `sum by (workspace) (kube_secret_info{namespace!=""} * on (namespace) group_left(workspace)(kube_namespace_labels{$1}))`,
 	"workspace_pod_abnormal_ratio":         `count by (workspace) ((kube_pod_info{node!=""} unless on (pod, namespace) (kube_pod_status_phase{job="kube-state-metrics", phase="Succeeded"}>0) unless on (pod, namespace) ((kube_pod_status_ready{job="kube-state-metrics", condition="true"}>0) and on (pod, namespace) (kube_pod_status_phase{job="kube-state-metrics", phase="Running"}>0)) unless on (pod, namespace) (kube_pod_container_status_waiting_reason{job="kube-state-metrics", reason="ContainerCreating"}>0)) * on (namespace) group_left(workspace) kube_namespace_labels{$1}) / sum by (workspace) (kube_pod_status_phase{phase!="Succeeded", namespace!=""} * on (namespace) group_left(workspace)(kube_namespace_labels{$1}))`,
 
+	// user
+	"user_cpu_usage":                  `round(sum by (user) (user:container_cpu_usage_seconds_total:sum_rate{namespace!="", $1}), 0.001)`,
+	"user_memory_usage":               `sum by (user) (user:container_memory_usage_bytes:sum{namespace!="", $1})`,
+	"user_memory_usage_wo_cache":      `sum by (user) (user:container_memory_usage_bytes_wo_cache:sum{namespace!="", $1})`,
+	"user_net_bytes_transmitted":      `sum by (user) (sum by (namespace) (irate(container_network_transmit_bytes_total{namespace!="", pod!="", interface!~"^(cali.+|tunl.+|dummy.+|kube.+|flannel.+|cni.+|docker.+|veth.+|lo.*)", job="kubelet"}[5m])) * on (namespace) group_left(user) kube_namespace_labels{$1}) or on(user) max by(user) (kube_namespace_labels{$1} * 0)`,
+	"user_net_bytes_received":         `sum by (user) (sum by (namespace) (irate(container_network_receive_bytes_total{namespace!="", pod!="", interface!~"^(cali.+|tunl.+|dummy.+|kube.+|flannel.+|cni.+|docker.+|veth.+|lo.*)", job="kubelet"}[5m])) * on (namespace) group_left(user) kube_namespace_labels{$1}) or on(user) max by(user) (kube_namespace_labels{$1} * 0)`,
+	"user_pod_count":                  `sum by (user) (kube_pod_status_phase{phase!~"Failed|Succeeded", namespace!=""} * on (namespace) group_left(user)(kube_namespace_labels{$1})) or on(user) max by(user) (kube_namespace_labels{$1} * 0)`,
+	"user_pod_running_count":          `sum by (user) (kube_pod_status_phase{phase="Running", namespace!=""} * on (namespace) group_left(user)(kube_namespace_labels{$1})) or on(user) max by(user) (kube_namespace_labels{$1} * 0)`,
+	"user_pod_succeeded_count":        `sum by (user) (kube_pod_status_phase{phase="Succeeded", namespace!=""} * on (namespace) group_left(user)(kube_namespace_labels{$1})) or on(user) max by(user) (kube_namespace_labels{$1} * 0)`,
+	"user_pod_abnormal_count":         `count by (user) ((kube_pod_info{node!=""} unless on (pod, namespace) (kube_pod_status_phase{job="kube-state-metrics", phase="Succeeded"}>0) unless on (pod, namespace) ((kube_pod_status_ready{job="kube-state-metrics", condition="true"}>0) and on (pod, namespace) (kube_pod_status_phase{job="kube-state-metrics", phase="Running"}>0)) unless on (pod, namespace) (kube_pod_container_status_waiting_reason{job="kube-state-metrics", reason="ContainerCreating"}>0)) * on (namespace) group_left(user)(kube_namespace_labels{$1}))`,
+	"user_ingresses_extensions_count": `sum by (user) (kube_ingress_labels{namespace!=""} * on (namespace) group_left(user)(kube_namespace_labels{$1}))`,
+	"user_cronjob_count":              `sum by (user) (kube_cronjob_labels{namespace!=""} * on (namespace) group_left(user)(kube_namespace_labels{$1}))`,
+	"user_pvc_count":                  `sum by (user) (kube_persistentvolumeclaim_info{namespace!=""} * on (namespace) group_left(user)(kube_namespace_labels{$1}))`,
+	"user_daemonset_count":            `sum by (user) (kube_daemonset_labels{namespace!=""} * on (namespace) group_left(user)(kube_namespace_labels{$1}))`,
+	"user_deployment_count":           `sum by (user) (kube_deployment_labels{namespace!=""} * on (namespace) group_left(user)(kube_namespace_labels{$1}))`,
+	"user_endpoint_count":             `sum by (user) (kube_endpoint_labels{namespace!=""} * on (namespace) group_left(user)(kube_namespace_labels{$1}))`,
+	"user_hpa_count":                  `sum by (user) (kube_horizontalpodautoscaler_labels{namespace!=""} * on (namespace) group_left(user)(kube_namespace_labels{$1}))`,
+	"user_job_count":                  `sum by (user) (kube_job_labels{namespace!=""} * on (namespace) group_left(user)(kube_namespace_labels{$1}))`,
+	"user_statefulset_count":          `sum by (user) (kube_statefulset_labels{namespace!=""} * on (namespace) group_left(user)(kube_namespace_labels{$1}))`,
+	"user_replicaset_count":           `count by (user) (kube_replicaset_labels{namespace!=""} * on (namespace) group_left(user)(kube_namespace_labels{$1}))`,
+	"user_service_count":              `sum by (user) (kube_service_info{namespace!=""} * on (namespace) group_left(user)(kube_namespace_labels{$1}))`,
+	"user_secret_count":               `sum by (user) (kube_secret_info{namespace!=""} * on (namespace) group_left(user)(kube_namespace_labels{$1}))`,
+	"user_pod_abnormal_ratio":         `count by (user) ((kube_pod_info{node!=""} unless on (pod, namespace) (kube_pod_status_phase{job="kube-state-metrics", phase="Succeeded"}>0) unless on (pod, namespace) ((kube_pod_status_ready{job="kube-state-metrics", condition="true"}>0) and on (pod, namespace) (kube_pod_status_phase{job="kube-state-metrics", phase="Running"}>0)) unless on (pod, namespace) (kube_pod_container_status_waiting_reason{job="kube-state-metrics", reason="ContainerCreating"}>0)) * on (namespace) group_left(user) kube_namespace_labels{$1}) / sum by (user) (kube_pod_status_phase{phase!="Succeeded", namespace!=""} * on (namespace) group_left(user)(kube_namespace_labels{$1}))`,
+
 	//namespace
 	"namespace_cpu_usage":                  `round(namespace:container_cpu_usage_seconds_total:sum_rate{namespace!="", $1}, 0.001)`,
 	"namespace_memory_usage":               `namespace:container_memory_usage_bytes:sum{namespace!="", $1}`,
@@ -272,6 +296,8 @@ func makeExpr(metric string, opts monitoring.QueryOptions) string {
 		return makeNodeMetricExpr(tmpl, opts)
 	case monitoring.LevelWorkspace:
 		return makeWorkspaceMetricExpr(tmpl, opts)
+	case monitoring.LevelUser:
+		return makeUserMetricExpr(tmpl, opts)
 	case monitoring.LevelNamespace:
 		return makeNamespaceMetricExpr(tmpl, opts)
 	case monitoring.LevelWorkload:
@@ -309,6 +335,16 @@ func makeWorkspaceMetricExpr(tmpl string, o monitoring.QueryOptions) string {
 		workspaceSelector = fmt.Sprintf(`workspace=~"%s", workspace!=""`, o.ResourceFilter)
 	}
 	return strings.Replace(tmpl, "$1", workspaceSelector, -1)
+}
+
+func makeUserMetricExpr(tmpl string, o monitoring.QueryOptions) string {
+	var userSelector string
+	if o.UserName != "" {
+		userSelector = fmt.Sprintf(`user="%s"`, o.UserName)
+	} else {
+		userSelector = fmt.Sprintf(`user=~"%s", user!=""`, o.ResourceFilter)
+	}
+	return strings.Replace(tmpl, "$1", userSelector, -1)
 }
 
 func makeNamespaceMetricExpr(tmpl string, o monitoring.QueryOptions) string {

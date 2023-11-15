@@ -166,6 +166,31 @@ var WorkspaceMetrics = []string{
 	"meter_workspace_pvc_bytes_total",
 }
 
+var UserMetrics = []string{
+	"user_cpu_usage",
+	"user_memory_usage",
+	"user_memory_usage_wo_cache",
+	"user_net_bytes_transmitted",
+	"user_net_bytes_received",
+	"user_pod_count",
+	"user_pod_running_count",
+	"user_pod_succeeded_count",
+	"user_pod_abnormal_count",
+	"user_ingresses_extensions_count",
+	"user_cronjob_count",
+	"user_pvc_count",
+	"user_daemonset_count",
+	"user_deployment_count",
+	"user_endpoint_count",
+	"user_hpa_count",
+	"user_job_count",
+	"user_statefulset_count",
+	"user_replicaset_count",
+	"user_service_count",
+	"user_secret_count",
+	"user_pod_abnormal_ratio",
+}
+
 var NamespaceMetrics = []string{
 	"namespace_cpu_usage",
 	"namespace_memory_usage",

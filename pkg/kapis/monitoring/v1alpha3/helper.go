@@ -75,6 +75,7 @@ type reqParams struct {
 	resourceFilter            string
 	nodeName                  string
 	workspaceName             string
+	userName                  string
 	namespaceName             string
 	workloadKind              string
 	workloadName              string
@@ -140,6 +141,7 @@ func parseRequestParams(req *restful.Request) reqParams {
 	r.namespacedResourcesFilter = strings.TrimRight(req.QueryParameter("namespaced_resources_filter"), "$")
 	r.resourceFilter = req.QueryParameter("resources_filter")
 	r.workspaceName = req.PathParameter("workspace")
+	r.userName = req.PathParameter("user")
 	r.namespaceName = req.PathParameter("namespace")
 	r.workloadKind = req.PathParameter("kind")
 	r.nodeName = req.PathParameter("node")
@@ -238,7 +240,15 @@ func (h handler) makeQueryOptions(r reqParams, lvl monitoring.Level) (q queryOpt
 			StorageClassName: r.storageClassName, // metering pvc
 		}
 		q.namedMetrics = model.WorkspaceMetrics
-
+	case monitoring.LevelUser:
+		q.identifier = model.IdentifierUser
+		q.option = monitoring.UserOption{
+			ResourceFilter:   r.resourceFilter,
+			UserName:         r.userName,
+			PVCFilter:        r.pvcFilter,
+			StorageClassName: r.storageClassName,
+		}
+		q.namedMetrics = model.UserMetrics
 	case monitoring.LevelNamespace:
 		q.identifier = model.IdentifierNamespace
 		q.option = monitoring.NamespaceOption{

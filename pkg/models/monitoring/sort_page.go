@@ -26,6 +26,7 @@ import (
 const (
 	IdentifierNode        = "node"
 	IdentifierWorkspace   = "workspace"
+	IdentifierUser        = "user"
 	IdentifierNamespace   = "namespace"
 	IdentifierWorkload    = "workload"
 	IdentifierPod         = "pod"
