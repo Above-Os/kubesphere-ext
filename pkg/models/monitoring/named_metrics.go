@@ -169,6 +169,8 @@ var WorkspaceMetrics = []string{
 var UserMetrics = []string{
 	"user_cpu_usage",
 	"user_memory_usage",
+	"user_cpu_total",
+	"user_memory_total",
 	"user_memory_usage_wo_cache",
 	"user_net_bytes_transmitted",
 	"user_net_bytes_received",
