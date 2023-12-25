@@ -15,6 +15,7 @@ package prometheus
 
 import (
 	"fmt"
+	"k8s.io/apimachinery/pkg/util/sets"
 	"strings"
 
 	"kubesphere.io/kubesphere/pkg/constants"
@@ -143,6 +144,8 @@ var promQLTemplates = map[string]string{
 	// user
 	"user_cpu_usage":                  `round(sum by (user) (user:container_cpu_usage_seconds_total:sum_rate{namespace!="", $1}), 0.001)`,
 	"user_memory_usage":               `sum by (user) (user:container_memory_usage_bytes:sum{namespace!="", $1})`,
+	"user_cpu_total":                  `kube_user_cpu_total{$1}`,
+	"user_memory_total":               `kube_user_memory_total{$1}`,
 	"user_memory_usage_wo_cache":      `sum by (user) (user:container_memory_usage_bytes_wo_cache:sum{namespace!="", $1})`,
 	"user_net_bytes_transmitted":      `sum by (user) (sum by (namespace) (irate(container_network_transmit_bytes_total{namespace!="", pod!="", interface!~"^(cali.+|tunl.+|dummy.+|kube.+|flannel.+|cni.+|docker.+|veth.+|lo.*)", job="kubelet"}[5m])) * on (namespace) group_left(user) kube_namespace_labels{$1}) or on(user) max by(user) (kube_namespace_labels{$1} * 0)`,
 	"user_net_bytes_received":         `sum by (user) (sum by (namespace) (irate(container_network_receive_bytes_total{namespace!="", pod!="", interface!~"^(cali.+|tunl.+|dummy.+|kube.+|flannel.+|cni.+|docker.+|veth.+|lo.*)", job="kubelet"}[5m])) * on (namespace) group_left(user) kube_namespace_labels{$1}) or on(user) max by(user) (kube_namespace_labels{$1} * 0)`,
@@ -287,6 +290,8 @@ var promQLTemplates = map[string]string{
 	"scheduler_e2e_scheduling_latency_quantile": `scheduler:scheduler_e2e_scheduling_duration:histogram_quantile`,
 }
 
+var particularMetricSet = sets.String{"user_cpu_total": sets.Empty{}, "user_memory_total": sets.Empty{}}
+
 func makeExpr(metric string, opts monitoring.QueryOptions) string {
 	tmpl := promQLTemplates[metric]
 	switch opts.Level {
@@ -297,7 +302,7 @@ func makeExpr(metric string, opts monitoring.QueryOptions) string {
 	case monitoring.LevelWorkspace:
 		return makeWorkspaceMetricExpr(tmpl, opts)
 	case monitoring.LevelUser:
-		return makeUserMetricExpr(tmpl, opts)
+		return makeUserMetricExpr(metric, tmpl, opts)
 	case monitoring.LevelNamespace:
 		return makeNamespaceMetricExpr(tmpl, opts)
 	case monitoring.LevelWorkload:
@@ -337,10 +342,13 @@ func makeWorkspaceMetricExpr(tmpl string, o monitoring.QueryOptions) string {
 	return strings.Replace(tmpl, "$1", workspaceSelector, -1)
 }
 
-func makeUserMetricExpr(tmpl string, o monitoring.QueryOptions) string {
+func makeUserMetricExpr(metric, tmpl string, o monitoring.QueryOptions) string {
 	var userSelector string
 	if o.UserName != "" {
 		userSelector = fmt.Sprintf(`user="%s"`, o.UserName)
+		if particularMetricSet.Has(metric) {
+			userSelector = fmt.Sprintf(`username="%s"`, o.UserName)
+		}
 	} else {
 		userSelector = fmt.Sprintf(`user=~"%s", user!=""`, o.ResourceFilter)
 	}
