@@ -37,5 +37,5 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: bytetrade/ks-apiserver:${{ github.event.inputs.tags }}
+          tags: baclab/ks-apiserver:${{ github.event.inputs.tags }}
           file: build/ks-apiserver/Dockerfile
