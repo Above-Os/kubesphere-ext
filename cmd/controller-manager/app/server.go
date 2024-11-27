@@ -36,8 +36,6 @@ import (
 	"kubesphere.io/kubesphere/cmd/controller-manager/app/options"
 	"kubesphere.io/kubesphere/pkg/apis"
 	controllerconfig "kubesphere.io/kubesphere/pkg/apiserver/config"
-	"kubesphere.io/kubesphere/pkg/controller/network/webhooks"
-	"kubesphere.io/kubesphere/pkg/controller/quota"
 	"kubesphere.io/kubesphere/pkg/controller/user"
 	"kubesphere.io/kubesphere/pkg/informers"
 	"kubesphere.io/kubesphere/pkg/simple/client/k8s"
@@ -234,15 +232,6 @@ func run(s *options.KubeSphereControllerManagerOptions, ctx context.Context) err
 
 	klog.V(2).Info("registering webhooks to the webhook server")
 	hookServer.Register("/validate-email-iam-kubesphere-io-v1alpha2", &webhook.Admission{Handler: &user.EmailValidator{Client: mgr.GetClient()}})
-	hookServer.Register("/validate-network-kubesphere-io-v1alpha1", &webhook.Admission{Handler: &webhooks.ValidatingHandler{C: mgr.GetClient()}})
-	hookServer.Register("/mutate-network-kubesphere-io-v1alpha1", &webhook.Admission{Handler: &webhooks.MutatingHandler{C: mgr.GetClient()}})
-	hookServer.Register("/persistentvolumeclaims", &webhook.Admission{Handler: &webhooks.AccessorHandler{C: mgr.GetClient()}})
-
-	resourceQuotaAdmission, err := quota.NewResourceQuotaAdmission(mgr.GetClient(), mgr.GetScheme())
-	if err != nil {
-		klog.Fatalf("unable to create resource quota admission: %v", err)
-	}
-	hookServer.Register("/validate-quota-kubesphere-io-v1alpha2", &webhook.Admission{Handler: resourceQuotaAdmission})
 
 	klog.V(2).Info("registering metrics to the webhook server")
 	// Add an extra metric endpoint, so we can use the the same metric definition with ks-apiserver
