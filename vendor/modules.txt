@@ -1754,7 +1754,6 @@ k8s.io/utils/trace
 # kubesphere.io/api v0.0.0 => ./staging/src/kubesphere.io/api
 ## explicit
 kubesphere.io/api/auditing/v1alpha1
-kubesphere.io/api/cluster/v1alpha1
 kubesphere.io/api/iam/v1alpha2
 kubesphere.io/api/network/calicov3
 kubesphere.io/api/network/crdinstall

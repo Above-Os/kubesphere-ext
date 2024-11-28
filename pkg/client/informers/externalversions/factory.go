@@ -29,7 +29,6 @@ import (
 	cache "k8s.io/client-go/tools/cache"
 	versioned "kubesphere.io/kubesphere/pkg/client/clientset/versioned"
 	auditing "kubesphere.io/kubesphere/pkg/client/informers/externalversions/auditing"
-	cluster "kubesphere.io/kubesphere/pkg/client/informers/externalversions/cluster"
 	iam "kubesphere.io/kubesphere/pkg/client/informers/externalversions/iam"
 	internalinterfaces "kubesphere.io/kubesphere/pkg/client/informers/externalversions/internalinterfaces"
 	network "kubesphere.io/kubesphere/pkg/client/informers/externalversions/network"
@@ -181,7 +180,6 @@ type SharedInformerFactory interface {
 	WaitForCacheSync(stopCh <-chan struct{}) map[reflect.Type]bool
 
 	Auditing() auditing.Interface
-	Cluster() cluster.Interface
 	Iam() iam.Interface
 	Network() network.Interface
 	Notification() notification.Interface
@@ -193,10 +191,6 @@ type SharedInformerFactory interface {
 
 func (f *sharedInformerFactory) Auditing() auditing.Interface {
 	return auditing.New(f, f.namespace, f.tweakListOptions)
-}
-
-func (f *sharedInformerFactory) Cluster() cluster.Interface {
-	return cluster.New(f, f.namespace, f.tweakListOptions)
 }
 
 func (f *sharedInformerFactory) Iam() iam.Interface {

@@ -18,7 +18,6 @@ package notification
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"reflect"
 	"time"
@@ -26,7 +25,6 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/kubernetes"
@@ -40,7 +38,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 
-	"kubesphere.io/api/cluster/v1alpha1"
 	"kubesphere.io/api/notification/v2beta1"
 	"kubesphere.io/api/types/v1beta1"
 
@@ -125,16 +122,16 @@ func (c *Controller) setEventHandlers() error {
 	}
 
 	// Watch the cluster add and delete operations.
-	if informer, err := c.ksCache.GetInformer(context.Background(), &v1alpha1.Cluster{}); err != nil {
-		klog.Errorf("get cluster informer error, %v", err)
-		return err
-	} else {
-		informer.AddEventHandler(toolscache.ResourceEventHandlerFuncs{
-			AddFunc:    c.enqueue,
-			DeleteFunc: c.enqueue,
-		})
-		c.informerSynced = append(c.informerSynced, informer.HasSynced)
-	}
+	//if informer, err := c.ksCache.GetInformer(context.Background(), &v1alpha1.Cluster{}); err != nil {
+	//	klog.Errorf("get cluster informer error, %v", err)
+	//	return err
+	//} else {
+	//	informer.AddEventHandler(toolscache.ResourceEventHandlerFuncs{
+	//		AddFunc:    c.enqueue,
+	//		DeleteFunc: c.enqueue,
+	//	})
+	//	c.informerSynced = append(c.informerSynced, informer.HasSynced)
+	//}
 
 	return nil
 }
@@ -233,18 +230,6 @@ func (c *Controller) reconcile(obj interface{}) error {
 
 	name := runtimeObj.GetName()
 
-	// The notification controller should update the annotations of secrets managed by itself
-	// whenever a cluster is added or deleted. This way, the controller will have a chance to override the secret.
-	if _, ok := obj.(*v1alpha1.Cluster); ok {
-		err := c.updateSecret()
-		if err != nil {
-			klog.Errorf("update secret failed, %s", err)
-			return err
-		}
-
-		return nil
-	}
-
 	err := c.Get(context.Background(), client.ObjectKey{Name: runtimeObj.GetName(), Namespace: runtimeObj.GetNamespace()}, runtimeObj)
 	if err != nil {
 		// The user may no longer exist, in which case we stop
@@ -259,9 +244,9 @@ func (c *Controller) reconcile(obj interface{}) error {
 		return err
 	}
 
-	if err = c.multiClusterSync(context.Background(), runtimeObj); err != nil {
-		return err
-	}
+	//if err = c.multiClusterSync(context.Background(), runtimeObj); err != nil {
+	//	return err
+	//}
 
 	c.recorder.Event(runtimeObj, corev1.EventTypeNormal, successSynced, messageResourceSynced)
 	klog.Infof("Successfully synced %s", name)
@@ -272,25 +257,25 @@ func (c *Controller) Start(ctx context.Context) error {
 	return c.Run(4, ctx.Done())
 }
 
-func (c *Controller) multiClusterSync(ctx context.Context, obj client.Object) error {
-
-	if err := c.ensureNotControlledByKubefed(ctx, obj); err != nil {
-		klog.Error(err)
-		return err
-	}
-
-	switch obj.(type) {
-	case *v2beta1.Config:
-		return c.syncFederatedConfig(obj.(*v2beta1.Config))
-	case *v2beta1.Receiver:
-		return c.syncFederatedReceiver(obj.(*v2beta1.Receiver))
-	case *corev1.Secret:
-		return c.syncFederatedSecret(obj.(*corev1.Secret))
-	default:
-		klog.Errorf("unknown type for notification, %v", obj)
-		return nil
-	}
-}
+//func (c *Controller) multiClusterSync(ctx context.Context, obj client.Object) error {
+//
+//if err := c.ensureNotControlledByKubefed(ctx, obj); err != nil {
+//	klog.Error(err)
+//	return err
+//}
+//
+//switch obj.(type) {
+//case *v2beta1.Config:
+//	return c.syncFederatedConfig(obj.(*v2beta1.Config))
+//case *v2beta1.Receiver:
+//	return c.syncFederatedReceiver(obj.(*v2beta1.Receiver))
+//case *corev1.Secret:
+//	return c.syncFederatedSecret(obj.(*corev1.Secret))
+//default:
+//	klog.Errorf("unknown type for notification, %v", obj)
+//	return nil
+//}
+//}
 
 func (c *Controller) syncFederatedConfig(obj *v2beta1.Config) error {
 
@@ -403,109 +388,6 @@ func (c *Controller) syncFederatedReceiver(obj *v2beta1.Receiver) error {
 			klog.Errorf("update FederatedNotificationReceiver '%s' failed, %s", obj.Name, err)
 			return err
 		}
-	}
-
-	return nil
-}
-
-func (c *Controller) syncFederatedSecret(obj *corev1.Secret) error {
-
-	fedObj := &v1beta1.FederatedSecret{}
-	err := c.Get(context.Background(), client.ObjectKey{Name: obj.Name, Namespace: obj.Namespace}, fedObj)
-	if err != nil {
-		if errors.IsNotFound(err) {
-			fedObj = &v1beta1.FederatedSecret{
-				TypeMeta: metav1.TypeMeta{
-					Kind:       v1beta1.FederatedSecretKind,
-					APIVersion: v1beta1.SchemeGroupVersion.String(),
-				},
-				ObjectMeta: metav1.ObjectMeta{
-					Name:      obj.Name,
-					Namespace: obj.Namespace,
-				},
-				Spec: v1beta1.FederatedSecretSpec{
-					Template: v1beta1.SecretTemplate{
-						Data:       obj.Data,
-						StringData: obj.StringData,
-						Type:       obj.Type,
-					},
-					Placement: v1beta1.GenericPlacementFields{
-						ClusterSelector: &metav1.LabelSelector{},
-					},
-				},
-			}
-
-			err = c.updateOverrides(obj, fedObj)
-			if err != nil {
-				klog.Errorf("update FederatedSecret '%s' overrides failed, %s", obj.Name, err)
-				return err
-			}
-
-			err = controllerutil.SetControllerReference(obj, fedObj, scheme.Scheme)
-			if err != nil {
-				klog.Errorf("FederatedSecret '%s' SetControllerReference failed, %s", obj.Name, err)
-				return err
-			}
-
-			if err = c.Create(context.Background(), fedObj); err != nil {
-				klog.Errorf("create FederatedSecret '%s' failed, %s", obj.Name, err)
-				return err
-			}
-
-			return nil
-		}
-		klog.Errorf("get FederatedSecret '%s' failed, %s", obj.Name, err)
-		return err
-	}
-
-	if !reflect.DeepEqual(fedObj.Spec.Template.Data, obj.Data) ||
-		!reflect.DeepEqual(fedObj.Spec.Template.StringData, obj.StringData) ||
-		!reflect.DeepEqual(fedObj.Spec.Template.Type, obj.Type) {
-
-		fedObj.Spec.Template.Data = obj.Data
-		fedObj.Spec.Template.StringData = obj.StringData
-		fedObj.Spec.Template.Type = obj.Type
-	}
-
-	err = c.updateOverrides(obj, fedObj)
-	if err != nil {
-		klog.Errorf("update FederatedSecret '%s' overrides failed, %s", obj.Name, err)
-		return err
-	}
-
-	if err := c.Update(context.Background(), fedObj); err != nil {
-		klog.Errorf("update FederatedSecret '%s' failed, %s", obj.Name, err)
-		return err
-	}
-
-	return nil
-}
-
-func (c *Controller) updateOverrides(obj *corev1.Secret, fedSecret *v1beta1.FederatedSecret) error {
-	clusterList := &v1alpha1.ClusterList{}
-	err := c.ksCache.List(context.Background(), clusterList)
-	if err != nil {
-		return err
-	}
-
-	bs, err := json.Marshal(obj.Labels)
-	if err != nil {
-		return err
-	}
-
-	fedSecret.Spec.Overrides = fedSecret.Spec.Overrides[:0]
-	for _, cluster := range clusterList.Items {
-		fedSecret.Spec.Overrides = append(fedSecret.Spec.Overrides, v1beta1.GenericOverrideItem{
-			ClusterName: cluster.Name,
-			ClusterOverrides: []v1beta1.ClusterOverride{
-				{
-					Path: "/metadata/labels",
-					Value: runtime.RawExtension{
-						Raw: bs,
-					},
-				},
-			},
-		})
 	}
 
 	return nil

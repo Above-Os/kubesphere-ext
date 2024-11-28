@@ -207,29 +207,19 @@ func (mo monitoringOperator) GetKubeSphereStats() Metrics {
 	var res Metrics
 	now := float64(time.Now().Unix())
 
-	clusterList, err := mo.ks.Cluster().V1alpha1().Clusters().Lister().List(labels.Everything())
-	clusterTotal := len(clusterList)
-	if clusterTotal == 0 {
-		clusterTotal = 1
-	}
-	if err != nil {
-		res.Results = append(res.Results, monitoring.Metric{
-			MetricName: KubeSphereClusterCount,
-			Error:      err.Error(),
-		})
-	} else {
-		res.Results = append(res.Results, monitoring.Metric{
-			MetricName: KubeSphereClusterCount,
-			MetricData: monitoring.MetricData{
-				MetricType: monitoring.MetricTypeVector,
-				MetricValues: []monitoring.MetricValue{
-					{
-						Sample: &monitoring.Point{now, float64(clusterTotal)},
-					},
+	clusterTotal := 1
+
+	res.Results = append(res.Results, monitoring.Metric{
+		MetricName: KubeSphereClusterCount,
+		MetricData: monitoring.MetricData{
+			MetricType: monitoring.MetricTypeVector,
+			MetricValues: []monitoring.MetricValue{
+				{
+					Sample: &monitoring.Point{now, float64(clusterTotal)},
 				},
 			},
-		})
-	}
+		},
+	})
 
 	wkList, err := mo.ks.Tenant().V1alpha2().WorkspaceTemplates().Lister().List(labels.Everything())
 	if err != nil {

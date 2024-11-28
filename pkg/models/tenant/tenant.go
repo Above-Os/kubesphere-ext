@@ -30,18 +30,14 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/apiserver/pkg/authentication/user"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/klog"
 
-	clusterv1alpha1 "kubesphere.io/api/cluster/v1alpha1"
 	quotav1alpha2 "kubesphere.io/api/quota/v1alpha2"
 	tenantv1alpha1 "kubesphere.io/api/tenant/v1alpha1"
 	tenantv1alpha2 "kubesphere.io/api/tenant/v1alpha2"
 	typesv1beta1 "kubesphere.io/api/types/v1beta1"
-
-	iamv1alpha2 "kubesphere.io/api/iam/v1alpha2"
 
 	"kubesphere.io/kubesphere/pkg/api"
 	auditingv1alpha1 "kubesphere.io/kubesphere/pkg/api/auditing/v1alpha1"
@@ -489,110 +485,19 @@ func (t *tenantOperator) DescribeWorkspaceTemplate(workspace string) (*tenantv1a
 }
 
 func (t *tenantOperator) ListWorkspaceClusters(workspaceName string) (*api.ListResult, error) {
-	workspace, err := t.DescribeWorkspaceTemplate(workspaceName)
-	if err != nil {
-		klog.Error(err)
-		return nil, err
-	}
-
-	// In this case, spec.placement.clusterSelector will be ignored, since spec.placement.clusters is provided.
-	if workspace.Spec.Placement.Clusters != nil {
-		clusters := make([]interface{}, 0)
-		for _, cluster := range workspace.Spec.Placement.Clusters {
-			obj, err := t.resourceGetter.Get(clusterv1alpha1.ResourcesPluralCluster, "", cluster.Name)
-			if err != nil {
-				klog.Warning(err)
-				if errors.IsNotFound(err) {
-					continue
-				}
-				return nil, err
-			}
-			clusters = append(clusters, obj)
-		}
-		return &api.ListResult{Items: clusters, TotalItems: len(clusters)}, nil
-	}
-
-	if workspace.Spec.Placement.ClusterSelector != nil {
-		// In this case, the resource will be propagated to all member clusters.
-		if workspace.Spec.Placement.ClusterSelector.MatchLabels == nil {
-			return t.resourceGetter.List(clusterv1alpha1.ResourcesPluralCluster, "", query.New())
-		} else {
-			// In this case, the resource will only be propagated to member clusters that are labeled with foo: bar.
-			return t.resourceGetter.List(clusterv1alpha1.ResourcesPluralCluster, "", &query.Query{
-				Pagination:    query.NoPagination,
-				Ascending:     false,
-				LabelSelector: labels.SelectorFromSet(workspace.Spec.Placement.ClusterSelector.MatchLabels).String(),
-			})
-		}
-	}
+	//workspace, err := t.DescribeWorkspaceTemplate(workspaceName)
+	//if err != nil {
+	//	klog.Error(err)
+	//	return nil, err
+	//}
 
 	// In this case, you can either set spec: {} as above or remove spec field from your placement policy. The resource will not be propagated to member clusters.
 	return &api.ListResult{Items: []interface{}{}, TotalItems: 0}, nil
 }
 
 func (t *tenantOperator) ListClusters(user user.Info, queryParam *query.Query) (*api.ListResult, error) {
+	return &api.ListResult{Items: []interface{}{}, TotalItems: 0}, nil
 
-	listClustersInGlobalScope := authorizer.AttributesRecord{
-		User:            user,
-		Verb:            "list",
-		APIGroup:        "cluster.kubesphere.io",
-		Resource:        "clusters",
-		ResourceScope:   request.GlobalScope,
-		ResourceRequest: true,
-	}
-
-	allowedListClustersInGlobalScope, _, err := t.authorizer.Authorize(listClustersInGlobalScope)
-	if err != nil {
-		return nil, fmt.Errorf("failed to authorize: %s", err)
-	}
-
-	if allowedListClustersInGlobalScope == authorizer.DecisionAllow {
-		return t.resourceGetter.List(clusterv1alpha1.ResourcesPluralCluster, "", queryParam)
-	}
-
-	userDetail, err := t.im.DescribeUser(user.GetName())
-	if err != nil {
-		return nil, fmt.Errorf("failed to describe user: %s", err)
-	}
-
-	grantedClustersAnnotation := userDetail.Annotations[iamv1alpha2.GrantedClustersAnnotation]
-	var grantedClusters sets.String
-	if len(grantedClustersAnnotation) > 0 {
-		grantedClusters = sets.NewString(strings.Split(grantedClustersAnnotation, ",")...)
-	} else {
-		grantedClusters = sets.NewString()
-	}
-	var clusters []*clusterv1alpha1.Cluster
-	for _, grantedCluster := range grantedClusters.List() {
-		obj, err := t.resourceGetter.Get(clusterv1alpha1.ResourcesPluralCluster, "", grantedCluster)
-		if err != nil {
-			if errors.IsNotFound(err) {
-				continue
-			}
-			return nil, fmt.Errorf("failed to fetch cluster: %s", err)
-		}
-		cluster := obj.(*clusterv1alpha1.Cluster)
-		clusters = append(clusters, cluster)
-	}
-
-	items := make([]runtime.Object, 0)
-	for _, cluster := range clusters {
-		items = append(items, cluster)
-	}
-
-	// apply additional labelSelector
-	if queryParam.LabelSelector != "" {
-		queryParam.Filters[query.FieldLabel] = query.Value(queryParam.LabelSelector)
-	}
-
-	// use default pagination search logic
-	result := resources.DefaultList(items, queryParam, func(left runtime.Object, right runtime.Object, field query.Field) bool {
-		return resources.DefaultObjectMetaCompare(left.(*clusterv1alpha1.Cluster).ObjectMeta, right.(*clusterv1alpha1.Cluster).ObjectMeta, field)
-	}, func(workspace runtime.Object, filter query.Filter) bool {
-		return resources.DefaultObjectMetaFilter(workspace.(*clusterv1alpha1.Cluster).ObjectMeta, filter)
-	})
-
-	return result, nil
 }
 
 func (t *tenantOperator) DeleteWorkspaceTemplate(workspace string, opts metav1.DeleteOptions) error {

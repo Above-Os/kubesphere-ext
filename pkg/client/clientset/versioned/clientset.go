@@ -25,7 +25,6 @@ import (
 	rest "k8s.io/client-go/rest"
 	flowcontrol "k8s.io/client-go/util/flowcontrol"
 	auditingv1alpha1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/auditing/v1alpha1"
-	clusterv1alpha1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/cluster/v1alpha1"
 	iamv1alpha2 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/iam/v1alpha2"
 	networkv1alpha1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/network/v1alpha1"
 	notificationv2beta1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/notification/v2beta1"
@@ -39,7 +38,6 @@ import (
 type Interface interface {
 	Discovery() discovery.DiscoveryInterface
 	AuditingV1alpha1() auditingv1alpha1.AuditingV1alpha1Interface
-	ClusterV1alpha1() clusterv1alpha1.ClusterV1alpha1Interface
 	IamV1alpha2() iamv1alpha2.IamV1alpha2Interface
 	NetworkV1alpha1() networkv1alpha1.NetworkV1alpha1Interface
 	NotificationV2beta1() notificationv2beta1.NotificationV2beta1Interface
@@ -55,7 +53,6 @@ type Interface interface {
 type Clientset struct {
 	*discovery.DiscoveryClient
 	auditingV1alpha1    *auditingv1alpha1.AuditingV1alpha1Client
-	clusterV1alpha1     *clusterv1alpha1.ClusterV1alpha1Client
 	iamV1alpha2         *iamv1alpha2.IamV1alpha2Client
 	networkV1alpha1     *networkv1alpha1.NetworkV1alpha1Client
 	notificationV2beta1 *notificationv2beta1.NotificationV2beta1Client
@@ -69,11 +66,6 @@ type Clientset struct {
 // AuditingV1alpha1 retrieves the AuditingV1alpha1Client
 func (c *Clientset) AuditingV1alpha1() auditingv1alpha1.AuditingV1alpha1Interface {
 	return c.auditingV1alpha1
-}
-
-// ClusterV1alpha1 retrieves the ClusterV1alpha1Client
-func (c *Clientset) ClusterV1alpha1() clusterv1alpha1.ClusterV1alpha1Interface {
-	return c.clusterV1alpha1
 }
 
 // IamV1alpha2 retrieves the IamV1alpha2Client
@@ -141,10 +133,6 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 	if err != nil {
 		return nil, err
 	}
-	cs.clusterV1alpha1, err = clusterv1alpha1.NewForConfig(&configShallowCopy)
-	if err != nil {
-		return nil, err
-	}
 	cs.iamV1alpha2, err = iamv1alpha2.NewForConfig(&configShallowCopy)
 	if err != nil {
 		return nil, err
@@ -190,7 +178,6 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 func NewForConfigOrDie(c *rest.Config) *Clientset {
 	var cs Clientset
 	cs.auditingV1alpha1 = auditingv1alpha1.NewForConfigOrDie(c)
-	cs.clusterV1alpha1 = clusterv1alpha1.NewForConfigOrDie(c)
 	cs.iamV1alpha2 = iamv1alpha2.NewForConfigOrDie(c)
 	cs.networkV1alpha1 = networkv1alpha1.NewForConfigOrDie(c)
 	cs.notificationV2beta1 = notificationv2beta1.NewForConfigOrDie(c)
@@ -208,7 +195,6 @@ func NewForConfigOrDie(c *rest.Config) *Clientset {
 func New(c rest.Interface) *Clientset {
 	var cs Clientset
 	cs.auditingV1alpha1 = auditingv1alpha1.New(c)
-	cs.clusterV1alpha1 = clusterv1alpha1.New(c)
 	cs.iamV1alpha2 = iamv1alpha2.New(c)
 	cs.networkV1alpha1 = networkv1alpha1.New(c)
 	cs.notificationV2beta1 = notificationv2beta1.New(c)

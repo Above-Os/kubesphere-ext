@@ -24,7 +24,6 @@ import (
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	cache "k8s.io/client-go/tools/cache"
 	v1alpha1 "kubesphere.io/api/auditing/v1alpha1"
-	clusterv1alpha1 "kubesphere.io/api/cluster/v1alpha1"
 	v1alpha2 "kubesphere.io/api/iam/v1alpha2"
 	networkv1alpha1 "kubesphere.io/api/network/v1alpha1"
 	v2beta1 "kubesphere.io/api/notification/v2beta1"
@@ -66,10 +65,6 @@ func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Auditing().V1alpha1().Rules().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("webhooks"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Auditing().V1alpha1().Webhooks().Informer()}, nil
-
-		// Group=cluster.kubesphere.io, Version=v1alpha1
-	case clusterv1alpha1.SchemeGroupVersion.WithResource("clusters"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.Cluster().V1alpha1().Clusters().Informer()}, nil
 
 		// Group=iam.kubesphere.io, Version=v1alpha2
 	case v1alpha2.SchemeGroupVersion.WithResource("globalroles"):

@@ -21,8 +21,6 @@ import (
 	"flag"
 	"fmt"
 
-	"kubesphere.io/kubesphere/pkg/utils/clusterclient"
-
 	"kubesphere.io/kubesphere/pkg/apiserver/authentication/token"
 
 	"k8s.io/client-go/kubernetes/scheme"
@@ -203,11 +201,6 @@ func (s *ServerRunOptions) NewAPIServer(stopCh <-chan struct{}) (*apiserver.APIS
 			return nil, fmt.Errorf("failed to init alerting client: %v", err)
 		}
 		apiServer.AlertingClient = alertingClient
-	}
-
-	if s.Config.MultiClusterOptions.Enable {
-		cc := clusterclient.NewClusterClient(informerFactory.KubeSphereSharedInformerFactory().Cluster().V1alpha1().Clusters())
-		apiServer.ClusterClient = cc
 	}
 
 	server := &http.Server{
