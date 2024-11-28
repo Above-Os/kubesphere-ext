@@ -33,8 +33,6 @@ import (
 	"kubesphere.io/kubesphere/pkg/controller/namespace"
 	"kubesphere.io/kubesphere/pkg/controller/user"
 	"kubesphere.io/kubesphere/pkg/models/kubeconfig"
-	"kubesphere.io/kubesphere/pkg/simple/client/devops"
-	"kubesphere.io/kubesphere/pkg/simple/client/devops/jenkins"
 	ldapclient "kubesphere.io/kubesphere/pkg/simple/client/ldap"
 
 	iamv1alpha2 "kubesphere.io/api/iam/v1alpha2"
@@ -96,14 +94,6 @@ func addAllControllers(mgr manager.Manager, client k8s.Client, informerFactory i
 		informerFactory.KubernetesSharedInformerFactory().Core().V1().ConfigMaps().Lister(),
 		client.Config())
 
-	var devopsClient devops.Interface
-	if cmOptions.DevopsOptions != nil && len(cmOptions.DevopsOptions.Host) != 0 {
-		devopsClient, err = jenkins.NewDevopsClient(cmOptions.DevopsOptions)
-		if err != nil {
-			return fmt.Errorf("failed to connect jenkins, please check jenkins status, error: %v", err)
-		}
-	}
-
 	var ldapClient ldapclient.Interface
 	// when there is no ldapOption, we set ldapClient as nil, which means we don't need to sync user info into ldap.
 	if cmOptions.LdapOptions != nil && len(cmOptions.LdapOptions.Host) != 0 {
@@ -132,7 +122,6 @@ func addAllControllers(mgr manager.Manager, client k8s.Client, informerFactory i
 			MultiClusterEnabled:     cmOptions.MultiClusterOptions.Enable,
 			MaxConcurrentReconciles: 4,
 			LdapClient:              ldapClient,
-			DevopsClient:            devopsClient,
 			KubeconfigClient:        kubeconfigClient,
 			AuthenticationOptions:   cmOptions.AuthenticationOptions,
 		}

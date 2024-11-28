@@ -43,7 +43,6 @@ import (
 	"net/http"
 	"strings"
 
-	"kubesphere.io/kubesphere/pkg/simple/client/devops/jenkins"
 	eventsclient "kubesphere.io/kubesphere/pkg/simple/client/events/elasticsearch"
 	"kubesphere.io/kubesphere/pkg/simple/client/k8s"
 	esclient "kubesphere.io/kubesphere/pkg/simple/client/logging/elasticsearch"
@@ -84,7 +83,6 @@ func (s *ServerRunOptions) Flags() (fss cliflag.NamedFlagSets) {
 	s.KubernetesOptions.AddFlags(fss.FlagSet("kubernetes"), s.KubernetesOptions)
 	s.AuthenticationOptions.AddFlags(fss.FlagSet("authentication"), s.AuthenticationOptions)
 	s.AuthorizationOptions.AddFlags(fss.FlagSet("authorization"), s.AuthorizationOptions)
-	s.DevopsOptions.AddFlags(fss.FlagSet("devops"), s.DevopsOptions)
 	s.SonarQubeOptions.AddFlags(fss.FlagSet("sonarqube"), s.SonarQubeOptions)
 	s.RedisOptions.AddFlags(fss.FlagSet("redis"), s.RedisOptions)
 	s.S3Options.AddFlags(fss.FlagSet("s3"), s.S3Options)
@@ -156,14 +154,6 @@ func (s *ServerRunOptions) NewAPIServer(stopCh <-chan struct{}) (*apiserver.APIS
 			}
 			apiServer.S3Client = s3Client
 		}
-	}
-
-	if s.DevopsOptions.Host != "" {
-		devopsClient, err := jenkins.NewDevopsClient(s.DevopsOptions)
-		if err != nil {
-			return nil, fmt.Errorf("failed to connect to jenkins, please check jenkins status, error: %v", err)
-		}
-		apiServer.DevopsClient = devopsClient
 	}
 
 	if s.SonarQubeOptions.Host != "" {

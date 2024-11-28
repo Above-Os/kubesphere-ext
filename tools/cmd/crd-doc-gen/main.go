@@ -27,7 +27,6 @@ import (
 	urlruntime "k8s.io/apimachinery/pkg/util/runtime"
 
 	clusterv1alpha1 "kubesphere.io/api/cluster/v1alpha1"
-	devopsv1alpha3 "kubesphere.io/api/devops/v1alpha3"
 
 	"kubesphere.io/kubesphere/pkg/version"
 	"kubesphere.io/kubesphere/tools/lib"
@@ -38,8 +37,6 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/serializer"
 	"k8s.io/kube-openapi/pkg/common"
 
-	devopsinstall "kubesphere.io/api/devops/crdinstall"
-	devopsv1alpha1 "kubesphere.io/api/devops/v1alpha1"
 	networkinstall "kubesphere.io/api/network/crdinstall"
 	networkv1alpha1 "kubesphere.io/api/network/v1alpha1"
 	servicemeshinstall "kubesphere.io/api/servicemesh/crdinstall"
@@ -64,7 +61,6 @@ func main() {
 	servicemeshinstall.Install(Scheme)
 	tenantinstall.Install(Scheme)
 	networkinstall.Install(Scheme)
-	devopsinstall.Install(Scheme)
 
 	urlruntime.Must(clusterv1alpha1.AddToScheme(Scheme))
 	urlruntime.Must(Scheme.SetVersionPriority(clusterv1alpha1.SchemeGroupVersion))
@@ -83,20 +79,20 @@ func main() {
 		tenantv1alpha1.SchemeGroupVersion.WithResource(tenantv1alpha1.ResourcePluralWorkspace),
 		tenantv1alpha1.SchemeGroupVersion.WithResource(tenantv1alpha1.ResourceSingularWorkspace), meta.RESTScopeRoot)
 
-	mapper.AddSpecific(devopsv1alpha1.SchemeGroupVersion.WithKind(devopsv1alpha1.ResourceKindS2iBuilder),
-		devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourcePluralS2iBuilder),
-		devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourceSingularS2iBuilder), meta.RESTScopeRoot)
-
-	mapper.AddSpecific(devopsv1alpha1.SchemeGroupVersion.WithKind(devopsv1alpha1.ResourceKindS2iBuilderTemplate),
-		devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourcePluralS2iBuilderTemplate),
-		devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourceSingularS2iBuilderTemplate), meta.RESTScopeRoot)
-
-	mapper.AddSpecific(devopsv1alpha1.SchemeGroupVersion.WithKind(devopsv1alpha1.ResourceKindS2iRun),
-		devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourcePluralS2iRun),
-		devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourceSingularS2iRun), meta.RESTScopeRoot)
-	mapper.AddSpecific(devopsv1alpha1.SchemeGroupVersion.WithKind(devopsv1alpha1.ResourceKindS2iBinary),
-		devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourceSingularS2iBinary),
-		devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourcePluralS2iBinary), meta.RESTScopeRoot)
+	//mapper.AddSpecific(devopsv1alpha1.SchemeGroupVersion.WithKind(devopsv1alpha1.ResourceKindS2iBuilder),
+	//	devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourcePluralS2iBuilder),
+	//	devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourceSingularS2iBuilder), meta.RESTScopeRoot)
+	//
+	//mapper.AddSpecific(devopsv1alpha1.SchemeGroupVersion.WithKind(devopsv1alpha1.ResourceKindS2iBuilderTemplate),
+	//	devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourcePluralS2iBuilderTemplate),
+	//	devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourceSingularS2iBuilderTemplate), meta.RESTScopeRoot)
+	//
+	//mapper.AddSpecific(devopsv1alpha1.SchemeGroupVersion.WithKind(devopsv1alpha1.ResourceKindS2iRun),
+	//	devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourcePluralS2iRun),
+	//	devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourceSingularS2iRun), meta.RESTScopeRoot)
+	//mapper.AddSpecific(devopsv1alpha1.SchemeGroupVersion.WithKind(devopsv1alpha1.ResourceKindS2iBinary),
+	//	devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourceSingularS2iBinary),
+	//	devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourcePluralS2iBinary), meta.RESTScopeRoot)
 
 	mapper.AddSpecific(networkv1alpha1.SchemeGroupVersion.WithKind(networkv1alpha1.ResourceKindNamespaceNetworkPolicy),
 		networkv1alpha1.SchemeGroupVersion.WithResource(networkv1alpha1.ResourcePluralNamespaceNetworkPolicy),
@@ -105,12 +101,12 @@ func main() {
 		networkv1alpha1.SchemeGroupVersion.WithResource(networkv1alpha1.ResourcePluralIPPool),
 		networkv1alpha1.SchemeGroupVersion.WithResource(networkv1alpha1.ResourceSingularIPPool), meta.RESTScopeRoot)
 
-	mapper.AddSpecific(devopsv1alpha3.SchemeGroupVersion.WithKind(devopsv1alpha3.ResourceKindDevOpsProject),
-		devopsv1alpha3.SchemeGroupVersion.WithResource(devopsv1alpha3.ResourcePluralDevOpsProject),
-		devopsv1alpha3.SchemeGroupVersion.WithResource(devopsv1alpha3.ResourceSingularDevOpsProject), meta.RESTScopeRoot)
-	mapper.AddSpecific(devopsv1alpha3.SchemeGroupVersion.WithKind(devopsv1alpha3.ResourceKindPipeline),
-		devopsv1alpha3.SchemeGroupVersion.WithResource(devopsv1alpha3.ResourcePluralPipeline),
-		devopsv1alpha3.SchemeGroupVersion.WithResource(devopsv1alpha3.ResourceSingularPipeline), meta.RESTScopeRoot)
+	//mapper.AddSpecific(devopsv1alpha3.SchemeGroupVersion.WithKind(devopsv1alpha3.ResourceKindDevOpsProject),
+	//	devopsv1alpha3.SchemeGroupVersion.WithResource(devopsv1alpha3.ResourcePluralDevOpsProject),
+	//	devopsv1alpha3.SchemeGroupVersion.WithResource(devopsv1alpha3.ResourceSingularDevOpsProject), meta.RESTScopeRoot)
+	//mapper.AddSpecific(devopsv1alpha3.SchemeGroupVersion.WithKind(devopsv1alpha3.ResourceKindPipeline),
+	//	devopsv1alpha3.SchemeGroupVersion.WithResource(devopsv1alpha3.ResourcePluralPipeline),
+	//	devopsv1alpha3.SchemeGroupVersion.WithResource(devopsv1alpha3.ResourceSingularPipeline), meta.RESTScopeRoot)
 
 	mapper.AddSpecific(clusterv1alpha1.SchemeGroupVersion.WithKind(clusterv1alpha1.ResourceKindCluster),
 		clusterv1alpha1.SchemeGroupVersion.WithResource(clusterv1alpha1.ResourcesPluralCluster),
@@ -144,8 +140,6 @@ func main() {
 			servicemeshv1alpha2.GetOpenAPIDefinitions,
 			tenantv1alpha1.GetOpenAPIDefinitions,
 			networkv1alpha1.GetOpenAPIDefinitions,
-			devopsv1alpha1.GetOpenAPIDefinitions,
-			devopsv1alpha3.GetOpenAPIDefinitions,
 			clusterv1alpha1.GetOpenAPIDefinitions,
 		},
 		Resources: []schema.GroupVersionResource{
@@ -155,14 +149,14 @@ func main() {
 			//servicemeshv1alpha2.SchemeGroupVersion.WithResource(servicemeshv1alpha2.ResourcePluralStrategy),
 			//servicemeshv1alpha2.SchemeGroupVersion.WithResource(servicemeshv1alpha2.ResourcePluralServicePolicy),
 			tenantv1alpha1.SchemeGroupVersion.WithResource(tenantv1alpha1.ResourcePluralWorkspace),
-			devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourcePluralS2iBinary),
-			devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourcePluralS2iRun),
-			devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourcePluralS2iBuilderTemplate),
-			devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourcePluralS2iBuilder),
+			//devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourcePluralS2iBinary),
+			//devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourcePluralS2iRun),
+			//devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourcePluralS2iBuilderTemplate),
+			//devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourcePluralS2iBuilder),
 			networkv1alpha1.SchemeGroupVersion.WithResource(networkv1alpha1.ResourcePluralNamespaceNetworkPolicy),
 			networkv1alpha1.SchemeGroupVersion.WithResource(networkv1alpha1.ResourcePluralIPPool),
-			devopsv1alpha3.SchemeGroupVersion.WithResource(devopsv1alpha3.ResourcePluralDevOpsProject),
-			devopsv1alpha3.SchemeGroupVersion.WithResource(devopsv1alpha3.ResourcePluralPipeline),
+			//devopsv1alpha3.SchemeGroupVersion.WithResource(devopsv1alpha3.ResourcePluralDevOpsProject),
+			//devopsv1alpha3.SchemeGroupVersion.WithResource(devopsv1alpha3.ResourcePluralPipeline),
 			clusterv1alpha1.SchemeGroupVersion.WithResource(clusterv1alpha1.ResourcesPluralCluster),
 		},
 		Mapper: mapper,

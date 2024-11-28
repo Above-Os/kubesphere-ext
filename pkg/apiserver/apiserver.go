@@ -69,7 +69,6 @@ import (
 	clusterkapisv1alpha1 "kubesphere.io/kubesphere/pkg/kapis/cluster/v1alpha1"
 	configv1alpha2 "kubesphere.io/kubesphere/pkg/kapis/config/v1alpha2"
 	"kubesphere.io/kubesphere/pkg/kapis/crd"
-	kapisdevops "kubesphere.io/kubesphere/pkg/kapis/devops"
 	edgeruntimev1alpha1 "kubesphere.io/kubesphere/pkg/kapis/edgeruntime/v1alpha1"
 	iamapi "kubesphere.io/kubesphere/pkg/kapis/iam/v1alpha2"
 	kubeedgev1alpha1 "kubesphere.io/kubesphere/pkg/kapis/kubeedge/v1alpha1"
@@ -98,7 +97,6 @@ import (
 	"kubesphere.io/kubesphere/pkg/simple/client/alerting"
 	"kubesphere.io/kubesphere/pkg/simple/client/auditing"
 	"kubesphere.io/kubesphere/pkg/simple/client/cache"
-	"kubesphere.io/kubesphere/pkg/simple/client/devops"
 	"kubesphere.io/kubesphere/pkg/simple/client/events"
 	"kubesphere.io/kubesphere/pkg/simple/client/k8s"
 	"kubesphere.io/kubesphere/pkg/simple/client/logging"
@@ -139,8 +137,6 @@ type APIServer struct {
 	MetricsClient monitoring.Interface
 
 	LoggingClient logging.Client
-
-	DevopsClient devops.Interface
 
 	S3Client s3.Interface
 
@@ -218,8 +214,7 @@ func (s *APIServer) installKubeSphereAPIs(stopCh <-chan struct{}) {
 		s.Config.AuthenticationOptions)
 	amOperator := am.NewOperator(s.KubernetesClient.KubeSphere(),
 		s.KubernetesClient.Kubernetes(),
-		s.InformerFactory,
-		s.DevopsClient)
+		s.InformerFactory)
 	rbacAuthorizer := rbac.NewRBACAuthorizer(amOperator)
 
 	urlruntime.Must(configv1alpha2.AddToContainer(s.container, s.Config))
@@ -254,7 +249,6 @@ func (s *APIServer) installKubeSphereAPIs(stopCh <-chan struct{}) {
 		s.Config.AuthenticationOptions))
 	urlruntime.Must(servicemeshv1alpha2.AddToContainer(s.Config.ServiceMeshOptions, s.container, s.KubernetesClient.Kubernetes(), s.CacheClient))
 	urlruntime.Must(networkv1alpha2.AddToContainer(s.container, s.Config.NetworkOptions.WeaveScopeHost))
-	urlruntime.Must(kapisdevops.AddToContainer(s.container, s.Config.DevopsOptions.Endpoint))
 	urlruntime.Must(notificationv1.AddToContainer(s.container, s.Config.NotificationOptions.Endpoint))
 	urlruntime.Must(alertingv1.AddToContainer(s.container, s.Config.AlertingOptions.Endpoint))
 	urlruntime.Must(alertingv2alpha1.AddToContainer(s.container, s.InformerFactory,
@@ -338,7 +332,7 @@ func (s *APIServer) buildHandlerChain(stopCh <-chan struct{}) {
 	case authorization.RBAC:
 		excludedPaths := []string{"/oauth/*", "/kapis/config.kubesphere.io/*", "/kapis/version", "/kapis/metrics"}
 		pathAuthorizer, _ := path.NewAuthorizer(excludedPaths)
-		amOperator := am.NewReadOnlyOperator(s.InformerFactory, s.DevopsClient)
+		amOperator := am.NewReadOnlyOperator(s.InformerFactory)
 		authorizers = unionauthorizer.New(pathAuthorizer, rbac.NewRBACAuthorizer(amOperator))
 	}
 
@@ -493,20 +487,6 @@ func (s *APIServer) waitForResourceSync(ctx context.Context) error {
 			notificationv2beta1.ResourcesPluralConfig,
 			notificationv2beta1.ResourcesPluralReceiver,
 		},
-	}
-
-	// skip caching devops resources if devops not enabled
-	if s.DevopsClient != nil {
-		ksGVRs[schema.GroupVersion{Group: "devops.kubesphere.io", Version: "v1alpha1"}] = []string{
-			"s2ibinaries",
-			"s2ibuildertemplates",
-			"s2iruns",
-			"s2ibuilders",
-		}
-		ksGVRs[schema.GroupVersion{Group: "devops.kubesphere.io", Version: "v1alpha3"}] = []string{
-			"devopsprojects",
-			"pipelines",
-		}
 	}
 
 	// skip caching servicemesh resources if servicemesh not enabled

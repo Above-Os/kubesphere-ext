@@ -37,7 +37,6 @@ import (
 	"kubesphere.io/kubesphere/pkg/simple/client/alerting"
 	"kubesphere.io/kubesphere/pkg/simple/client/auditing"
 	"kubesphere.io/kubesphere/pkg/simple/client/cache"
-	"kubesphere.io/kubesphere/pkg/simple/client/devops/jenkins"
 	"kubesphere.io/kubesphere/pkg/simple/client/edgeruntime"
 	"kubesphere.io/kubesphere/pkg/simple/client/events"
 	"kubesphere.io/kubesphere/pkg/simple/client/gateway"
@@ -153,7 +152,6 @@ func defaultConfig() *config {
 
 // Config defines everything needed for apiserver to deal with external services
 type Config struct {
-	DevopsOptions         *jenkins.Options        `json:"devops,omitempty" yaml:"devops,omitempty" mapstructure:"devops"`
 	SonarQubeOptions      *sonarqube.Options      `json:"sonarqube,omitempty" yaml:"sonarQube,omitempty" mapstructure:"sonarqube"`
 	KubernetesOptions     *k8s.KubernetesOptions  `json:"kubernetes,omitempty" yaml:"kubernetes,omitempty" mapstructure:"kubernetes"`
 	ServiceMeshOptions    *servicemesh.Options    `json:"servicemesh,omitempty" yaml:"servicemesh,omitempty" mapstructure:"servicemesh"`
@@ -181,7 +179,6 @@ type Config struct {
 // newConfig creates a default non-empty Config
 func New() *Config {
 	return &Config{
-		DevopsOptions:         jenkins.NewDevopsOptions(),
 		SonarQubeOptions:      sonarqube.NewSonarQubeOptions(),
 		KubernetesOptions:     k8s.NewKubernetesOptions(),
 		ServiceMeshOptions:    servicemesh.NewServiceMeshOptions(),
@@ -280,10 +277,6 @@ func (conf *Config) stripEmptyOptions() {
 
 	if conf.RedisOptions != nil && conf.RedisOptions.Host == "" {
 		conf.RedisOptions = nil
-	}
-
-	if conf.DevopsOptions != nil && conf.DevopsOptions.Host == "" {
-		conf.DevopsOptions = nil
 	}
 
 	if conf.MonitoringOptions != nil && conf.MonitoringOptions.Endpoint == "" {

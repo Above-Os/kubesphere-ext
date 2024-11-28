@@ -83,7 +83,7 @@ type Interface interface {
 	PatchWorkspaceTemplate(workspace string, data json.RawMessage) (*tenantv1alpha2.WorkspaceTemplate, error)
 	DescribeWorkspaceTemplate(workspace string) (*tenantv1alpha2.WorkspaceTemplate, error)
 	ListNamespaces(user user.Info, workspace string, query *query.Query) (*api.ListResult, error)
-	ListDevOpsProjects(user user.Info, workspace string, query *query.Query) (*api.ListResult, error)
+	//ListDevOpsProjects(user user.Info, workspace string, query *query.Query) (*api.ListResult, error)
 	ListFederatedNamespaces(info user.Info, workspace string, param *query.Query) (*api.ListResult, error)
 	CreateNamespace(workspace string, namespace *corev1.Namespace) (*corev1.Namespace, error)
 	ListWorkspaceClusters(workspace string) (*api.ListResult, error)

@@ -35,7 +35,6 @@ import (
 	"kubesphere.io/kubesphere/pkg/simple/client/alerting"
 	"kubesphere.io/kubesphere/pkg/simple/client/auditing"
 	"kubesphere.io/kubesphere/pkg/simple/client/cache"
-	"kubesphere.io/kubesphere/pkg/simple/client/devops/jenkins"
 	"kubesphere.io/kubesphere/pkg/simple/client/edgeruntime"
 	"kubesphere.io/kubesphere/pkg/simple/client/events"
 	"kubesphere.io/kubesphere/pkg/simple/client/gateway"
@@ -56,12 +55,6 @@ import (
 
 func newTestConfig() (*Config, error) {
 	var conf = &Config{
-		DevopsOptions: &jenkins.Options{
-			Host:           "http://ks-devops.kubesphere-devops-system.svc",
-			Username:       "jenkins",
-			Password:       "kubesphere",
-			MaxConnections: 10,
-		},
 		SonarQubeOptions: &sonarqube.Options{
 			Host:  "http://sonarqube.kubesphere-devops-system.svc",
 			Token: "ABCDEFG",
@@ -235,7 +228,6 @@ func TestStripEmptyOptions(t *testing.T) {
 	var config Config
 
 	config.RedisOptions = &cache.Options{Host: ""}
-	config.DevopsOptions = &jenkins.Options{Host: ""}
 	config.MonitoringOptions = &prometheus.Options{Endpoint: ""}
 	config.SonarQubeOptions = &sonarqube.Options{Host: ""}
 	config.LdapOptions = &ldap.Options{Host: ""}
@@ -268,7 +260,6 @@ func TestStripEmptyOptions(t *testing.T) {
 	config.stripEmptyOptions()
 
 	if config.RedisOptions != nil ||
-		config.DevopsOptions != nil ||
 		config.MonitoringOptions != nil ||
 		config.SonarQubeOptions != nil ||
 		config.LdapOptions != nil ||

@@ -19,8 +19,6 @@ package sonarqube
 import (
 	sonargo "github.com/kubesphere/sonargo/sonar"
 	"k8s.io/klog"
-
-	"kubesphere.io/kubesphere/pkg/simple/client/devops"
 )
 
 type SonarInterface interface {
@@ -42,10 +40,9 @@ const (
 )
 
 type SonarStatus struct {
-	Measures      *sonargo.MeasuresComponentObject `json:"measures,omitempty"`
-	Issues        *sonargo.IssuesSearchObject      `json:"issues,omitempty"`
-	GeneralAction *devops.GeneralAction            `json:"generalAction,omitempty"`
-	Task          *sonargo.CeTaskObject            `json:"task,omitempty"`
+	Measures *sonargo.MeasuresComponentObject `json:"measures,omitempty"`
+	Issues   *sonargo.IssuesSearchObject      `json:"issues,omitempty"`
+	Task     *sonargo.CeTaskObject            `json:"task,omitempty"`
 }
 
 func (s *sonarQube) GetSonarResultsByTaskIds(taskIds ...string) ([]*SonarStatus, error) {

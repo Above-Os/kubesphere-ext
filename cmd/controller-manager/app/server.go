@@ -52,7 +52,6 @@ func NewControllerManagerCommand() *cobra.Command {
 		// make sure LeaderElection is not nil
 		s = &options.KubeSphereControllerManagerOptions{
 			KubernetesOptions:     conf.KubernetesOptions,
-			DevopsOptions:         conf.DevopsOptions,
 			S3Options:             conf.S3Options,
 			AuthenticationOptions: conf.AuthenticationOptions,
 			LdapOptions:           conf.LdapOptions,

@@ -9,10 +9,8 @@ go 1.16
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20190710193110-1eb035ffe2b6
 	github.com/MakeNowJust/heredoc v0.0.0-20171113091838-e9091a26100e // indirect
-	github.com/PuerkitoBio/goquery v1.5.0
 	github.com/asaskevich/govalidator v0.0.0-20200428143746-21a406dcc535
 	github.com/aws/aws-sdk-go v1.33.12
-	github.com/beevik/etree v1.1.0
 	github.com/containernetworking/cni v0.8.0
 	github.com/coreos/go-oidc v2.1.0+incompatible
 	github.com/davecgh/go-spew v1.1.1
@@ -26,7 +24,6 @@ require (
 	github.com/emicklei/go-restful v2.14.3+incompatible
 	github.com/emicklei/go-restful-openapi v1.4.1
 	github.com/emirpasic/gods v1.12.0 // indirect
-	github.com/fatih/structs v1.1.0
 	github.com/form3tech-oss/jwt-go v3.2.2+incompatible
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/ghodss/yaml v1.0.0

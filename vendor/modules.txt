@@ -15,9 +15,6 @@ github.com/Microsoft/go-winio
 github.com/NYTimes/gziphandler
 # github.com/OneOfOne/xxhash v1.2.7 => github.com/OneOfOne/xxhash v1.2.7
 github.com/OneOfOne/xxhash
-# github.com/PuerkitoBio/goquery v1.5.0 => github.com/PuerkitoBio/goquery v1.5.0
-## explicit
-github.com/PuerkitoBio/goquery
 # github.com/PuerkitoBio/purell v1.1.1 => github.com/PuerkitoBio/purell v1.1.1
 github.com/PuerkitoBio/purell
 # github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 => github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578
@@ -27,8 +24,6 @@ github.com/alecthomas/template
 github.com/alecthomas/template/parse
 # github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d => github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d
 github.com/alecthomas/units
-# github.com/andybalholm/cascadia v1.0.0 => github.com/andybalholm/cascadia v1.0.0
-github.com/andybalholm/cascadia
 # github.com/asaskevich/govalidator v0.0.0-20200428143746-21a406dcc535 => github.com/asaskevich/govalidator v0.0.0-20200108200545-475eaeb16496
 ## explicit
 github.com/asaskevich/govalidator
@@ -78,9 +73,6 @@ github.com/aws/aws-sdk-go/service/s3/s3iface
 github.com/aws/aws-sdk-go/service/s3/s3manager
 github.com/aws/aws-sdk-go/service/sts
 github.com/aws/aws-sdk-go/service/sts/stsiface
-# github.com/beevik/etree v1.1.0 => github.com/beevik/etree v1.1.0
-## explicit
-github.com/beevik/etree
 # github.com/beorn7/perks v1.0.1 => github.com/beorn7/perks v1.0.1
 github.com/beorn7/perks/quantile
 # github.com/blang/semver v3.5.1+incompatible => github.com/blang/semver v3.5.0+incompatible
@@ -201,9 +193,6 @@ github.com/evanphx/json-patch
 github.com/exponent-io/jsonpath
 # github.com/fatih/color v1.12.0 => github.com/fatih/color v1.9.0
 github.com/fatih/color
-# github.com/fatih/structs v1.1.0 => github.com/fatih/structs v1.1.0
-## explicit
-github.com/fatih/structs
 # github.com/form3tech-oss/jwt-go v3.2.2+incompatible => github.com/form3tech-oss/jwt-go v3.2.2+incompatible
 ## explicit
 github.com/form3tech-oss/jwt-go
@@ -1766,9 +1755,6 @@ k8s.io/utils/trace
 ## explicit
 kubesphere.io/api/auditing/v1alpha1
 kubesphere.io/api/cluster/v1alpha1
-kubesphere.io/api/devops/crdinstall
-kubesphere.io/api/devops/v1alpha1
-kubesphere.io/api/devops/v1alpha3
 kubesphere.io/api/iam/v1alpha2
 kubesphere.io/api/network/calicov3
 kubesphere.io/api/network/crdinstall
