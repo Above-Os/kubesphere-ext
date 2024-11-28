@@ -30,7 +30,6 @@ import (
 	networkv1alpha1 "kubesphere.io/api/network/v1alpha1"
 	notificationv2beta1 "kubesphere.io/api/notification/v2beta1"
 	quotav1alpha2 "kubesphere.io/api/quota/v1alpha2"
-	servicemeshv1alpha2 "kubesphere.io/api/servicemesh/v1alpha2"
 	storagev1alpha1 "kubesphere.io/api/storage/v1alpha1"
 	tenantv1alpha1 "kubesphere.io/api/tenant/v1alpha1"
 	tenantv1alpha2 "kubesphere.io/api/tenant/v1alpha2"
@@ -47,7 +46,6 @@ var localSchemeBuilder = runtime.SchemeBuilder{
 	networkv1alpha1.AddToScheme,
 	notificationv2beta1.AddToScheme,
 	quotav1alpha2.AddToScheme,
-	servicemeshv1alpha2.AddToScheme,
 	storagev1alpha1.AddToScheme,
 	tenantv1alpha1.AddToScheme,
 	tenantv1alpha2.AddToScheme,

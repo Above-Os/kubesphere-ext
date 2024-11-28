@@ -19,14 +19,11 @@ package apis
 import (
 	"istio.io/client-go/pkg/apis/networking/v1alpha3"
 
-	"kubesphere.io/api/servicemesh/v1alpha2"
-
 	appv1beta1 "sigs.k8s.io/application/api/v1beta1"
 )
 
 func init() {
 	// Register the types with the Scheme so the components can map objects to GroupVersionKinds and back
-	AddToSchemes = append(AddToSchemes, v1alpha2.SchemeBuilder.AddToScheme)
 
 	// Register networking.istio.io/v1alpha3
 	AddToSchemes = append(AddToSchemes, v1alpha3.SchemeBuilder.AddToScheme)

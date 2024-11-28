@@ -39,8 +39,6 @@ import (
 
 	networkinstall "kubesphere.io/api/network/crdinstall"
 	networkv1alpha1 "kubesphere.io/api/network/v1alpha1"
-	servicemeshinstall "kubesphere.io/api/servicemesh/crdinstall"
-	servicemeshv1alpha2 "kubesphere.io/api/servicemesh/v1alpha2"
 	tenantinstall "kubesphere.io/api/tenant/crdinstall"
 	tenantv1alpha1 "kubesphere.io/api/tenant/v1alpha1"
 )
@@ -58,7 +56,6 @@ func main() {
 		Codecs = serializer.NewCodecFactory(Scheme)
 	)
 
-	servicemeshinstall.Install(Scheme)
 	tenantinstall.Install(Scheme)
 	networkinstall.Install(Scheme)
 
@@ -67,13 +64,13 @@ func main() {
 
 	mapper := meta.NewDefaultRESTMapper(nil)
 
-	mapper.AddSpecific(servicemeshv1alpha2.SchemeGroupVersion.WithKind(servicemeshv1alpha2.ResourceKindServicePolicy),
-		servicemeshv1alpha2.SchemeGroupVersion.WithResource(servicemeshv1alpha2.ResourcePluralServicePolicy),
-		servicemeshv1alpha2.SchemeGroupVersion.WithResource(servicemeshv1alpha2.ResourceSingularServicePolicy), meta.RESTScopeRoot)
-
-	mapper.AddSpecific(servicemeshv1alpha2.SchemeGroupVersion.WithKind(servicemeshv1alpha2.ResourceKindStrategy),
-		servicemeshv1alpha2.SchemeGroupVersion.WithResource(servicemeshv1alpha2.ResourcePluralStrategy),
-		servicemeshv1alpha2.SchemeGroupVersion.WithResource(servicemeshv1alpha2.ResourceSingularStrategy), meta.RESTScopeRoot)
+	//mapper.AddSpecific(servicemeshv1alpha2.SchemeGroupVersion.WithKind(servicemeshv1alpha2.ResourceKindServicePolicy),
+	//	servicemeshv1alpha2.SchemeGroupVersion.WithResource(servicemeshv1alpha2.ResourcePluralServicePolicy),
+	//	servicemeshv1alpha2.SchemeGroupVersion.WithResource(servicemeshv1alpha2.ResourceSingularServicePolicy), meta.RESTScopeRoot)
+	//
+	//mapper.AddSpecific(servicemeshv1alpha2.SchemeGroupVersion.WithKind(servicemeshv1alpha2.ResourceKindStrategy),
+	//	servicemeshv1alpha2.SchemeGroupVersion.WithResource(servicemeshv1alpha2.ResourcePluralStrategy),
+	//	servicemeshv1alpha2.SchemeGroupVersion.WithResource(servicemeshv1alpha2.ResourceSingularStrategy), meta.RESTScopeRoot)
 
 	mapper.AddSpecific(tenantv1alpha1.SchemeGroupVersion.WithKind(tenantv1alpha1.ResourceKindWorkspace),
 		tenantv1alpha1.SchemeGroupVersion.WithResource(tenantv1alpha1.ResourcePluralWorkspace),
@@ -137,7 +134,6 @@ func main() {
 			},
 		},
 		OpenAPIDefinitions: []common.GetOpenAPIDefinitions{
-			servicemeshv1alpha2.GetOpenAPIDefinitions,
 			tenantv1alpha1.GetOpenAPIDefinitions,
 			networkv1alpha1.GetOpenAPIDefinitions,
 			clusterv1alpha1.GetOpenAPIDefinitions,

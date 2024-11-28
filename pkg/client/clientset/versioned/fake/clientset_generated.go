@@ -37,8 +37,6 @@ import (
 	fakenotificationv2beta1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/notification/v2beta1/fake"
 	quotav1alpha2 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/quota/v1alpha2"
 	fakequotav1alpha2 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/quota/v1alpha2/fake"
-	servicemeshv1alpha2 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/servicemesh/v1alpha2"
-	fakeservicemeshv1alpha2 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/servicemesh/v1alpha2/fake"
 	storagev1alpha1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/storage/v1alpha1"
 	fakestoragev1alpha1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/storage/v1alpha1/fake"
 	tenantv1alpha1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/tenant/v1alpha1"
@@ -124,11 +122,6 @@ func (c *Clientset) NotificationV2beta1() notificationv2beta1.NotificationV2beta
 // QuotaV1alpha2 retrieves the QuotaV1alpha2Client
 func (c *Clientset) QuotaV1alpha2() quotav1alpha2.QuotaV1alpha2Interface {
 	return &fakequotav1alpha2.FakeQuotaV1alpha2{Fake: &c.Fake}
-}
-
-// ServicemeshV1alpha2 retrieves the ServicemeshV1alpha2Client
-func (c *Clientset) ServicemeshV1alpha2() servicemeshv1alpha2.ServicemeshV1alpha2Interface {
-	return &fakeservicemeshv1alpha2.FakeServicemeshV1alpha2{Fake: &c.Fake}
 }
 
 // StorageV1alpha1 retrieves the StorageV1alpha1Client
