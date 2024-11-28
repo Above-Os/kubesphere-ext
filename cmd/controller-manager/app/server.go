@@ -56,7 +56,6 @@ func NewControllerManagerCommand() *cobra.Command {
 			S3Options:             conf.S3Options,
 			AuthenticationOptions: conf.AuthenticationOptions,
 			LdapOptions:           conf.LdapOptions,
-			OpenPitrixOptions:     conf.OpenPitrixOptions,
 			NetworkOptions:        conf.NetworkOptions,
 			MultiClusterOptions:   conf.MultiClusterOptions,
 			ServiceMeshOptions:    conf.ServiceMeshOptions,

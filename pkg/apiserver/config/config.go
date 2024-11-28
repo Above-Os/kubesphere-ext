@@ -51,7 +51,6 @@ import (
 	"kubesphere.io/kubesphere/pkg/simple/client/multicluster"
 	"kubesphere.io/kubesphere/pkg/simple/client/network"
 	"kubesphere.io/kubesphere/pkg/simple/client/notification"
-	"kubesphere.io/kubesphere/pkg/simple/client/openpitrix"
 	"kubesphere.io/kubesphere/pkg/simple/client/s3"
 	"kubesphere.io/kubesphere/pkg/simple/client/servicemesh"
 	"kubesphere.io/kubesphere/pkg/simple/client/sonarqube"
@@ -162,7 +161,6 @@ type Config struct {
 	LdapOptions           *ldap.Options           `json:"-,omitempty" yaml:"ldap,omitempty" mapstructure:"ldap"`
 	RedisOptions          *cache.Options          `json:"redis,omitempty" yaml:"redis,omitempty" mapstructure:"redis"`
 	S3Options             *s3.Options             `json:"s3,omitempty" yaml:"s3,omitempty" mapstructure:"s3"`
-	OpenPitrixOptions     *openpitrix.Options     `json:"openpitrix,omitempty" yaml:"openpitrix,omitempty" mapstructure:"openpitrix"`
 	MonitoringOptions     *prometheus.Options     `json:"monitoring,omitempty" yaml:"monitoring,omitempty" mapstructure:"monitoring"`
 	LoggingOptions        *logging.Options        `json:"logging,omitempty" yaml:"logging,omitempty" mapstructure:"logging"`
 	AuthenticationOptions *authentication.Options `json:"authentication,omitempty" yaml:"authentication,omitempty" mapstructure:"authentication"`
@@ -191,7 +189,6 @@ func New() *Config {
 		LdapOptions:           ldap.NewOptions(),
 		RedisOptions:          cache.NewRedisOptions(),
 		S3Options:             s3.NewS3Options(),
-		OpenPitrixOptions:     openpitrix.NewOptions(),
 		MonitoringOptions:     prometheus.NewPrometheusOptions(),
 		AlertingOptions:       alerting.NewAlertingOptions(),
 		NotificationOptions:   notification.NewNotificationOptions(),
@@ -264,17 +261,6 @@ func (conf *Config) ToMap() map[string]bool {
 				} else {
 					result[networkTopologyName] = true
 				}
-			}
-			continue
-		}
-
-		if name == "openpitrix" {
-			// openpitrix is always true
-			result[name] = true
-			if conf.OpenPitrixOptions == nil {
-				result["openpitrix.appstore"] = false
-			} else {
-				result["openpitrix.appstore"] = !conf.OpenPitrixOptions.AppStoreConfIsEmpty()
 			}
 			continue
 		}

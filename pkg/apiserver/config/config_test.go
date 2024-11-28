@@ -49,7 +49,6 @@ import (
 	"kubesphere.io/kubesphere/pkg/simple/client/multicluster"
 	"kubesphere.io/kubesphere/pkg/simple/client/network"
 	"kubesphere.io/kubesphere/pkg/simple/client/notification"
-	"kubesphere.io/kubesphere/pkg/simple/client/openpitrix"
 	"kubesphere.io/kubesphere/pkg/simple/client/s3"
 	"kubesphere.io/kubesphere/pkg/simple/client/servicemesh"
 	"kubesphere.io/kubesphere/pkg/simple/client/sonarqube"
@@ -103,22 +102,6 @@ func newTestConfig() (*Config, error) {
 			SecretAccessKey: "OPQRSTUVWXYZ",
 			SessionToken:    "abcdefghijklmn",
 			Bucket:          "ssss",
-		},
-		OpenPitrixOptions: &openpitrix.Options{
-			S3Options: &s3.Options{
-				Endpoint:        "http://minio.openpitrix-system.svc",
-				Region:          "",
-				DisableSSL:      false,
-				ForcePathStyle:  false,
-				AccessKeyID:     "ABCDEFGHIJKLMN",
-				SecretAccessKey: "OPQRSTUVWXYZ",
-				SessionToken:    "abcdefghijklmn",
-				Bucket:          "app",
-			},
-			ReleaseControllerOptions: &openpitrix.ReleaseControllerOptions{
-				MaxConcurrent: 10,
-				WaitTime:      30 * time.Second,
-			},
 		},
 		NetworkOptions: &network.Options{
 			EnableNetworkPolicy: true,

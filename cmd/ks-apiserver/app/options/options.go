@@ -21,7 +21,6 @@ import (
 	"flag"
 	"fmt"
 
-	openpitrixv1 "kubesphere.io/kubesphere/pkg/kapis/openpitrix/v1"
 	"kubesphere.io/kubesphere/pkg/utils/clusterclient"
 
 	"kubesphere.io/kubesphere/pkg/apiserver/authentication/token"
@@ -89,7 +88,6 @@ func (s *ServerRunOptions) Flags() (fss cliflag.NamedFlagSets) {
 	s.SonarQubeOptions.AddFlags(fss.FlagSet("sonarqube"), s.SonarQubeOptions)
 	s.RedisOptions.AddFlags(fss.FlagSet("redis"), s.RedisOptions)
 	s.S3Options.AddFlags(fss.FlagSet("s3"), s.S3Options)
-	s.OpenPitrixOptions.AddFlags(fss.FlagSet("openpitrix"), s.OpenPitrixOptions)
 	s.NetworkOptions.AddFlags(fss.FlagSet("network"), s.NetworkOptions)
 	s.ServiceMeshOptions.AddFlags(fss.FlagSet("servicemesh"), s.ServiceMeshOptions)
 	s.MonitoringOptions.AddFlags(fss.FlagSet("monitoring"), s.MonitoringOptions)
@@ -221,8 +219,6 @@ func (s *ServerRunOptions) NewAPIServer(stopCh <-chan struct{}) (*apiserver.APIS
 		cc := clusterclient.NewClusterClient(informerFactory.KubeSphereSharedInformerFactory().Cluster().V1alpha1().Clusters())
 		apiServer.ClusterClient = cc
 	}
-
-	apiServer.OpenpitrixClient = openpitrixv1.NewOpenpitrixClient(informerFactory, apiServer.KubernetesClient.KubeSphere(), s.OpenPitrixOptions, apiServer.ClusterClient, stopCh)
 
 	server := &http.Server{
 		Addr: fmt.Sprintf(":%d", s.GenericServerRunOptions.InsecurePort),

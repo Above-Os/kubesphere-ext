@@ -38,10 +38,9 @@ import (
 	"kubesphere.io/kubesphere/pkg/constants"
 	"kubesphere.io/kubesphere/pkg/informers"
 	"kubesphere.io/kubesphere/pkg/models/monitoring/expressions"
-	"kubesphere.io/kubesphere/pkg/models/openpitrix"
+
 	resourcev1alpha3 "kubesphere.io/kubesphere/pkg/models/resources/v1alpha3/resource"
 	"kubesphere.io/kubesphere/pkg/server/errors"
-	"kubesphere.io/kubesphere/pkg/server/params"
 	meteringclient "kubesphere.io/kubesphere/pkg/simple/client/metering"
 	"kubesphere.io/kubesphere/pkg/simple/client/monitoring"
 )
@@ -70,18 +69,16 @@ type monitoringOperator struct {
 	metricsserver  monitoring.Interface
 	k8s            kubernetes.Interface
 	ks             ksinformers.SharedInformerFactory
-	op             openpitrix.Interface
 	resourceGetter *resourcev1alpha3.ResourceGetter
 }
 
-func NewMonitoringOperator(monitoringClient monitoring.Interface, metricsClient monitoring.Interface, k8s kubernetes.Interface, factory informers.InformerFactory, resourceGetter *resourcev1alpha3.ResourceGetter, op openpitrix.Interface) MonitoringOperator {
+func NewMonitoringOperator(monitoringClient monitoring.Interface, metricsClient monitoring.Interface, k8s kubernetes.Interface, factory informers.InformerFactory, resourceGetter *resourcev1alpha3.ResourceGetter) MonitoringOperator {
 	return &monitoringOperator{
 		prometheus:     monitoringClient,
 		metricsserver:  metricsClient,
 		k8s:            k8s,
 		ks:             factory.KubeSphereSharedInformerFactory(),
 		resourceGetter: resourceGetter,
-		op:             op,
 	}
 }
 
@@ -272,34 +269,6 @@ func (mo monitoringOperator) GetKubeSphereStats() Metrics {
 				},
 			},
 		})
-	}
-
-	cond := &params.Conditions{
-		Match: map[string]string{
-			openpitrix.Status: openpitrix.StatusActive,
-			openpitrix.RepoId: openpitrix.BuiltinRepoId,
-		},
-	}
-	if mo.op != nil {
-		tmpl, err := mo.op.ListApps(cond, "", false, 0, 0)
-		if err != nil {
-			res.Results = append(res.Results, monitoring.Metric{
-				MetricName: KubeSphereAppTmplCount,
-				Error:      err.Error(),
-			})
-		} else {
-			res.Results = append(res.Results, monitoring.Metric{
-				MetricName: KubeSphereAppTmplCount,
-				MetricData: monitoring.MetricData{
-					MetricType: monitoring.MetricTypeVector,
-					MetricValues: []monitoring.MetricValue{
-						{
-							Sample: &monitoring.Point{now, float64(tmpl.TotalCount)},
-						},
-					},
-				},
-			})
-		}
 	}
 
 	return res

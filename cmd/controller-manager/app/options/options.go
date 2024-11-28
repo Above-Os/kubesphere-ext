@@ -43,7 +43,6 @@ import (
 	ldapclient "kubesphere.io/kubesphere/pkg/simple/client/ldap"
 	"kubesphere.io/kubesphere/pkg/simple/client/multicluster"
 	"kubesphere.io/kubesphere/pkg/simple/client/network"
-	"kubesphere.io/kubesphere/pkg/simple/client/openpitrix"
 	"kubesphere.io/kubesphere/pkg/simple/client/s3"
 	"kubesphere.io/kubesphere/pkg/simple/client/servicemesh"
 )
@@ -54,7 +53,6 @@ type KubeSphereControllerManagerOptions struct {
 	S3Options             *s3.Options
 	AuthenticationOptions *authentication.Options
 	LdapOptions           *ldapclient.Options
-	OpenPitrixOptions     *openpitrix.Options
 	NetworkOptions        *network.Options
 	MultiClusterOptions   *multicluster.Options
 	ServiceMeshOptions    *servicemesh.Options
@@ -93,7 +91,6 @@ func NewKubeSphereControllerManagerOptions() *KubeSphereControllerManagerOptions
 		DevopsOptions:         jenkins.NewDevopsOptions(),
 		S3Options:             s3.NewS3Options(),
 		LdapOptions:           ldapclient.NewOptions(),
-		OpenPitrixOptions:     openpitrix.NewOptions(),
 		NetworkOptions:        network.NewNetworkOptions(),
 		MultiClusterOptions:   multicluster.NewOptions(),
 		ServiceMeshOptions:    servicemesh.NewServiceMeshOptions(),
@@ -121,7 +118,6 @@ func (s *KubeSphereControllerManagerOptions) Flags(allControllerNameSelectors []
 	s.S3Options.AddFlags(fss.FlagSet("s3"), s.S3Options)
 	s.AuthenticationOptions.AddFlags(fss.FlagSet("authentication"), s.AuthenticationOptions)
 	s.LdapOptions.AddFlags(fss.FlagSet("ldap"), s.LdapOptions)
-	s.OpenPitrixOptions.AddFlags(fss.FlagSet("openpitrix"), s.OpenPitrixOptions)
 	s.NetworkOptions.AddFlags(fss.FlagSet("network"), s.NetworkOptions)
 	s.MultiClusterOptions.AddFlags(fss.FlagSet("multicluster"), s.MultiClusterOptions)
 	s.ServiceMeshOptions.AddFlags(fss.FlagSet("servicemesh"), s.ServiceMeshOptions)
@@ -167,7 +163,6 @@ func (o *KubeSphereControllerManagerOptions) Validate(allControllerNameSelectors
 	errs = append(errs, o.DevopsOptions.Validate()...)
 	errs = append(errs, o.KubernetesOptions.Validate()...)
 	errs = append(errs, o.S3Options.Validate()...)
-	errs = append(errs, o.OpenPitrixOptions.Validate()...)
 	errs = append(errs, o.NetworkOptions.Validate()...)
 	errs = append(errs, o.LdapOptions.Validate()...)
 	errs = append(errs, o.MultiClusterOptions.Validate()...)
@@ -237,7 +232,6 @@ func (s *KubeSphereControllerManagerOptions) MergeConfig(cfg *controllerconfig.C
 	s.S3Options = cfg.S3Options
 	s.AuthenticationOptions = cfg.AuthenticationOptions
 	s.LdapOptions = cfg.LdapOptions
-	s.OpenPitrixOptions = cfg.OpenPitrixOptions
 	s.NetworkOptions = cfg.NetworkOptions
 	s.MultiClusterOptions = cfg.MultiClusterOptions
 	s.ServiceMeshOptions = cfg.ServiceMeshOptions

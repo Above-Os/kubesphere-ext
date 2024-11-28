@@ -43,7 +43,6 @@ import (
 	"kubesphere.io/kubesphere/pkg/models/iam/im"
 	"kubesphere.io/kubesphere/pkg/models/metering"
 	"kubesphere.io/kubesphere/pkg/models/monitoring"
-	"kubesphere.io/kubesphere/pkg/models/openpitrix"
 	resourcev1alpha3 "kubesphere.io/kubesphere/pkg/models/resources/v1alpha3/resource"
 	"kubesphere.io/kubesphere/pkg/server/errors"
 	"kubesphere.io/kubesphere/pkg/simple/client/auditing"
@@ -66,11 +65,11 @@ func Resource(resource string) schema.GroupResource {
 func AddToContainer(c *restful.Container, factory informers.InformerFactory, k8sclient kubernetes.Interface,
 	ksclient kubesphere.Interface, evtsClient events.Client, loggingClient logging.Client,
 	auditingclient auditing.Client, am am.AccessManagementInterface, im im.IdentityManagementInterface, authorizer authorizer.Authorizer,
-	monitoringclient monitoringclient.Interface, cache cache.Cache, meteringOptions *meteringclient.Options, opClient openpitrix.Interface) error {
+	monitoringclient monitoringclient.Interface, cache cache.Cache, meteringOptions *meteringclient.Options) error {
 	mimePatch := []string{restful.MIME_JSON, runtime.MimeMergePatchJson, runtime.MimeJsonPatchJson}
 
 	ws := runtime.NewWebService(GroupVersion)
-	handler := NewTenantHandler(factory, k8sclient, ksclient, evtsClient, loggingClient, auditingclient, am, im, authorizer, monitoringclient, resourcev1alpha3.NewResourceGetter(factory, cache), meteringOptions, opClient)
+	handler := NewTenantHandler(factory, k8sclient, ksclient, evtsClient, loggingClient, auditingclient, am, im, authorizer, monitoringclient, resourcev1alpha3.NewResourceGetter(factory, cache), meteringOptions)
 
 	ws.Route(ws.GET("/clusters").
 		To(handler.ListClusters).

@@ -15,11 +15,3 @@ limitations under the License.
 */
 
 package apis
-
-import (
-	"kubesphere.io/api/application/v1alpha1"
-)
-
-func init() {
-	AddToSchemes = append(AddToSchemes, v1alpha1.SchemeBuilder.AddToScheme)
-}

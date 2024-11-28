@@ -60,7 +60,6 @@ import (
 	"kubesphere.io/kubesphere/pkg/models/logging"
 	"kubesphere.io/kubesphere/pkg/models/metering"
 	"kubesphere.io/kubesphere/pkg/models/monitoring"
-	"kubesphere.io/kubesphere/pkg/models/openpitrix"
 	resources "kubesphere.io/kubesphere/pkg/models/resources/v1alpha3"
 	resourcesv1alpha3 "kubesphere.io/kubesphere/pkg/models/resources/v1alpha3/resource"
 	resourcev1alpha3 "kubesphere.io/kubesphere/pkg/models/resources/v1alpha3/resource"
@@ -116,10 +115,9 @@ type tenantOperator struct {
 	lo             logging.LoggingOperator
 	auditing       auditing.Interface
 	mo             monitoring.MonitoringOperator
-	opRelease      openpitrix.ReleaseInterface
 }
 
-func New(informers informers.InformerFactory, k8sclient kubernetes.Interface, ksclient kubesphere.Interface, evtsClient eventsclient.Client, loggingClient loggingclient.Client, auditingclient auditingclient.Client, am am.AccessManagementInterface, im im.IdentityManagementInterface, authorizer authorizer.Authorizer, monitoringclient monitoringclient.Interface, resourceGetter *resourcev1alpha3.ResourceGetter, opClient openpitrix.Interface) Interface {
+func New(informers informers.InformerFactory, k8sclient kubernetes.Interface, ksclient kubesphere.Interface, evtsClient eventsclient.Client, loggingClient loggingclient.Client, auditingclient auditingclient.Client, am am.AccessManagementInterface, im im.IdentityManagementInterface, authorizer authorizer.Authorizer, monitoringclient monitoringclient.Interface, resourceGetter *resourcev1alpha3.ResourceGetter) Interface {
 	return &tenantOperator{
 		am:             am,
 		im:             im,
@@ -130,8 +128,7 @@ func New(informers informers.InformerFactory, k8sclient kubernetes.Interface, ks
 		events:         events.NewEventsOperator(evtsClient),
 		lo:             logging.NewLoggingOperator(loggingClient),
 		auditing:       auditing.NewEventsOperator(auditingclient),
-		mo:             monitoring.NewMonitoringOperator(monitoringclient, nil, k8sclient, informers, resourceGetter, nil),
-		opRelease:      opClient,
+		mo:             monitoring.NewMonitoringOperator(monitoringclient, nil, k8sclient, informers, resourceGetter),
 	}
 }
 

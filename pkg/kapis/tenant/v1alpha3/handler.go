@@ -32,7 +32,6 @@ import (
 	"kubesphere.io/kubesphere/pkg/informers"
 	"kubesphere.io/kubesphere/pkg/models/iam/am"
 	"kubesphere.io/kubesphere/pkg/models/iam/im"
-	"kubesphere.io/kubesphere/pkg/models/openpitrix"
 	resourcev1alpha3 "kubesphere.io/kubesphere/pkg/models/resources/v1alpha3/resource"
 	"kubesphere.io/kubesphere/pkg/models/tenant"
 	"kubesphere.io/kubesphere/pkg/simple/client/auditing"
@@ -51,14 +50,14 @@ func newTenantHandler(factory informers.InformerFactory, k8sclient kubernetes.In
 	evtsClient events.Client, loggingClient logging.Client, auditingclient auditing.Client,
 	am am.AccessManagementInterface, im im.IdentityManagementInterface, authorizer authorizer.Authorizer,
 	monitoringclient monitoringclient.Interface, resourceGetter *resourcev1alpha3.ResourceGetter,
-	meteringOptions *meteringclient.Options, opClient openpitrix.Interface) *tenantHandler {
+	meteringOptions *meteringclient.Options) *tenantHandler {
 
 	if meteringOptions == nil || meteringOptions.RetentionDay == "" {
 		meteringOptions = &meteringclient.DefaultMeteringOption
 	}
 
 	return &tenantHandler{
-		tenant:          tenant.New(factory, k8sclient, ksclient, evtsClient, loggingClient, auditingclient, am, im, authorizer, monitoringclient, resourceGetter, opClient),
+		tenant:          tenant.New(factory, k8sclient, ksclient, evtsClient, loggingClient, auditingclient, am, im, authorizer, monitoringclient, resourceGetter),
 		meteringOptions: meteringOptions,
 	}
 }

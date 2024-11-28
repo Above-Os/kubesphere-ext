@@ -18,8 +18,6 @@ package v1alpha3
 import (
 	"net/http"
 
-	"kubesphere.io/kubesphere/pkg/models/openpitrix"
-
 	monitoringdashboardv1alpha2 "kubesphere.io/monitoring-dashboard/api/v1alpha2"
 
 	"github.com/emicklei/go-restful"
@@ -43,10 +41,10 @@ const (
 
 var GroupVersion = schema.GroupVersion{Group: groupName, Version: "v1alpha3"}
 
-func AddToContainer(c *restful.Container, k8sClient kubernetes.Interface, monitoringClient monitoring.Interface, metricsClient monitoring.Interface, factory informers.InformerFactory, opClient openpitrix.Interface, rtClient runtimeclient.Client) error {
+func AddToContainer(c *restful.Container, k8sClient kubernetes.Interface, monitoringClient monitoring.Interface, metricsClient monitoring.Interface, factory informers.InformerFactory, rtClient runtimeclient.Client) error {
 	ws := runtime.NewWebService(GroupVersion)
 
-	h := NewHandler(k8sClient, monitoringClient, metricsClient, factory, nil, nil, opClient, rtClient)
+	h := NewHandler(k8sClient, monitoringClient, metricsClient, factory, nil, nil, rtClient)
 
 	ws.Route(ws.GET("/kubesphere").
 		To(h.handleKubeSphereMetricsQuery).

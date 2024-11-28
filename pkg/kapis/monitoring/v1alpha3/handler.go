@@ -29,8 +29,6 @@ import (
 
 	converter "kubesphere.io/monitoring-dashboard/tools/converter"
 
-	"kubesphere.io/kubesphere/pkg/models/openpitrix"
-
 	"github.com/emicklei/go-restful"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -49,12 +47,11 @@ import (
 type handler struct {
 	k               kubernetes.Interface
 	mo              model.MonitoringOperator
-	opRelease       openpitrix.ReleaseInterface
 	meteringOptions *meteringclient.Options
 	rtClient        runtimeclient.Client
 }
 
-func NewHandler(k kubernetes.Interface, monitoringClient monitoring.Interface, metricsClient monitoring.Interface, f informers.InformerFactory, resourceGetter *resourcev1alpha3.ResourceGetter, meteringOptions *meteringclient.Options, opClient openpitrix.Interface, rtClient runtimeclient.Client) *handler {
+func NewHandler(k kubernetes.Interface, monitoringClient monitoring.Interface, metricsClient monitoring.Interface, f informers.InformerFactory, resourceGetter *resourcev1alpha3.ResourceGetter, meteringOptions *meteringclient.Options, rtClient runtimeclient.Client) *handler {
 
 	if meteringOptions == nil || meteringOptions.RetentionDay == "" {
 		meteringOptions = &meteringclient.DefaultMeteringOption
@@ -62,8 +59,7 @@ func NewHandler(k kubernetes.Interface, monitoringClient monitoring.Interface, m
 
 	return &handler{
 		k:               k,
-		mo:              model.NewMonitoringOperator(monitoringClient, metricsClient, k, f, resourceGetter, opClient),
-		opRelease:       opClient,
+		mo:              model.NewMonitoringOperator(monitoringClient, metricsClient, k, f, resourceGetter),
 		meteringOptions: meteringOptions,
 		rtClient:        rtClient,
 	}
