@@ -43,7 +43,6 @@ func AddToContainer(c *restful.Container, im im.IdentityManagementInterface,
 	tokenOperator auth.TokenManagementInterface,
 	passwordAuthenticator auth.PasswordAuthenticator,
 	oauth2Authenticator auth.OAuthAuthenticator,
-	loginRecorder auth.LoginRecorder,
 	options *authentication.Options) error {
 
 	ws := &restful.WebService{}
@@ -51,7 +50,7 @@ func AddToContainer(c *restful.Container, im im.IdentityManagementInterface,
 		Consumes(restful.MIME_JSON).
 		Produces(restful.MIME_JSON)
 
-	handler := newHandler(im, tokenOperator, passwordAuthenticator, oauth2Authenticator, loginRecorder, options)
+	handler := newHandler(im, tokenOperator, passwordAuthenticator, oauth2Authenticator, options)
 
 	ws.Route(ws.GET("/.well-known/openid-configuration").To(handler.discovery).
 		Doc("The OpenID Provider's configuration information can be retrieved."))

@@ -6,8 +6,8 @@
 # Produce CRDs that work back to Kubernetes 1.11 (no version conversion)
 CRD_OPTIONS ?= "crd:trivialVersions=true"
 
-GV="network:v1alpha1 tenant:v1alpha1 tenant:v1alpha2 iam:v1alpha2 storage:v1alpha1 auditing:v1alpha1 types:v1beta1 quota:v1alpha2 notification:v2beta1"
-MANIFESTS="application/* cluster/* iam/* network/v1alpha1 quota/* storage/* tenant/* gateway/*"
+GV="network:v1alpha1 iam:v1alpha2 notification:v2beta1"
+MANIFESTS="iam/* network/v1alpha1"
 
 # App Version
 APP_VERSION = v3.2.0

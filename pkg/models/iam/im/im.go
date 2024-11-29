@@ -5,7 +5,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,6 @@ package im
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"kubesphere.io/kubesphere/pkg/apiserver/authentication"
@@ -41,25 +40,22 @@ type IdentityManagementInterface interface {
 	UpdateUser(user *iamv1alpha2.User) (*iamv1alpha2.User, error)
 	DescribeUser(username string) (*iamv1alpha2.User, error)
 	ModifyPassword(username string, password string) error
-	ListLoginRecords(username string, query *query.Query) (*api.ListResult, error)
 	PasswordVerify(username string, password string) error
 }
 
-func NewOperator(ksClient kubesphere.Interface, userGetter resources.Interface, loginRecordGetter resources.Interface, options *authentication.Options) IdentityManagementInterface {
+func NewOperator(ksClient kubesphere.Interface, userGetter resources.Interface, options *authentication.Options) IdentityManagementInterface {
 	im := &imOperator{
-		ksClient:          ksClient,
-		userGetter:        userGetter,
-		loginRecordGetter: loginRecordGetter,
-		options:           options,
+		ksClient:   ksClient,
+		userGetter: userGetter,
+		options:    options,
 	}
 	return im
 }
 
 type imOperator struct {
-	ksClient          kubesphere.Interface
-	userGetter        resources.Interface
-	loginRecordGetter resources.Interface
-	options           *authentication.Options
+	ksClient   kubesphere.Interface
+	userGetter resources.Interface
+	options    *authentication.Options
 }
 
 // UpdateUser returns user information after update.
@@ -161,16 +157,6 @@ func (im *imOperator) CreateUser(user *iamv1alpha2.User) (*iamv1alpha2.User, err
 		return nil, err
 	}
 	return user, nil
-}
-
-func (im *imOperator) ListLoginRecords(username string, q *query.Query) (*api.ListResult, error) {
-	q.Filters[query.FieldLabel] = query.Value(fmt.Sprintf("%s=%s", iamv1alpha2.UserReferenceLabel, username))
-	result, err := im.loginRecordGetter.List("", q)
-	if err != nil {
-		klog.Error(err)
-		return nil, err
-	}
-	return result, nil
 }
 
 func ensurePasswordNotOutput(user *iamv1alpha2.User) *iamv1alpha2.User {

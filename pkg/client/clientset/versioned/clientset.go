@@ -24,48 +24,25 @@ import (
 	discovery "k8s.io/client-go/discovery"
 	rest "k8s.io/client-go/rest"
 	flowcontrol "k8s.io/client-go/util/flowcontrol"
-	auditingv1alpha1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/auditing/v1alpha1"
 	iamv1alpha2 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/iam/v1alpha2"
 	networkv1alpha1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/network/v1alpha1"
 	notificationv2beta1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/notification/v2beta1"
-	quotav1alpha2 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/quota/v1alpha2"
-	storagev1alpha1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/storage/v1alpha1"
-	tenantv1alpha1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/tenant/v1alpha1"
-	tenantv1alpha2 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/tenant/v1alpha2"
-	typesv1beta1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/types/v1beta1"
 )
 
 type Interface interface {
 	Discovery() discovery.DiscoveryInterface
-	AuditingV1alpha1() auditingv1alpha1.AuditingV1alpha1Interface
 	IamV1alpha2() iamv1alpha2.IamV1alpha2Interface
 	NetworkV1alpha1() networkv1alpha1.NetworkV1alpha1Interface
 	NotificationV2beta1() notificationv2beta1.NotificationV2beta1Interface
-	QuotaV1alpha2() quotav1alpha2.QuotaV1alpha2Interface
-	StorageV1alpha1() storagev1alpha1.StorageV1alpha1Interface
-	TenantV1alpha1() tenantv1alpha1.TenantV1alpha1Interface
-	TenantV1alpha2() tenantv1alpha2.TenantV1alpha2Interface
-	TypesV1beta1() typesv1beta1.TypesV1beta1Interface
 }
 
 // Clientset contains the clients for groups. Each group has exactly one
 // version included in a Clientset.
 type Clientset struct {
 	*discovery.DiscoveryClient
-	auditingV1alpha1    *auditingv1alpha1.AuditingV1alpha1Client
 	iamV1alpha2         *iamv1alpha2.IamV1alpha2Client
 	networkV1alpha1     *networkv1alpha1.NetworkV1alpha1Client
 	notificationV2beta1 *notificationv2beta1.NotificationV2beta1Client
-	quotaV1alpha2       *quotav1alpha2.QuotaV1alpha2Client
-	storageV1alpha1     *storagev1alpha1.StorageV1alpha1Client
-	tenantV1alpha1      *tenantv1alpha1.TenantV1alpha1Client
-	tenantV1alpha2      *tenantv1alpha2.TenantV1alpha2Client
-	typesV1beta1        *typesv1beta1.TypesV1beta1Client
-}
-
-// AuditingV1alpha1 retrieves the AuditingV1alpha1Client
-func (c *Clientset) AuditingV1alpha1() auditingv1alpha1.AuditingV1alpha1Interface {
-	return c.auditingV1alpha1
 }
 
 // IamV1alpha2 retrieves the IamV1alpha2Client
@@ -81,31 +58,6 @@ func (c *Clientset) NetworkV1alpha1() networkv1alpha1.NetworkV1alpha1Interface {
 // NotificationV2beta1 retrieves the NotificationV2beta1Client
 func (c *Clientset) NotificationV2beta1() notificationv2beta1.NotificationV2beta1Interface {
 	return c.notificationV2beta1
-}
-
-// QuotaV1alpha2 retrieves the QuotaV1alpha2Client
-func (c *Clientset) QuotaV1alpha2() quotav1alpha2.QuotaV1alpha2Interface {
-	return c.quotaV1alpha2
-}
-
-// StorageV1alpha1 retrieves the StorageV1alpha1Client
-func (c *Clientset) StorageV1alpha1() storagev1alpha1.StorageV1alpha1Interface {
-	return c.storageV1alpha1
-}
-
-// TenantV1alpha1 retrieves the TenantV1alpha1Client
-func (c *Clientset) TenantV1alpha1() tenantv1alpha1.TenantV1alpha1Interface {
-	return c.tenantV1alpha1
-}
-
-// TenantV1alpha2 retrieves the TenantV1alpha2Client
-func (c *Clientset) TenantV1alpha2() tenantv1alpha2.TenantV1alpha2Interface {
-	return c.tenantV1alpha2
-}
-
-// TypesV1beta1 retrieves the TypesV1beta1Client
-func (c *Clientset) TypesV1beta1() typesv1beta1.TypesV1beta1Interface {
-	return c.typesV1beta1
 }
 
 // Discovery retrieves the DiscoveryClient
@@ -129,10 +81,6 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 	}
 	var cs Clientset
 	var err error
-	cs.auditingV1alpha1, err = auditingv1alpha1.NewForConfig(&configShallowCopy)
-	if err != nil {
-		return nil, err
-	}
 	cs.iamV1alpha2, err = iamv1alpha2.NewForConfig(&configShallowCopy)
 	if err != nil {
 		return nil, err
@@ -142,26 +90,6 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 		return nil, err
 	}
 	cs.notificationV2beta1, err = notificationv2beta1.NewForConfig(&configShallowCopy)
-	if err != nil {
-		return nil, err
-	}
-	cs.quotaV1alpha2, err = quotav1alpha2.NewForConfig(&configShallowCopy)
-	if err != nil {
-		return nil, err
-	}
-	cs.storageV1alpha1, err = storagev1alpha1.NewForConfig(&configShallowCopy)
-	if err != nil {
-		return nil, err
-	}
-	cs.tenantV1alpha1, err = tenantv1alpha1.NewForConfig(&configShallowCopy)
-	if err != nil {
-		return nil, err
-	}
-	cs.tenantV1alpha2, err = tenantv1alpha2.NewForConfig(&configShallowCopy)
-	if err != nil {
-		return nil, err
-	}
-	cs.typesV1beta1, err = typesv1beta1.NewForConfig(&configShallowCopy)
 	if err != nil {
 		return nil, err
 	}
@@ -177,15 +105,9 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 // panics if there is an error in the config.
 func NewForConfigOrDie(c *rest.Config) *Clientset {
 	var cs Clientset
-	cs.auditingV1alpha1 = auditingv1alpha1.NewForConfigOrDie(c)
 	cs.iamV1alpha2 = iamv1alpha2.NewForConfigOrDie(c)
 	cs.networkV1alpha1 = networkv1alpha1.NewForConfigOrDie(c)
 	cs.notificationV2beta1 = notificationv2beta1.NewForConfigOrDie(c)
-	cs.quotaV1alpha2 = quotav1alpha2.NewForConfigOrDie(c)
-	cs.storageV1alpha1 = storagev1alpha1.NewForConfigOrDie(c)
-	cs.tenantV1alpha1 = tenantv1alpha1.NewForConfigOrDie(c)
-	cs.tenantV1alpha2 = tenantv1alpha2.NewForConfigOrDie(c)
-	cs.typesV1beta1 = typesv1beta1.NewForConfigOrDie(c)
 
 	cs.DiscoveryClient = discovery.NewDiscoveryClientForConfigOrDie(c)
 	return &cs
@@ -194,15 +116,9 @@ func NewForConfigOrDie(c *rest.Config) *Clientset {
 // New creates a new Clientset for the given RESTClient.
 func New(c rest.Interface) *Clientset {
 	var cs Clientset
-	cs.auditingV1alpha1 = auditingv1alpha1.New(c)
 	cs.iamV1alpha2 = iamv1alpha2.New(c)
 	cs.networkV1alpha1 = networkv1alpha1.New(c)
 	cs.notificationV2beta1 = notificationv2beta1.New(c)
-	cs.quotaV1alpha2 = quotav1alpha2.New(c)
-	cs.storageV1alpha1 = storagev1alpha1.New(c)
-	cs.tenantV1alpha1 = tenantv1alpha1.New(c)
-	cs.tenantV1alpha2 = tenantv1alpha2.New(c)
-	cs.typesV1beta1 = typesv1beta1.New(c)
 
 	cs.DiscoveryClient = discovery.NewDiscoveryClient(c)
 	return &cs

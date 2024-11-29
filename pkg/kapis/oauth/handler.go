@@ -126,20 +126,17 @@ type handler struct {
 	tokenOperator         auth.TokenManagementInterface
 	passwordAuthenticator auth.PasswordAuthenticator
 	oauthAuthenticator    auth.OAuthAuthenticator
-	loginRecorder         auth.LoginRecorder
 }
 
 func newHandler(im im.IdentityManagementInterface,
 	tokenOperator auth.TokenManagementInterface,
 	passwordAuthenticator auth.PasswordAuthenticator,
 	oauthAuthenticator auth.OAuthAuthenticator,
-	loginRecorder auth.LoginRecorder,
 	options *authentication.Options) *handler {
 	return &handler{im: im,
 		tokenOperator:         tokenOperator,
 		passwordAuthenticator: passwordAuthenticator,
 		oauthAuthenticator:    oauthAuthenticator,
-		loginRecorder:         loginRecorder,
 		options:               options}
 }
 
@@ -353,11 +350,6 @@ func (h *handler) oauthCallback(req *restful.Request, response *restful.Response
 		return
 	}
 
-	requestInfo, _ := request.RequestInfoFrom(req.Request.Context())
-	if err = h.loginRecorder.RecordLogin(authenticated.GetName(), iamv1alpha2.Token, provider, requestInfo.SourceIP, requestInfo.UserAgent, nil); err != nil {
-		klog.Errorf("Failed to record successful login for user %s, error: %v", authenticated.GetName(), err)
-	}
-
 	response.WriteEntity(result)
 }
 
@@ -434,17 +426,13 @@ func (h *handler) token(req *restful.Request, response *restful.Response) {
 // The authorization server should take special care when enabling this
 // grant type and only allow it when other flows are not viable.
 func (h *handler) passwordGrant(username string, password string, req *restful.Request, response *restful.Response) {
-	authenticated, provider, err := h.passwordAuthenticator.Authenticate(req.Request.Context(), username, password)
+	authenticated, _, err := h.passwordAuthenticator.Authenticate(req.Request.Context(), username, password)
 	if err != nil {
 		switch err {
 		case auth.AccountIsNotActiveError:
 			response.WriteHeaderAndEntity(http.StatusBadRequest, oauth.NewInvalidGrant(err))
 			return
 		case auth.IncorrectPasswordError:
-			requestInfo, _ := request.RequestInfoFrom(req.Request.Context())
-			if err := h.loginRecorder.RecordLogin(username, iamv1alpha2.Token, provider, requestInfo.SourceIP, requestInfo.UserAgent, err); err != nil {
-				klog.Errorf("Failed to record unsuccessful login attempt for user %s, error: %v", username, err)
-			}
 			response.WriteHeaderAndEntity(http.StatusBadRequest, oauth.NewInvalidGrant(err))
 			return
 		case auth.RateLimitExceededError:
@@ -460,11 +448,6 @@ func (h *handler) passwordGrant(username string, password string, req *restful.R
 	if err != nil {
 		response.WriteHeaderAndEntity(http.StatusInternalServerError, oauth.NewServerError(err))
 		return
-	}
-
-	requestInfo, _ := request.RequestInfoFrom(req.Request.Context())
-	if err = h.loginRecorder.RecordLogin(authenticated.GetName(), iamv1alpha2.Token, provider, requestInfo.SourceIP, requestInfo.UserAgent, nil); err != nil {
-		klog.Errorf("Failed to record successful login for user %s, error: %v", authenticated.GetName(), err)
 	}
 
 	response.WriteEntity(result)

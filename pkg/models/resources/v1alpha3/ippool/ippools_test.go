@@ -26,7 +26,6 @@ import (
 	k8sfake "k8s.io/client-go/kubernetes/fake"
 
 	"kubesphere.io/api/network/v1alpha1"
-	tenantv1alpha1 "kubesphere.io/api/tenant/v1alpha1"
 
 	"kubesphere.io/kubesphere/pkg/api"
 	"kubesphere.io/kubesphere/pkg/apiserver/query"
@@ -126,11 +125,11 @@ var (
 			},
 		},
 	}
-	wk = &tenantv1alpha1.Workspace{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: "wk1",
-		},
-	}
+	//wk = &tenantv1alpha1.Workspace{
+	//	ObjectMeta: metav1.ObjectMeta{
+	//		Name: "wk1",
+	//	},
+	//}
 	ps = []interface{}{foo1, foo2, foo3}
 )
 
@@ -145,7 +144,7 @@ func prepare() v1alpha3.Interface {
 		informer.Network().V1alpha1().IPPools().Informer().GetIndexer().Add(p)
 	}
 
-	informer.Tenant().V1alpha1().Workspaces().Informer().GetIndexer().Add(wk)
+	//informer.Tenant().V1alpha1().Workspaces().Informer().GetIndexer().Add(wk)
 	k8sInformer.Core().V1().Namespaces().Informer().GetIndexer().Add(ns)
 
 	return New(informer, k8sInformer)

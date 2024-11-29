@@ -25,24 +25,12 @@ import (
 	fakediscovery "k8s.io/client-go/discovery/fake"
 	"k8s.io/client-go/testing"
 	clientset "kubesphere.io/kubesphere/pkg/client/clientset/versioned"
-	auditingv1alpha1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/auditing/v1alpha1"
-	fakeauditingv1alpha1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/auditing/v1alpha1/fake"
 	iamv1alpha2 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/iam/v1alpha2"
 	fakeiamv1alpha2 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/iam/v1alpha2/fake"
 	networkv1alpha1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/network/v1alpha1"
 	fakenetworkv1alpha1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/network/v1alpha1/fake"
 	notificationv2beta1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/notification/v2beta1"
 	fakenotificationv2beta1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/notification/v2beta1/fake"
-	quotav1alpha2 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/quota/v1alpha2"
-	fakequotav1alpha2 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/quota/v1alpha2/fake"
-	storagev1alpha1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/storage/v1alpha1"
-	fakestoragev1alpha1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/storage/v1alpha1/fake"
-	tenantv1alpha1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/tenant/v1alpha1"
-	faketenantv1alpha1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/tenant/v1alpha1/fake"
-	tenantv1alpha2 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/tenant/v1alpha2"
-	faketenantv1alpha2 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/tenant/v1alpha2/fake"
-	typesv1beta1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/types/v1beta1"
-	faketypesv1beta1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/types/v1beta1/fake"
 )
 
 // NewSimpleClientset returns a clientset that will respond with the provided objects.
@@ -92,11 +80,6 @@ func (c *Clientset) Tracker() testing.ObjectTracker {
 
 var _ clientset.Interface = &Clientset{}
 
-// AuditingV1alpha1 retrieves the AuditingV1alpha1Client
-func (c *Clientset) AuditingV1alpha1() auditingv1alpha1.AuditingV1alpha1Interface {
-	return &fakeauditingv1alpha1.FakeAuditingV1alpha1{Fake: &c.Fake}
-}
-
 // IamV1alpha2 retrieves the IamV1alpha2Client
 func (c *Clientset) IamV1alpha2() iamv1alpha2.IamV1alpha2Interface {
 	return &fakeiamv1alpha2.FakeIamV1alpha2{Fake: &c.Fake}
@@ -110,29 +93,4 @@ func (c *Clientset) NetworkV1alpha1() networkv1alpha1.NetworkV1alpha1Interface {
 // NotificationV2beta1 retrieves the NotificationV2beta1Client
 func (c *Clientset) NotificationV2beta1() notificationv2beta1.NotificationV2beta1Interface {
 	return &fakenotificationv2beta1.FakeNotificationV2beta1{Fake: &c.Fake}
-}
-
-// QuotaV1alpha2 retrieves the QuotaV1alpha2Client
-func (c *Clientset) QuotaV1alpha2() quotav1alpha2.QuotaV1alpha2Interface {
-	return &fakequotav1alpha2.FakeQuotaV1alpha2{Fake: &c.Fake}
-}
-
-// StorageV1alpha1 retrieves the StorageV1alpha1Client
-func (c *Clientset) StorageV1alpha1() storagev1alpha1.StorageV1alpha1Interface {
-	return &fakestoragev1alpha1.FakeStorageV1alpha1{Fake: &c.Fake}
-}
-
-// TenantV1alpha1 retrieves the TenantV1alpha1Client
-func (c *Clientset) TenantV1alpha1() tenantv1alpha1.TenantV1alpha1Interface {
-	return &faketenantv1alpha1.FakeTenantV1alpha1{Fake: &c.Fake}
-}
-
-// TenantV1alpha2 retrieves the TenantV1alpha2Client
-func (c *Clientset) TenantV1alpha2() tenantv1alpha2.TenantV1alpha2Interface {
-	return &faketenantv1alpha2.FakeTenantV1alpha2{Fake: &c.Fake}
-}
-
-// TypesV1beta1 retrieves the TypesV1beta1Client
-func (c *Clientset) TypesV1beta1() typesv1beta1.TypesV1beta1Interface {
-	return &faketypesv1beta1.FakeTypesV1beta1{Fake: &c.Fake}
 }

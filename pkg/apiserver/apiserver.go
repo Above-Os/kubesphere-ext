@@ -40,12 +40,9 @@ import (
 	"k8s.io/klog"
 	iamv1alpha2 "kubesphere.io/api/iam/v1alpha2"
 	notificationv2beta1 "kubesphere.io/api/notification/v2beta1"
-	tenantv1alpha1 "kubesphere.io/api/tenant/v1alpha1"
-	typesv1beta1 "kubesphere.io/api/types/v1beta1"
 	runtimecache "sigs.k8s.io/controller-runtime/pkg/cache"
 	runtimeclient "sigs.k8s.io/controller-runtime/pkg/client"
 
-	audit "kubesphere.io/kubesphere/pkg/apiserver/auditing"
 	"kubesphere.io/kubesphere/pkg/apiserver/authentication/authenticators/basic"
 	"kubesphere.io/kubesphere/pkg/apiserver/authentication/authenticators/jwt"
 	"kubesphere.io/kubesphere/pkg/apiserver/authentication/request/anonymous"
@@ -66,9 +63,6 @@ import (
 	alertingv2alpha1 "kubesphere.io/kubesphere/pkg/kapis/alerting/v2alpha1"
 	configv1alpha2 "kubesphere.io/kubesphere/pkg/kapis/config/v1alpha2"
 	"kubesphere.io/kubesphere/pkg/kapis/crd"
-	edgeruntimev1alpha1 "kubesphere.io/kubesphere/pkg/kapis/edgeruntime/v1alpha1"
-	iamapi "kubesphere.io/kubesphere/pkg/kapis/iam/v1alpha2"
-	kubeedgev1alpha1 "kubesphere.io/kubesphere/pkg/kapis/kubeedge/v1alpha1"
 	meteringv1alpha1 "kubesphere.io/kubesphere/pkg/kapis/metering/v1alpha1"
 	monitoringv1alpha3 "kubesphere.io/kubesphere/pkg/kapis/monitoring/v1alpha3"
 	networkv1alpha2 "kubesphere.io/kubesphere/pkg/kapis/network/v1alpha2"
@@ -80,26 +74,18 @@ import (
 	operationsv1alpha2 "kubesphere.io/kubesphere/pkg/kapis/operations/v1alpha2"
 	resourcesv1alpha2 "kubesphere.io/kubesphere/pkg/kapis/resources/v1alpha2"
 	resourcev1alpha3 "kubesphere.io/kubesphere/pkg/kapis/resources/v1alpha3"
-	servicemeshv1alpha2 "kubesphere.io/kubesphere/pkg/kapis/servicemesh/metrics/v1alpha2"
-	tenantv1alpha2 "kubesphere.io/kubesphere/pkg/kapis/tenant/v1alpha2"
-	tenantv1alpha3 "kubesphere.io/kubesphere/pkg/kapis/tenant/v1alpha3"
 	terminalv1alpha2 "kubesphere.io/kubesphere/pkg/kapis/terminal/v1alpha2"
 	"kubesphere.io/kubesphere/pkg/kapis/version"
 	"kubesphere.io/kubesphere/pkg/models/auth"
 	"kubesphere.io/kubesphere/pkg/models/iam/am"
-	"kubesphere.io/kubesphere/pkg/models/iam/group"
 	"kubesphere.io/kubesphere/pkg/models/iam/im"
-	"kubesphere.io/kubesphere/pkg/models/resources/v1alpha3/loginrecord"
 	"kubesphere.io/kubesphere/pkg/models/resources/v1alpha3/user"
 	"kubesphere.io/kubesphere/pkg/simple/client/alerting"
-	"kubesphere.io/kubesphere/pkg/simple/client/auditing"
 	"kubesphere.io/kubesphere/pkg/simple/client/cache"
 	"kubesphere.io/kubesphere/pkg/simple/client/events"
 	"kubesphere.io/kubesphere/pkg/simple/client/k8s"
 	"kubesphere.io/kubesphere/pkg/simple/client/logging"
 	"kubesphere.io/kubesphere/pkg/simple/client/monitoring"
-	"kubesphere.io/kubesphere/pkg/simple/client/s3"
-	"kubesphere.io/kubesphere/pkg/simple/client/sonarqube"
 	"kubesphere.io/kubesphere/pkg/utils/iputil"
 	"kubesphere.io/kubesphere/pkg/utils/metrics"
 )
@@ -134,13 +120,7 @@ type APIServer struct {
 
 	LoggingClient logging.Client
 
-	S3Client s3.Interface
-
-	SonarClient sonarqube.SonarInterface
-
 	EventsClient events.Client
-
-	AuditingClient auditing.Client
 
 	AlertingClient alerting.RuleClient
 
@@ -204,7 +184,6 @@ func (s *APIServer) installKubeSphereAPIs(stopCh <-chan struct{}) {
 	imOperator := im.NewOperator(s.KubernetesClient.KubeSphere(),
 		user.New(s.InformerFactory.KubeSphereSharedInformerFactory(),
 			s.InformerFactory.KubernetesSharedInformerFactory()),
-		loginrecord.New(s.InformerFactory.KubeSphereSharedInformerFactory()),
 		s.Config.AuthenticationOptions)
 	amOperator := am.NewOperator(s.KubernetesClient.KubeSphere(),
 		s.KubernetesClient.Kubernetes(),
@@ -218,31 +197,28 @@ func (s *APIServer) installKubeSphereAPIs(stopCh <-chan struct{}) {
 	urlruntime.Must(operationsv1alpha2.AddToContainer(s.container, s.KubernetesClient.Kubernetes()))
 	urlruntime.Must(resourcesv1alpha2.AddToContainer(s.container, s.KubernetesClient.Kubernetes(), s.InformerFactory,
 		s.KubernetesClient.Master()))
-	urlruntime.Must(tenantv1alpha2.AddToContainer(s.container, s.InformerFactory, s.KubernetesClient.Kubernetes(),
-		s.KubernetesClient.KubeSphere(), s.EventsClient, s.LoggingClient, s.AuditingClient, amOperator, imOperator, rbacAuthorizer, s.MonitoringClient, s.RuntimeCache, s.Config.MeteringOptions))
-	urlruntime.Must(tenantv1alpha3.AddToContainer(s.container, s.InformerFactory, s.KubernetesClient.Kubernetes(),
-		s.KubernetesClient.KubeSphere(), s.EventsClient, s.LoggingClient, s.AuditingClient, amOperator, imOperator, rbacAuthorizer, s.MonitoringClient, s.RuntimeCache, s.Config.MeteringOptions))
+	//urlruntime.Must(tenantv1alpha2.AddToContainer(s.container, s.InformerFactory, s.KubernetesClient.Kubernetes(),
+	//	s.KubernetesClient.KubeSphere(), s.EventsClient, s.LoggingClient, s.AuditingClient, amOperator, imOperator, rbacAuthorizer, s.MonitoringClient, s.RuntimeCache, s.Config.MeteringOptions))
+	//urlruntime.Must(tenantv1alpha3.AddToContainer(s.container, s.InformerFactory, s.KubernetesClient.Kubernetes(),
+	//	s.KubernetesClient.KubeSphere(), s.EventsClient, s.LoggingClient, s.AuditingClient, amOperator, imOperator, rbacAuthorizer, s.MonitoringClient, s.RuntimeCache, s.Config.MeteringOptions))
 	urlruntime.Must(terminalv1alpha2.AddToContainer(s.container, s.KubernetesClient.Kubernetes(), rbacAuthorizer, s.KubernetesClient.Config(), s.Config.TerminalOptions))
-	urlruntime.Must(iamapi.AddToContainer(s.container, imOperator, amOperator,
-		group.New(s.InformerFactory, s.KubernetesClient.KubeSphere(), s.KubernetesClient.Kubernetes()),
-		rbacAuthorizer))
+	//urlruntime.Must(iamapi.AddToContainer(s.container, imOperator, amOperator,
+	//	group.New(s.InformerFactory, s.KubernetesClient.KubeSphere(), s.KubernetesClient.Kubernetes()),
+	//	rbacAuthorizer))
 
 	userLister := s.InformerFactory.KubeSphereSharedInformerFactory().Iam().V1alpha2().Users().Lister()
 	urlruntime.Must(oauth.AddToContainer(s.container, imOperator,
 		auth.NewTokenOperator(s.CacheClient, s.Issuer, s.Config.AuthenticationOptions),
 		auth.NewPasswordAuthenticator(s.KubernetesClient.KubeSphere(), userLister, s.Config.AuthenticationOptions),
 		auth.NewOAuthAuthenticator(s.KubernetesClient.KubeSphere(), userLister, s.Config.AuthenticationOptions),
-		auth.NewLoginRecorder(s.KubernetesClient.KubeSphere(), userLister),
 		s.Config.AuthenticationOptions))
-	urlruntime.Must(servicemeshv1alpha2.AddToContainer(s.Config.ServiceMeshOptions, s.container, s.KubernetesClient.Kubernetes(), s.CacheClient))
 	urlruntime.Must(networkv1alpha2.AddToContainer(s.container, s.Config.NetworkOptions.WeaveScopeHost))
 	urlruntime.Must(notificationv1.AddToContainer(s.container, s.Config.NotificationOptions.Endpoint))
 	urlruntime.Must(alertingv1.AddToContainer(s.container, s.Config.AlertingOptions.Endpoint))
 	urlruntime.Must(alertingv2alpha1.AddToContainer(s.container, s.InformerFactory,
 		s.KubernetesClient.Prometheus(), s.AlertingClient, s.Config.AlertingOptions))
 	urlruntime.Must(version.AddToContainer(s.container, s.KubernetesClient.Kubernetes().Discovery()))
-	urlruntime.Must(kubeedgev1alpha1.AddToContainer(s.container, s.Config.KubeEdgeOptions.Endpoint))
-	urlruntime.Must(edgeruntimev1alpha1.AddToContainer(s.container, s.Config.EdgeRuntimeOptions.Endpoint))
+	//urlruntime.Must(edgeruntimev1alpha1.AddToContainer(s.container, s.Config.EdgeRuntimeOptions.Endpoint))
 	urlruntime.Must(notificationkapisv2beta1.AddToContainer(s.container, s.InformerFactory, s.KubernetesClient.Kubernetes(),
 		s.KubernetesClient.KubeSphere()))
 	urlruntime.Must(notificationkapisv2beta2.AddToContainer(s.container, s.Config.NotificationOptions))
@@ -289,8 +265,6 @@ func (s *APIServer) buildHandlerChain(stopCh <-chan struct{}) {
 			iamv1alpha2.Resource(iamv1alpha2.ResourcesPluralUser),
 			iamv1alpha2.Resource(iamv1alpha2.ResourcesPluralGlobalRole),
 			iamv1alpha2.Resource(iamv1alpha2.ResourcesPluralGlobalRoleBinding),
-			tenantv1alpha1.Resource(tenantv1alpha1.ResourcePluralWorkspace),
-			tenantv1alpha2.Resource(tenantv1alpha1.ResourcePluralWorkspace),
 
 			notificationv2beta1.Resource(notificationv2beta1.ResourcesPluralConfig),
 			notificationv2beta1.Resource(notificationv2beta1.ResourcesPluralReceiver),
@@ -299,11 +273,6 @@ func (s *APIServer) buildHandlerChain(stopCh <-chan struct{}) {
 
 	handler := s.Server.Handler
 	handler = filters.WithKubeAPIServer(handler, s.KubernetesClient.Config(), &errorResponder{})
-
-	if s.Config.AuditingOptions.Enable {
-		handler = filters.WithAuditing(handler,
-			audit.NewAuditing(s.InformerFactory, s.Config.AuditingOptions, stopCh))
-	}
 
 	var authorizers authorizer.Authorizer
 
@@ -324,15 +293,13 @@ func (s *APIServer) buildHandlerChain(stopCh <-chan struct{}) {
 	handler = filters.WithAuthorization(handler, authorizers)
 
 	userLister := s.InformerFactory.KubeSphereSharedInformerFactory().Iam().V1alpha2().Users().Lister()
-	loginRecorder := auth.NewLoginRecorder(s.KubernetesClient.KubeSphere(), userLister)
 
 	// authenticators are unordered
 	authn := unionauth.New(anonymous.NewAuthenticator(),
 		basictoken.New(basic.NewBasicAuthenticator(auth.NewPasswordAuthenticator(
 			s.KubernetesClient.KubeSphere(),
 			userLister,
-			s.Config.AuthenticationOptions),
-			loginRecorder)),
+			s.Config.AuthenticationOptions))),
 		bearertoken.New(jwt.NewTokenAuthenticator(
 			auth.NewTokenOperator(s.CacheClient, s.Issuer, s.Config.AuthenticationOptions),
 			userLister)))
@@ -475,23 +442,6 @@ func (s *APIServer) waitForResourceSync(ctx context.Context) error {
 		ksGVRs[schema.GroupVersion{Group: "servicemesh.kubesphere.io", Version: "v1alpha2"}] = []string{
 			"strategies",
 			"servicepolicies",
-		}
-	}
-
-	// federated resources on cached in multi cluster setup
-	if s.Config.MultiClusterOptions.Enable {
-		ksGVRs[typesv1beta1.SchemeGroupVersion] = []string{
-			typesv1beta1.ResourcePluralFederatedClusterRole,
-			typesv1beta1.ResourcePluralFederatedClusterRoleBindingBinding,
-			typesv1beta1.ResourcePluralFederatedNamespace,
-			typesv1beta1.ResourcePluralFederatedService,
-			typesv1beta1.ResourcePluralFederatedDeployment,
-			typesv1beta1.ResourcePluralFederatedSecret,
-			typesv1beta1.ResourcePluralFederatedConfigmap,
-			typesv1beta1.ResourcePluralFederatedStatefulSet,
-			typesv1beta1.ResourcePluralFederatedIngress,
-			typesv1beta1.ResourcePluralFederatedPersistentVolumeClaim,
-			typesv1beta1.ResourcePluralFederatedApplication,
 		}
 	}
 

@@ -10,16 +10,12 @@ require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20190710193110-1eb035ffe2b6
 	github.com/MakeNowJust/heredoc v0.0.0-20171113091838-e9091a26100e // indirect
 	github.com/asaskevich/govalidator v0.0.0-20200428143746-21a406dcc535
-	github.com/aws/aws-sdk-go v1.33.12
 	github.com/containernetworking/cni v0.8.0
 	github.com/coreos/go-oidc v2.1.0+incompatible
 	github.com/davecgh/go-spew v1.1.1
 	github.com/deckarep/golang-set v1.7.1 // indirect
 	github.com/docker/distribution v2.7.1+incompatible
 	github.com/docker/docker v20.10.7+incompatible
-	github.com/elastic/go-elasticsearch/v5 v5.6.1
-	github.com/elastic/go-elasticsearch/v6 v6.8.2
-	github.com/elastic/go-elasticsearch/v7 v7.3.0
 	github.com/elazarl/goproxy v0.0.0-20200315184450-1f3cb6622dad // indirect
 	github.com/emicklei/go-restful v2.14.3+incompatible
 	github.com/emicklei/go-restful-openapi v1.4.1
@@ -47,7 +43,6 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0 // indirect
 	github.com/kubernetes-csi/external-snapshotter/client/v4 v4.2.0
 	github.com/kubesphere/pvc-autoresizer v0.1.1
-	github.com/kubesphere/sonargo v0.0.2
 	github.com/mitchellh/mapstructure v1.2.2
 	github.com/onsi/ginkgo v1.16.4
 	github.com/onsi/gomega v1.15.0
@@ -75,7 +70,6 @@ require (
 	gopkg.in/square/go-jose.v2 v2.4.0
 	gopkg.in/src-d/go-billy.v4 v4.3.0 // indirect
 	gopkg.in/src-d/go-git.v4 v4.13.1
-	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 	gotest.tools v2.2.0+incompatible
 	istio.io/api v0.0.0-20201113182140-d4b7e3fc2b44
@@ -90,18 +84,16 @@ require (
 	k8s.io/code-generator v0.21.2
 	k8s.io/component-base v0.21.4
 	k8s.io/klog v1.0.0
-	k8s.io/klog/v2 v2.9.0
+	k8s.io/klog/v2 v2.9.0 // indirect
 	k8s.io/kube-openapi v0.0.0-20210421082810-95288971da7e
 	k8s.io/kubectl v0.21.2
 	k8s.io/metrics v0.21.2
 	k8s.io/utils v0.0.0-20210802155522-efc7438f0176
 	kubesphere.io/api v0.0.0
-	kubesphere.io/client-go v0.0.0
 	kubesphere.io/monitoring-dashboard v0.2.2
 	sigs.k8s.io/application v0.8.4-0.20201016185654-c8e2959e57a0
 	sigs.k8s.io/controller-runtime v0.10.0
 	sigs.k8s.io/controller-tools v0.6.2
-	sigs.k8s.io/kubefed v0.8.1
 	sigs.k8s.io/kustomize/kyaml v0.10.21 // indirect
 )
 

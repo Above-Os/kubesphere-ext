@@ -22,25 +22,16 @@ import (
 
 	"github.com/kubesphere/pvc-autoresizer/runners"
 	"k8s.io/apimachinery/pkg/util/sets"
-	"k8s.io/client-go/tools/cache"
 	"k8s.io/klog"
-	ctrl "sigs.k8s.io/controller-runtime"
-	runtimeclient "sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/manager"
-	"sigs.k8s.io/kubefed/pkg/controller/util"
-
 	"kubesphere.io/kubesphere/cmd/controller-manager/app/options"
 	"kubesphere.io/kubesphere/pkg/controller/namespace"
 	"kubesphere.io/kubesphere/pkg/controller/user"
 	"kubesphere.io/kubesphere/pkg/models/kubeconfig"
 	ldapclient "kubesphere.io/kubesphere/pkg/simple/client/ldap"
-
-	iamv1alpha2 "kubesphere.io/api/iam/v1alpha2"
+	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/manager"
 
 	"kubesphere.io/kubesphere/pkg/controller/clusterrolebinding"
-	"kubesphere.io/kubesphere/pkg/controller/globalrole"
-	"kubesphere.io/kubesphere/pkg/controller/globalrolebinding"
-	"kubesphere.io/kubesphere/pkg/controller/notification"
 	"kubesphere.io/kubesphere/pkg/informers"
 	"kubesphere.io/kubesphere/pkg/simple/client/k8s"
 )
@@ -119,7 +110,6 @@ func addAllControllers(mgr manager.Manager, client k8s.Client, informerFactory i
 	// "user" controller
 	if cmOptions.IsControllerEnabled("user") {
 		userController := &user.Reconciler{
-			MultiClusterEnabled:     cmOptions.MultiClusterOptions.Enable,
 			MaxConcurrentReconciles: 4,
 			LdapClient:              ldapClient,
 			KubeconfigClient:        kubeconfigClient,
@@ -130,7 +120,7 @@ func addAllControllers(mgr manager.Manager, client k8s.Client, informerFactory i
 
 	// "namespace" controller
 	if cmOptions.IsControllerEnabled("namespace") {
-		namespaceReconciler := &namespace.Reconciler{GatewayOptions: cmOptions.GatewayOptions}
+		namespaceReconciler := &namespace.Reconciler{}
 		addControllerWithSetup(mgr, "namespace", namespaceReconciler)
 	}
 
@@ -175,67 +165,6 @@ func addAllControllers(mgr manager.Manager, client k8s.Client, informerFactory i
 			kubesphereInformer.Iam().V1alpha2().Users(),
 			cmOptions.AuthenticationOptions.KubectlImage)
 		addController(mgr, "clusterrolebinding", clusterRoleBindingController)
-	}
-
-	// "fedglobalrolecache" controller
-	var fedGlobalRoleCache cache.Store
-	var fedGlobalRoleCacheController cache.Controller
-	if cmOptions.IsControllerEnabled("fedglobalrolecache") {
-		if cmOptions.MultiClusterOptions.Enable {
-			fedGlobalRoleClient, err := util.NewResourceClient(client.Config(), &iamv1alpha2.FedGlobalRoleResource)
-			if err != nil {
-				klog.Fatalf("Unable to create FedGlobalRole controller: %v", err)
-			}
-			fedGlobalRoleCache, fedGlobalRoleCacheController = util.NewResourceInformer(fedGlobalRoleClient, "",
-				&iamv1alpha2.FedGlobalRoleResource, func(object runtimeclient.Object) {})
-			go fedGlobalRoleCacheController.Run(stopCh)
-			addSuccessfullyControllers.Insert("fedglobalrolecache")
-		}
-	}
-
-	// "globalrole" controller
-	if cmOptions.IsControllerEnabled("globalrole") {
-		if cmOptions.MultiClusterOptions.Enable {
-			globalRoleController := globalrole.NewController(client.Kubernetes(), client.KubeSphere(),
-				kubesphereInformer.Iam().V1alpha2().GlobalRoles(), fedGlobalRoleCache, fedGlobalRoleCacheController)
-			addController(mgr, "globalrole", globalRoleController)
-		}
-	}
-
-	// "fedglobalrolebindingcache" controller
-	var fedGlobalRoleBindingCache cache.Store
-	var fedGlobalRoleBindingCacheController cache.Controller
-	if cmOptions.IsControllerEnabled("fedglobalrolebindingcache") {
-		if cmOptions.MultiClusterOptions.Enable {
-			fedGlobalRoleBindingClient, err := util.NewResourceClient(client.Config(), &iamv1alpha2.FedGlobalRoleBindingResource)
-			if err != nil {
-				klog.Fatalf("Unable to create FedGlobalRoleBinding controller: %v", err)
-			}
-			fedGlobalRoleBindingCache, fedGlobalRoleBindingCacheController = util.NewResourceInformer(fedGlobalRoleBindingClient, "",
-				&iamv1alpha2.FedGlobalRoleBindingResource, func(object runtimeclient.Object) {})
-			go fedGlobalRoleBindingCacheController.Run(stopCh)
-			addSuccessfullyControllers.Insert("fedglobalrolebindingcache")
-		}
-	}
-
-	// "globalrolebinding" controller
-	if cmOptions.IsControllerEnabled("globalrolebinding") {
-		globalRoleBindingController := globalrolebinding.NewController(client.Kubernetes(), client.KubeSphere(),
-			kubesphereInformer.Iam().V1alpha2().GlobalRoleBindings(),
-			fedGlobalRoleBindingCache, fedGlobalRoleBindingCacheController,
-			cmOptions.MultiClusterOptions.Enable)
-		addController(mgr, "globalrolebinding", globalRoleBindingController)
-	}
-
-	// "notification" controller
-	if cmOptions.IsControllerEnabled("notification") {
-		if cmOptions.MultiClusterOptions.Enable {
-			notificationController, err := notification.NewController(client.Kubernetes(), mgr.GetClient(), mgr.GetCache())
-			if err != nil {
-				klog.Fatalf("Unable to create Notification controller: %v", err)
-			}
-			addController(mgr, "notification", notificationController)
-		}
 	}
 
 	// log all controllers process result

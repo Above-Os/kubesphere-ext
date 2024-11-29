@@ -24,35 +24,24 @@ import (
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
-	"gopkg.in/yaml.v2"
-	corev1 "k8s.io/api/core/v1"
 	"k8s.io/klog"
 
 	networkv1alpha1 "kubesphere.io/api/network/v1alpha1"
 
 	"kubesphere.io/kubesphere/pkg/apiserver/authentication"
 	"kubesphere.io/kubesphere/pkg/apiserver/authorization"
-	"kubesphere.io/kubesphere/pkg/constants"
 	"kubesphere.io/kubesphere/pkg/models/terminal"
 	"kubesphere.io/kubesphere/pkg/simple/client/alerting"
-	"kubesphere.io/kubesphere/pkg/simple/client/auditing"
 	"kubesphere.io/kubesphere/pkg/simple/client/cache"
-	"kubesphere.io/kubesphere/pkg/simple/client/edgeruntime"
 	"kubesphere.io/kubesphere/pkg/simple/client/events"
-	"kubesphere.io/kubesphere/pkg/simple/client/gateway"
 	"kubesphere.io/kubesphere/pkg/simple/client/gpu"
 	"kubesphere.io/kubesphere/pkg/simple/client/k8s"
-	"kubesphere.io/kubesphere/pkg/simple/client/kubeedge"
 	"kubesphere.io/kubesphere/pkg/simple/client/ldap"
 	"kubesphere.io/kubesphere/pkg/simple/client/logging"
 	"kubesphere.io/kubesphere/pkg/simple/client/metering"
 	"kubesphere.io/kubesphere/pkg/simple/client/monitoring/prometheus"
-	"kubesphere.io/kubesphere/pkg/simple/client/multicluster"
 	"kubesphere.io/kubesphere/pkg/simple/client/network"
 	"kubesphere.io/kubesphere/pkg/simple/client/notification"
-	"kubesphere.io/kubesphere/pkg/simple/client/s3"
-	"kubesphere.io/kubesphere/pkg/simple/client/servicemesh"
-	"kubesphere.io/kubesphere/pkg/simple/client/sonarqube"
 )
 
 // Package config saves configuration for running KubeSphere components
@@ -152,26 +141,18 @@ func defaultConfig() *config {
 
 // Config defines everything needed for apiserver to deal with external services
 type Config struct {
-	SonarQubeOptions      *sonarqube.Options      `json:"sonarqube,omitempty" yaml:"sonarQube,omitempty" mapstructure:"sonarqube"`
 	KubernetesOptions     *k8s.KubernetesOptions  `json:"kubernetes,omitempty" yaml:"kubernetes,omitempty" mapstructure:"kubernetes"`
-	ServiceMeshOptions    *servicemesh.Options    `json:"servicemesh,omitempty" yaml:"servicemesh,omitempty" mapstructure:"servicemesh"`
 	NetworkOptions        *network.Options        `json:"network,omitempty" yaml:"network,omitempty" mapstructure:"network"`
 	LdapOptions           *ldap.Options           `json:"-,omitempty" yaml:"ldap,omitempty" mapstructure:"ldap"`
 	RedisOptions          *cache.Options          `json:"redis,omitempty" yaml:"redis,omitempty" mapstructure:"redis"`
-	S3Options             *s3.Options             `json:"s3,omitempty" yaml:"s3,omitempty" mapstructure:"s3"`
 	MonitoringOptions     *prometheus.Options     `json:"monitoring,omitempty" yaml:"monitoring,omitempty" mapstructure:"monitoring"`
 	LoggingOptions        *logging.Options        `json:"logging,omitempty" yaml:"logging,omitempty" mapstructure:"logging"`
 	AuthenticationOptions *authentication.Options `json:"authentication,omitempty" yaml:"authentication,omitempty" mapstructure:"authentication"`
 	AuthorizationOptions  *authorization.Options  `json:"authorization,omitempty" yaml:"authorization,omitempty" mapstructure:"authorization"`
-	MultiClusterOptions   *multicluster.Options   `json:"multicluster,omitempty" yaml:"multicluster,omitempty" mapstructure:"multicluster"`
 	EventsOptions         *events.Options         `json:"events,omitempty" yaml:"events,omitempty" mapstructure:"events"`
-	AuditingOptions       *auditing.Options       `json:"auditing,omitempty" yaml:"auditing,omitempty" mapstructure:"auditing"`
 	AlertingOptions       *alerting.Options       `json:"alerting,omitempty" yaml:"alerting,omitempty" mapstructure:"alerting"`
 	NotificationOptions   *notification.Options   `json:"notification,omitempty" yaml:"notification,omitempty" mapstructure:"notification"`
-	KubeEdgeOptions       *kubeedge.Options       `json:"kubeedge,omitempty" yaml:"kubeedge,omitempty" mapstructure:"kubeedge"`
-	EdgeRuntimeOptions    *edgeruntime.Options    `json:"edgeruntime,omitempty" yaml:"edgeruntime,omitempty" mapstructure:"edgeruntime"`
 	MeteringOptions       *metering.Options       `json:"metering,omitempty" yaml:"metering,omitempty" mapstructure:"metering"`
-	GatewayOptions        *gateway.Options        `json:"gateway,omitempty" yaml:"gateway,omitempty" mapstructure:"gateway"`
 	GPUOptions            *gpu.Options            `json:"gpu,omitempty" yaml:"gpu,omitempty" mapstructure:"gpu"`
 	TerminalOptions       *terminal.Options       `json:"terminal,omitempty" yaml:"terminal,omitempty" mapstructure:"terminal"`
 }
@@ -179,26 +160,18 @@ type Config struct {
 // newConfig creates a default non-empty Config
 func New() *Config {
 	return &Config{
-		SonarQubeOptions:      sonarqube.NewSonarQubeOptions(),
 		KubernetesOptions:     k8s.NewKubernetesOptions(),
-		ServiceMeshOptions:    servicemesh.NewServiceMeshOptions(),
 		NetworkOptions:        network.NewNetworkOptions(),
 		LdapOptions:           ldap.NewOptions(),
 		RedisOptions:          cache.NewRedisOptions(),
-		S3Options:             s3.NewS3Options(),
 		MonitoringOptions:     prometheus.NewPrometheusOptions(),
 		AlertingOptions:       alerting.NewAlertingOptions(),
 		NotificationOptions:   notification.NewNotificationOptions(),
 		LoggingOptions:        logging.NewLoggingOptions(),
 		AuthenticationOptions: authentication.NewOptions(),
 		AuthorizationOptions:  authorization.NewOptions(),
-		MultiClusterOptions:   multicluster.NewOptions(),
 		EventsOptions:         events.NewEventsOptions(),
-		AuditingOptions:       auditing.NewAuditingOptions(),
-		KubeEdgeOptions:       kubeedge.NewKubeEdgeOptions(),
-		EdgeRuntimeOptions:    edgeruntime.NewEdgeRuntimeOptions(),
 		MeteringOptions:       metering.NewMeteringOptions(),
-		GatewayOptions:        gateway.NewGatewayOptions(),
 		GPUOptions:            gpu.NewGPUOptions(),
 		TerminalOptions:       terminal.NewTerminalOptions(),
 	}
@@ -283,26 +256,12 @@ func (conf *Config) stripEmptyOptions() {
 		conf.MonitoringOptions = nil
 	}
 
-	if conf.SonarQubeOptions != nil && conf.SonarQubeOptions.Host == "" {
-		conf.SonarQubeOptions = nil
-	}
-
 	if conf.LdapOptions != nil && conf.LdapOptions.Host == "" {
 		conf.LdapOptions = nil
 	}
 
 	if conf.NetworkOptions != nil && conf.NetworkOptions.IsEmpty() {
 		conf.NetworkOptions = nil
-	}
-
-	if conf.ServiceMeshOptions != nil && conf.ServiceMeshOptions.IstioPilotHost == "" &&
-		conf.ServiceMeshOptions.ServicemeshPrometheusHost == "" &&
-		conf.ServiceMeshOptions.JaegerQueryHost == "" {
-		conf.ServiceMeshOptions = nil
-	}
-
-	if conf.S3Options != nil && conf.S3Options.Endpoint == "" {
-		conf.S3Options = nil
 	}
 
 	if conf.AlertingOptions != nil && conf.AlertingOptions.Endpoint == "" &&
@@ -318,41 +277,11 @@ func (conf *Config) stripEmptyOptions() {
 		conf.NotificationOptions = nil
 	}
 
-	if conf.MultiClusterOptions != nil && !conf.MultiClusterOptions.Enable {
-		conf.MultiClusterOptions = nil
-	}
-
 	if conf.EventsOptions != nil && conf.EventsOptions.Host == "" {
 		conf.EventsOptions = nil
-	}
-
-	if conf.AuditingOptions != nil && conf.AuditingOptions.Host == "" {
-		conf.AuditingOptions = nil
-	}
-
-	if conf.KubeEdgeOptions != nil && conf.KubeEdgeOptions.Endpoint == "" {
-		conf.KubeEdgeOptions = nil
-	}
-
-	if conf.EdgeRuntimeOptions != nil && conf.EdgeRuntimeOptions.Endpoint == "" {
-		conf.EdgeRuntimeOptions = nil
 	}
 
 	if conf.GPUOptions != nil && len(conf.GPUOptions.Kinds) == 0 {
 		conf.GPUOptions = nil
 	}
-}
-
-// GetFromConfigMap returns KubeSphere ruuning config by the given ConfigMap.
-func GetFromConfigMap(cm *corev1.ConfigMap) (*Config, error) {
-	c := &Config{}
-	value, ok := cm.Data[constants.KubeSphereConfigMapDataKey]
-	if !ok {
-		return nil, fmt.Errorf("failed to get configmap kubesphere.yaml value")
-	}
-
-	if err := yaml.Unmarshal([]byte(value), c); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal value from configmap. err: %s", err)
-	}
-	return c, nil
 }

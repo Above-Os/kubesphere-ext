@@ -19,13 +19,10 @@ package user
 import (
 	"context"
 	"fmt"
-	"reflect"
 	"time"
 
 	"github.com/go-logr/logr"
 	rbacv1 "k8s.io/api/rbac/v1"
-	"k8s.io/apimachinery/pkg/types"
-	typesv1beta1 "kubesphere.io/api/types/v1beta1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
@@ -39,14 +36,10 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/tools/record"
 	"k8s.io/klog"
-	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
-
 	iamv1alpha2 "kubesphere.io/api/iam/v1alpha2"
 
 	"kubesphere.io/kubesphere/pkg/constants"
@@ -73,7 +66,6 @@ const (
 type Reconciler struct {
 	client.Client
 	KubeconfigClient        kubeconfig.Interface
-	MultiClusterEnabled     bool
 	LdapClient              ldapclient.Interface
 	AuthenticationOptions   *authentication.Options
 	Logger                  logr.Logger
@@ -141,15 +133,10 @@ func (r *Reconciler) Reconcile(ctx context.Context, req reconcile.Request) (reco
 				return ctrl.Result{}, err
 			}
 
-			if err = r.deleteGroupBindings(ctx, user); err != nil {
-				r.Recorder.Event(user, corev1.EventTypeWarning, failedSynced, fmt.Sprintf(syncFailMessage, err))
-				return ctrl.Result{}, err
-			}
-
-			if err = r.deleteLoginRecords(ctx, user); err != nil {
-				r.Recorder.Event(user, corev1.EventTypeWarning, failedSynced, fmt.Sprintf(syncFailMessage, err))
-				return ctrl.Result{}, err
-			}
+			//if err = r.deleteGroupBindings(ctx, user); err != nil {
+			//	r.Recorder.Event(user, corev1.EventTypeWarning, failedSynced, fmt.Sprintf(syncFailMessage, err))
+			//	return ctrl.Result{}, err
+			//}
 
 			// remove our finalizer from the list and update it.
 			user.Finalizers = sliceutil.RemoveString(user.ObjectMeta.Finalizers, func(item string) bool {
@@ -165,14 +152,6 @@ func (r *Reconciler) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 		// Our finalizer has finished, so the reconciler can do nothing.
 		return ctrl.Result{}, err
-	}
-
-	// synchronization through kubefed-controller when multi cluster is enabled
-	if r.MultiClusterEnabled {
-		if err = r.multiClusterSync(ctx, user); err != nil {
-			r.Recorder.Event(user, corev1.EventTypeWarning, failedSynced, fmt.Sprintf(syncFailMessage, err))
-			return ctrl.Result{}, err
-		}
 	}
 
 	// we do not need to sync ldap info when ldapClient is nil
@@ -257,70 +236,6 @@ func (r *Reconciler) ensureNotControlledByKubefed(ctx context.Context, user *iam
 	return nil
 }
 
-func (r *Reconciler) multiClusterSync(ctx context.Context, user *iamv1alpha2.User) error {
-	if err := r.ensureNotControlledByKubefed(ctx, user); err != nil {
-		klog.Error(err)
-		return err
-	}
-
-	federatedUser := &typesv1beta1.FederatedUser{}
-	err := r.Get(ctx, types.NamespacedName{Name: user.Name}, federatedUser)
-	if err != nil {
-		if errors.IsNotFound(err) {
-			return r.createFederatedUser(ctx, user)
-		}
-		return err
-	}
-
-	if !reflect.DeepEqual(federatedUser.Spec.Template.Spec, user.Spec) ||
-		!reflect.DeepEqual(federatedUser.Spec.Template.Status, user.Status) ||
-		!reflect.DeepEqual(federatedUser.Spec.Template.Labels, user.Labels) {
-
-		federatedUser.Spec.Template.Labels = user.Labels
-		federatedUser.Spec.Template.Spec = user.Spec
-		federatedUser.Spec.Template.Status = user.Status
-		return r.Update(ctx, federatedUser, &client.UpdateOptions{})
-	}
-
-	return nil
-}
-
-func (r *Reconciler) createFederatedUser(ctx context.Context, user *iamv1alpha2.User) error {
-	federatedUser := &typesv1beta1.FederatedUser{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: user.Name,
-		},
-		Spec: typesv1beta1.FederatedUserSpec{
-			Template: typesv1beta1.UserTemplate{
-				ObjectMeta: metav1.ObjectMeta{
-					Labels: user.Labels,
-				},
-				Spec:   user.Spec,
-				Status: user.Status,
-			},
-			Placement: typesv1beta1.GenericPlacementFields{
-				ClusterSelector: &metav1.LabelSelector{},
-			},
-		},
-	}
-
-	// must bind user lifecycle
-	err := controllerutil.SetControllerReference(user, federatedUser, scheme.Scheme)
-	if err != nil {
-		return err
-	}
-
-	err = r.Create(ctx, federatedUser, &client.CreateOptions{})
-	if err != nil {
-		if errors.IsAlreadyExists(err) {
-			return nil
-		}
-		return err
-	}
-
-	return nil
-}
-
 //func (r *Reconciler) waitForAssignDevOpsAdminRole(user *iamv1alpha2.User) error {
 //	err := utilwait.PollImmediate(interval, timeout, func() (done bool, err error) {
 //		if err := r.DevopsClient.AssignGlobalRole(modelsdevops.JenkinsAdminRoleName, user.Name); err != nil {
@@ -382,11 +297,11 @@ func (r *Reconciler) waitForDeleteFromLDAP(username string) error {
 	return err
 }
 
-func (r *Reconciler) deleteGroupBindings(ctx context.Context, user *iamv1alpha2.User) error {
-	// groupBindings that created by kubeshpere will be deleted directly.
-	groupBindings := &iamv1alpha2.GroupBinding{}
-	return r.Client.DeleteAllOf(ctx, groupBindings, client.MatchingLabels{iamv1alpha2.UserReferenceLabel: user.Name})
-}
+//func (r *Reconciler) deleteGroupBindings(ctx context.Context, user *iamv1alpha2.User) error {
+//	// groupBindings that created by kubeshpere will be deleted directly.
+//	groupBindings := &iamv1alpha2.GroupBinding{}
+//	return r.Client.DeleteAllOf(ctx, groupBindings, client.MatchingLabels{iamv1alpha2.UserReferenceLabel: user.Name})
+//}
 
 func (r *Reconciler) deleteRoleBindings(ctx context.Context, user *iamv1alpha2.User) error {
 	if len(user.Name) > validation.LabelValueMaxLength {
@@ -394,20 +309,8 @@ func (r *Reconciler) deleteRoleBindings(ctx context.Context, user *iamv1alpha2.U
 		return nil
 	}
 
-	globalRoleBinding := &iamv1alpha2.GlobalRoleBinding{}
-	err := r.Client.DeleteAllOf(ctx, globalRoleBinding, client.MatchingLabels{iamv1alpha2.UserReferenceLabel: user.Name})
-	if err != nil {
-		return err
-	}
-
-	workspaceRoleBinding := &iamv1alpha2.WorkspaceRoleBinding{}
-	err = r.Client.DeleteAllOf(ctx, workspaceRoleBinding, client.MatchingLabels{iamv1alpha2.UserReferenceLabel: user.Name})
-	if err != nil {
-		return err
-	}
-
 	clusterRoleBinding := &rbacv1.ClusterRoleBinding{}
-	err = r.Client.DeleteAllOf(ctx, clusterRoleBinding, client.MatchingLabels{iamv1alpha2.UserReferenceLabel: user.Name})
+	err := r.Client.DeleteAllOf(ctx, clusterRoleBinding, client.MatchingLabels{iamv1alpha2.UserReferenceLabel: user.Name})
 	if err != nil {
 		return err
 	}
@@ -425,11 +328,6 @@ func (r *Reconciler) deleteRoleBindings(ctx context.Context, user *iamv1alpha2.U
 		}
 	}
 	return nil
-}
-
-func (r *Reconciler) deleteLoginRecords(ctx context.Context, user *iamv1alpha2.User) error {
-	loginRecord := &iamv1alpha2.LoginRecord{}
-	return r.Client.DeleteAllOf(ctx, loginRecord, client.MatchingLabels{iamv1alpha2.UserReferenceLabel: user.Name})
 }
 
 // syncUserStatus Update the user status
@@ -495,40 +393,6 @@ func (r *Reconciler) syncUserStatus(ctx context.Context, user *iamv1alpha2.User)
 				return err
 			}
 			return nil
-		}
-	}
-
-	records := &iamv1alpha2.LoginRecordList{}
-	// normal user, check user's login records see if we need to block
-	err := r.List(ctx, records, client.MatchingLabels{iamv1alpha2.UserReferenceLabel: user.Name})
-	if err != nil {
-		klog.Error(err)
-		return err
-	}
-
-	// count failed login attempts during last AuthenticateRateLimiterDuration
-	now := time.Now()
-	failedLoginAttempts := 0
-	for _, loginRecord := range records.Items {
-		afterStateTransition := user.Status.LastTransitionTime == nil || loginRecord.CreationTimestamp.After(user.Status.LastTransitionTime.Time)
-		if !loginRecord.Spec.Success &&
-			afterStateTransition &&
-			loginRecord.CreationTimestamp.Add(r.AuthenticationOptions.AuthenticateRateLimiterDuration).After(now) {
-			failedLoginAttempts++
-		}
-	}
-
-	// block user if failed login attempts exceeds maximum tries setting
-	if failedLoginAttempts >= r.AuthenticationOptions.AuthenticateRateLimiterMaxTries {
-		user.Status = iamv1alpha2.UserStatus{
-			State:              iamv1alpha2.UserAuthLimitExceeded,
-			Reason:             fmt.Sprintf("Failed login attempts exceed %d in last %s", failedLoginAttempts, r.AuthenticationOptions.AuthenticateRateLimiterDuration),
-			LastTransitionTime: &metav1.Time{Time: time.Now()},
-		}
-
-		err = r.Update(ctx, user, &client.UpdateOptions{})
-		if err != nil {
-			return err
 		}
 	}
 

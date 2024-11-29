@@ -49,22 +49,8 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 	scheme.AddKnownTypes(SchemeGroupVersion,
 		&User{},
 		&UserList{},
-		&LoginRecord{},
-		&LoginRecordList{},
-		&GlobalRole{},
-		&GlobalRoleList{},
-		&GlobalRoleBinding{},
-		&GlobalRoleBindingList{},
-		&WorkspaceRole{},
-		&WorkspaceRoleList{},
-		&WorkspaceRoleBinding{},
-		&WorkspaceRoleBindingList{},
 		&RoleBase{},
 		&RoleBaseList{},
-		&Group{},
-		&GroupList{},
-		&GroupBinding{},
-		&GroupBindingList{},
 	)
 	metav1.AddToGroupVersion(scheme, SchemeGroupVersion)
 	return nil

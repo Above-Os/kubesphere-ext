@@ -35,20 +35,14 @@ import (
 	"kubesphere.io/kubesphere/pkg/informers"
 	genericoptions "kubesphere.io/kubesphere/pkg/server/options"
 	"kubesphere.io/kubesphere/pkg/simple/client/alerting"
-	auditingclient "kubesphere.io/kubesphere/pkg/simple/client/auditing/elasticsearch"
 	"kubesphere.io/kubesphere/pkg/simple/client/cache"
 
 	"net/http"
 	"strings"
 
-	eventsclient "kubesphere.io/kubesphere/pkg/simple/client/events/elasticsearch"
 	"kubesphere.io/kubesphere/pkg/simple/client/k8s"
-	esclient "kubesphere.io/kubesphere/pkg/simple/client/logging/elasticsearch"
 	"kubesphere.io/kubesphere/pkg/simple/client/monitoring/metricsserver"
 	"kubesphere.io/kubesphere/pkg/simple/client/monitoring/prometheus"
-	"kubesphere.io/kubesphere/pkg/simple/client/s3"
-	fakes3 "kubesphere.io/kubesphere/pkg/simple/client/s3/fake"
-	"kubesphere.io/kubesphere/pkg/simple/client/sonarqube"
 )
 
 type ServerRunOptions struct {
@@ -81,16 +75,11 @@ func (s *ServerRunOptions) Flags() (fss cliflag.NamedFlagSets) {
 	s.KubernetesOptions.AddFlags(fss.FlagSet("kubernetes"), s.KubernetesOptions)
 	s.AuthenticationOptions.AddFlags(fss.FlagSet("authentication"), s.AuthenticationOptions)
 	s.AuthorizationOptions.AddFlags(fss.FlagSet("authorization"), s.AuthorizationOptions)
-	s.SonarQubeOptions.AddFlags(fss.FlagSet("sonarqube"), s.SonarQubeOptions)
 	s.RedisOptions.AddFlags(fss.FlagSet("redis"), s.RedisOptions)
-	s.S3Options.AddFlags(fss.FlagSet("s3"), s.S3Options)
 	s.NetworkOptions.AddFlags(fss.FlagSet("network"), s.NetworkOptions)
-	s.ServiceMeshOptions.AddFlags(fss.FlagSet("servicemesh"), s.ServiceMeshOptions)
 	s.MonitoringOptions.AddFlags(fss.FlagSet("monitoring"), s.MonitoringOptions)
 	s.LoggingOptions.AddFlags(fss.FlagSet("logging"), s.LoggingOptions)
-	s.MultiClusterOptions.AddFlags(fss.FlagSet("multicluster"), s.MultiClusterOptions)
 	s.EventsOptions.AddFlags(fss.FlagSet("events"), s.EventsOptions)
-	s.AuditingOptions.AddFlags(fss.FlagSet("auditing"), s.AuditingOptions)
 	s.AlertingOptions.AddFlags(fss.FlagSet("alerting"), s.AlertingOptions)
 
 	fs = fss.FlagSet("klog")
@@ -134,34 +123,6 @@ func (s *ServerRunOptions) NewAPIServer(stopCh <-chan struct{}) (*apiserver.APIS
 
 	apiServer.MetricsClient = metricsserver.NewMetricsClient(kubernetesClient.Kubernetes(), s.KubernetesOptions)
 
-	if s.LoggingOptions.Host != "" {
-		loggingClient, err := esclient.NewClient(s.LoggingOptions)
-		if err != nil {
-			return nil, fmt.Errorf("failed to connect to elasticsearch, please check elasticsearch status, error: %v", err)
-		}
-		apiServer.LoggingClient = loggingClient
-	}
-
-	if s.S3Options.Endpoint != "" {
-		if s.S3Options.Endpoint == fakeInterface && s.DebugMode {
-			apiServer.S3Client = fakes3.NewFakeS3()
-		} else {
-			s3Client, err := s3.NewS3Client(s.S3Options)
-			if err != nil {
-				return nil, fmt.Errorf("failed to connect to s3, please check s3 service status, error: %v", err)
-			}
-			apiServer.S3Client = s3Client
-		}
-	}
-
-	if s.SonarQubeOptions.Host != "" {
-		sonarClient, err := sonarqube.NewSonarQubeClient(s.SonarQubeOptions)
-		if err != nil {
-			return nil, fmt.Errorf("failed to connecto to sonarqube, please check sonarqube status, error: %v", err)
-		}
-		apiServer.SonarClient = sonarqube.NewSonar(sonarClient.SonarQube())
-	}
-
 	var cacheClient cache.Interface
 	if s.RedisOptions != nil && len(s.RedisOptions.Host) != 0 {
 		if s.RedisOptions.Host == fakeInterface && s.DebugMode {
@@ -177,22 +138,6 @@ func (s *ServerRunOptions) NewAPIServer(stopCh <-chan struct{}) (*apiserver.APIS
 		klog.Warning("ks-apiserver starts without redis provided, it will use in memory cache. " +
 			"This may cause inconsistencies when running ks-apiserver with multiple replicas.")
 		apiServer.CacheClient = cache.NewSimpleCache()
-	}
-
-	if s.EventsOptions.Host != "" {
-		eventsClient, err := eventsclient.NewClient(s.EventsOptions)
-		if err != nil {
-			return nil, fmt.Errorf("failed to connect to elasticsearch, please check elasticsearch status, error: %v", err)
-		}
-		apiServer.EventsClient = eventsClient
-	}
-
-	if s.AuditingOptions.Host != "" {
-		auditingClient, err := auditingclient.NewClient(s.AuditingOptions)
-		if err != nil {
-			return nil, fmt.Errorf("failed to connect to elasticsearch, please check elasticsearch status, error: %v", err)
-		}
-		apiServer.AuditingClient = auditingClient
 	}
 
 	if s.AlertingOptions != nil && (s.AlertingOptions.PrometheusEndpoint != "" || s.AlertingOptions.ThanosRulerEndpoint != "") {

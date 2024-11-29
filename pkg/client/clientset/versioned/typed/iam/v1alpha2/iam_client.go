@@ -26,40 +26,13 @@ import (
 
 type IamV1alpha2Interface interface {
 	RESTClient() rest.Interface
-	GlobalRolesGetter
-	GlobalRoleBindingsGetter
-	GroupsGetter
-	GroupBindingsGetter
-	LoginRecordsGetter
 	RoleBasesGetter
 	UsersGetter
-	WorkspaceRolesGetter
-	WorkspaceRoleBindingsGetter
 }
 
 // IamV1alpha2Client is used to interact with features provided by the iam.kubesphere.io group.
 type IamV1alpha2Client struct {
 	restClient rest.Interface
-}
-
-func (c *IamV1alpha2Client) GlobalRoles() GlobalRoleInterface {
-	return newGlobalRoles(c)
-}
-
-func (c *IamV1alpha2Client) GlobalRoleBindings() GlobalRoleBindingInterface {
-	return newGlobalRoleBindings(c)
-}
-
-func (c *IamV1alpha2Client) Groups() GroupInterface {
-	return newGroups(c)
-}
-
-func (c *IamV1alpha2Client) GroupBindings() GroupBindingInterface {
-	return newGroupBindings(c)
-}
-
-func (c *IamV1alpha2Client) LoginRecords() LoginRecordInterface {
-	return newLoginRecords(c)
 }
 
 func (c *IamV1alpha2Client) RoleBases() RoleBaseInterface {
@@ -68,14 +41,6 @@ func (c *IamV1alpha2Client) RoleBases() RoleBaseInterface {
 
 func (c *IamV1alpha2Client) Users() UserInterface {
 	return newUsers(c)
-}
-
-func (c *IamV1alpha2Client) WorkspaceRoles() WorkspaceRoleInterface {
-	return newWorkspaceRoles(c)
-}
-
-func (c *IamV1alpha2Client) WorkspaceRoleBindings() WorkspaceRoleBindingInterface {
-	return newWorkspaceRoleBindings(c)
 }
 
 // NewForConfig creates a new IamV1alpha2Client for the given config.

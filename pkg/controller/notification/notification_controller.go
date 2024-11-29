@@ -19,12 +19,10 @@ package notification
 import (
 	"context"
 	"fmt"
-	"reflect"
 	"time"
 
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/kubernetes"
@@ -34,12 +32,9 @@ import (
 	"k8s.io/client-go/tools/record"
 	"k8s.io/client-go/util/workqueue"
 	"k8s.io/klog"
+	"kubesphere.io/api/notification/v2beta1"
 	"sigs.k8s.io/controller-runtime/pkg/cache"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
-
-	"kubesphere.io/api/notification/v2beta1"
-	"kubesphere.io/api/types/v1beta1"
 
 	"kubesphere.io/kubesphere/pkg/constants"
 )
@@ -276,122 +271,6 @@ func (c *Controller) Start(ctx context.Context) error {
 //	return nil
 //}
 //}
-
-func (c *Controller) syncFederatedConfig(obj *v2beta1.Config) error {
-
-	fedObj := &v1beta1.FederatedNotificationConfig{}
-	err := c.Get(context.Background(), client.ObjectKey{Name: obj.Name}, fedObj)
-	if err != nil {
-		if errors.IsNotFound(err) {
-			fedObj = &v1beta1.FederatedNotificationConfig{
-				TypeMeta: metav1.TypeMeta{
-					Kind:       v1beta1.FederatedNotificationConfigKind,
-					APIVersion: v1beta1.SchemeGroupVersion.String(),
-				},
-				ObjectMeta: metav1.ObjectMeta{
-					Name: obj.Name,
-				},
-				Spec: v1beta1.FederatedNotificationConfigSpec{
-					Template: v1beta1.NotificationConfigTemplate{
-						ObjectMeta: metav1.ObjectMeta{
-							Labels: obj.Labels,
-						},
-						Spec: obj.Spec,
-					},
-					Placement: v1beta1.GenericPlacementFields{
-						ClusterSelector: &metav1.LabelSelector{},
-					},
-				},
-			}
-
-			err = controllerutil.SetControllerReference(obj, fedObj, scheme.Scheme)
-			if err != nil {
-				klog.Errorf("FederatedNotificationConfig '%s' SetControllerReference failed, %s", obj.Name, err)
-				return err
-			}
-
-			if err = c.Create(context.Background(), fedObj); err != nil {
-				klog.Errorf("create FederatedNotificationConfig '%s' failed, %s", obj.Name, err)
-				return err
-			}
-
-			return nil
-		}
-		klog.Errorf("get FederatedNotificationConfig '%s' failed, %s", obj.Name, err)
-		return err
-	}
-
-	if !reflect.DeepEqual(fedObj.Spec.Template.Labels, obj.Labels) || !reflect.DeepEqual(fedObj.Spec.Template.Spec, obj.Spec) {
-
-		fedObj.Spec.Template.Spec = obj.Spec
-		fedObj.Spec.Template.Labels = obj.Labels
-
-		if err := c.Update(context.Background(), fedObj); err != nil {
-			klog.Errorf("update FederatedNotificationConfig '%s' failed, %s", obj.Name, err)
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (c *Controller) syncFederatedReceiver(obj *v2beta1.Receiver) error {
-
-	fedObj := &v1beta1.FederatedNotificationReceiver{}
-	err := c.Get(context.Background(), client.ObjectKey{Name: obj.Name}, fedObj)
-	if err != nil {
-		if errors.IsNotFound(err) {
-			fedObj = &v1beta1.FederatedNotificationReceiver{
-				TypeMeta: metav1.TypeMeta{
-					Kind:       v1beta1.FederatedNotificationReceiverKind,
-					APIVersion: v1beta1.SchemeGroupVersion.String(),
-				},
-				ObjectMeta: metav1.ObjectMeta{
-					Name: obj.Name,
-				},
-				Spec: v1beta1.FederatedNotificationReceiverSpec{
-					Template: v1beta1.NotificationReceiverTemplate{
-						ObjectMeta: metav1.ObjectMeta{
-							Labels: obj.Labels,
-						},
-						Spec: obj.Spec,
-					},
-					Placement: v1beta1.GenericPlacementFields{
-						ClusterSelector: &metav1.LabelSelector{},
-					},
-				},
-			}
-
-			err = controllerutil.SetControllerReference(obj, fedObj, scheme.Scheme)
-			if err != nil {
-				klog.Errorf("FederatedNotificationReceiver '%s' SetControllerReference failed, %s", obj.Name, err)
-				return err
-			}
-
-			if err = c.Create(context.Background(), fedObj); err != nil {
-				klog.Errorf("create FederatedNotificationReceiver '%s' failed, %s", obj.Name, err)
-				return err
-			}
-
-			return nil
-		}
-		klog.Errorf("get FederatedNotificationReceiver '%s' failed, %s", obj.Name, err)
-		return err
-	}
-
-	if !reflect.DeepEqual(fedObj.Spec.Template.Labels, obj.Labels) || !reflect.DeepEqual(fedObj.Spec.Template.Spec, obj.Spec) {
-
-		fedObj.Spec.Template.Spec = obj.Spec
-		fedObj.Spec.Template.Labels = obj.Labels
-
-		if err := c.Update(context.Background(), fedObj); err != nil {
-			klog.Errorf("update FederatedNotificationReceiver '%s' failed, %s", obj.Name, err)
-			return err
-		}
-	}
-
-	return nil
-}
 
 // Update the annotations of secrets managed by the notification controller to trigger a reconcile.
 func (c *Controller) updateSecret() error {

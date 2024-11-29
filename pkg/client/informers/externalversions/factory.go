@@ -28,15 +28,10 @@ import (
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	cache "k8s.io/client-go/tools/cache"
 	versioned "kubesphere.io/kubesphere/pkg/client/clientset/versioned"
-	auditing "kubesphere.io/kubesphere/pkg/client/informers/externalversions/auditing"
 	iam "kubesphere.io/kubesphere/pkg/client/informers/externalversions/iam"
 	internalinterfaces "kubesphere.io/kubesphere/pkg/client/informers/externalversions/internalinterfaces"
 	network "kubesphere.io/kubesphere/pkg/client/informers/externalversions/network"
 	notification "kubesphere.io/kubesphere/pkg/client/informers/externalversions/notification"
-	quota "kubesphere.io/kubesphere/pkg/client/informers/externalversions/quota"
-	storage "kubesphere.io/kubesphere/pkg/client/informers/externalversions/storage"
-	tenant "kubesphere.io/kubesphere/pkg/client/informers/externalversions/tenant"
-	types "kubesphere.io/kubesphere/pkg/client/informers/externalversions/types"
 )
 
 // SharedInformerOption defines the functional option type for SharedInformerFactory.
@@ -179,18 +174,9 @@ type SharedInformerFactory interface {
 	ForResource(resource schema.GroupVersionResource) (GenericInformer, error)
 	WaitForCacheSync(stopCh <-chan struct{}) map[reflect.Type]bool
 
-	Auditing() auditing.Interface
 	Iam() iam.Interface
 	Network() network.Interface
 	Notification() notification.Interface
-	Quota() quota.Interface
-	Storage() storage.Interface
-	Tenant() tenant.Interface
-	Types() types.Interface
-}
-
-func (f *sharedInformerFactory) Auditing() auditing.Interface {
-	return auditing.New(f, f.namespace, f.tweakListOptions)
 }
 
 func (f *sharedInformerFactory) Iam() iam.Interface {
@@ -203,20 +189,4 @@ func (f *sharedInformerFactory) Network() network.Interface {
 
 func (f *sharedInformerFactory) Notification() notification.Interface {
 	return notification.New(f, f.namespace, f.tweakListOptions)
-}
-
-func (f *sharedInformerFactory) Quota() quota.Interface {
-	return quota.New(f, f.namespace, f.tweakListOptions)
-}
-
-func (f *sharedInformerFactory) Storage() storage.Interface {
-	return storage.New(f, f.namespace, f.tweakListOptions)
-}
-
-func (f *sharedInformerFactory) Tenant() tenant.Interface {
-	return tenant.New(f, f.namespace, f.tweakListOptions)
-}
-
-func (f *sharedInformerFactory) Types() types.Interface {
-	return types.New(f, f.namespace, f.tweakListOptions)
 }

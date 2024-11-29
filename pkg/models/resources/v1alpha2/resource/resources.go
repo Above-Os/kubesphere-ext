@@ -42,7 +42,6 @@ import (
 	"kubesphere.io/kubesphere/pkg/models/resources/v1alpha2/service"
 	"kubesphere.io/kubesphere/pkg/models/resources/v1alpha2/statefulset"
 	"kubesphere.io/kubesphere/pkg/models/resources/v1alpha2/storageclass"
-	"kubesphere.io/kubesphere/pkg/models/resources/v1alpha2/workspace"
 	"kubesphere.io/kubesphere/pkg/server/params"
 	"kubesphere.io/kubesphere/pkg/utils/sliceutil"
 )
@@ -81,7 +80,7 @@ func NewResourceGetter(factory informers.InformerFactory) *ResourceGetter {
 	resourceGetters[v1alpha2.ClusterRoles] = clusterrole.NewClusterRoleSearcher(factory.KubernetesSharedInformerFactory())
 	resourceGetters[v1alpha2.StorageClasses] = storageclass.NewStorageClassesSearcher(factory.KubernetesSharedInformerFactory(), factory.SnapshotSharedInformerFactory())
 	resourceGetters[v1alpha2.HorizontalPodAutoscalers] = hpa.NewHpaSearcher(factory.KubernetesSharedInformerFactory())
-	resourceGetters[v1alpha2.Workspaces] = workspace.NewWorkspaceSearcher(factory.KubeSphereSharedInformerFactory())
+	//resourceGetters[v1alpha2.Workspaces] = workspace.NewWorkspaceSearcher(factory.KubeSphereSharedInformerFactory())
 
 	return &ResourceGetter{resourcesGetters: resourceGetters}
 
