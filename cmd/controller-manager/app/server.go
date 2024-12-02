@@ -21,7 +21,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/google/gops/agent"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	utilerrors "k8s.io/apimachinery/pkg/util/errors"
@@ -68,14 +67,6 @@ func NewControllerManagerCommand() *cobra.Command {
 			if errs := s.Validate(allControllers); len(errs) != 0 {
 				klog.Error(utilerrors.NewAggregate(errs))
 				os.Exit(1)
-			}
-
-			if s.GOPSEnabled {
-				// Add agent to report additional information such as the current stack trace, Go version, memory stats, etc.
-				// Bind to a random port on address 127.0.0.1
-				if err := agent.Listen(agent.Options{}); err != nil {
-					klog.Fatal(err)
-				}
 			}
 
 			if err = Run(s, controllerconfig.WatchConfigChange(), signals.SetupSignalHandler()); err != nil {

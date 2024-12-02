@@ -31,7 +31,6 @@ import (
 	"kubesphere.io/kubesphere/pkg/api"
 	"kubesphere.io/kubesphere/pkg/informers"
 	"kubesphere.io/kubesphere/pkg/models/components"
-	"kubesphere.io/kubesphere/pkg/models/git"
 	"kubesphere.io/kubesphere/pkg/models/kubeconfig"
 	"kubesphere.io/kubesphere/pkg/models/kubectl"
 	"kubesphere.io/kubesphere/pkg/models/quotas"
@@ -50,7 +49,6 @@ type resourceHandler struct {
 	resourceQuotaGetter quotas.ResourceQuotaGetter
 	revisionGetter      revisions.RevisionGetter
 	routerOperator      routers.RouterOperator
-	gitVerifier         git.GitVerifier
 	registryGetter      registries.RegistryGetter
 	kubeconfigOperator  kubeconfig.Interface
 	kubectlOperator     kubectl.Interface
@@ -64,7 +62,6 @@ func newResourceHandler(k8sClient kubernetes.Interface, factory informers.Inform
 		resourceQuotaGetter: quotas.NewResourceQuotaGetter(factory.KubernetesSharedInformerFactory()),
 		revisionGetter:      revisions.NewRevisionGetter(factory.KubernetesSharedInformerFactory()),
 		routerOperator:      routers.NewRouterOperator(k8sClient, factory.KubernetesSharedInformerFactory()),
-		gitVerifier:         git.NewGitVerifier(factory.KubernetesSharedInformerFactory()),
 		registryGetter:      registries.NewRegistryGetter(factory.KubernetesSharedInformerFactory()),
 		kubeconfigOperator:  kubeconfig.NewReadOnlyOperator(factory.KubernetesSharedInformerFactory().Core().V1().ConfigMaps().Lister(), masterURL),
 		kubectlOperator: kubectl.NewOperator(nil, factory.KubernetesSharedInformerFactory().Apps().V1().Deployments(),
@@ -284,26 +281,6 @@ func (r *resourceHandler) handleUpdateRouter(request *restful.Request, response 
 	}
 
 	response.WriteAsJson(router)
-}
-
-func (r *resourceHandler) handleVerifyGitCredential(request *restful.Request, response *restful.Response) {
-	var credential api.GitCredential
-	err := request.ReadEntity(&credential)
-	if err != nil {
-		response.WriteHeaderAndEntity(http.StatusInternalServerError, errors.Wrap(err))
-		return
-	}
-	var namespace, secretName string
-	if credential.SecretRef != nil {
-		namespace = credential.SecretRef.Namespace
-		secretName = credential.SecretRef.Name
-	}
-	err = r.gitVerifier.VerifyGitCredential(credential.RemoteUrl, namespace, secretName)
-	if err != nil {
-		response.WriteHeaderAndEntity(http.StatusInternalServerError, errors.Wrap(err))
-		return
-	}
-	response.WriteAsJson(errors.None)
 }
 
 func (r *resourceHandler) handleVerifyRegistryCredential(request *restful.Request, response *restful.Response) {

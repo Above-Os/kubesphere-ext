@@ -32,7 +32,6 @@ import (
 	"kubesphere.io/kubesphere/pkg/constants"
 	"kubesphere.io/kubesphere/pkg/informers"
 	"kubesphere.io/kubesphere/pkg/models"
-	gitmodel "kubesphere.io/kubesphere/pkg/models/git"
 	registriesmodel "kubesphere.io/kubesphere/pkg/models/registries"
 	"kubesphere.io/kubesphere/pkg/server/errors"
 	"kubesphere.io/kubesphere/pkg/server/params"
@@ -156,13 +155,6 @@ func AddToContainer(c *restful.Container, k8sClient kubernetes.Interface, factor
 		Doc("Retrieve the blob from the registry identified").
 		Writes(registriesmodel.ImageDetails{}).
 		Returns(http.StatusOK, api.StatusOK, registriesmodel.ImageDetails{}),
-	)
-	webservice.Route(webservice.POST("git/verify").
-		To(handler.handleVerifyGitCredential).
-		Metadata(restfulspec.KeyOpenAPITags, []string{constants.GitTag}).
-		Doc("Verify if the kubernetes secret has read access to the git repository").
-		Reads(gitmodel.AuthInfo{}).
-		Returns(http.StatusOK, api.StatusOK, errors.Error{}),
 	)
 
 	webservice.Route(webservice.GET("/namespaces/{namespace}/daemonsets/{daemonset}/revisions/{revision}").
