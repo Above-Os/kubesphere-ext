@@ -32,8 +32,6 @@ import (
 
 	"k8s.io/apimachinery/pkg/util/validation"
 
-	utilwait "k8s.io/apimachinery/pkg/util/wait"
-
 	"golang.org/x/crypto/bcrypt"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -44,7 +42,6 @@ import (
 
 	"kubesphere.io/kubesphere/pkg/constants"
 	"kubesphere.io/kubesphere/pkg/models/kubeconfig"
-	ldapclient "kubesphere.io/kubesphere/pkg/simple/client/ldap"
 	"kubesphere.io/kubesphere/pkg/utils/sliceutil"
 )
 
@@ -66,7 +63,6 @@ const (
 type Reconciler struct {
 	client.Client
 	KubeconfigClient        kubeconfig.Interface
-	LdapClient              ldapclient.Interface
 	AuthenticationOptions   *authentication.Options
 	Logger                  logr.Logger
 	Scheme                  *runtime.Scheme
@@ -120,13 +116,6 @@ func (r *Reconciler) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	} else {
 		// The object is being deleted
 		if sliceutil.HasString(user.ObjectMeta.Finalizers, finalizer) {
-			// we do not need to delete the user from ldapServer when ldapClient is nil
-			if r.LdapClient != nil {
-				if err = r.waitForDeleteFromLDAP(user.Name); err != nil {
-					// ignore timeout error
-					r.Recorder.Event(user, corev1.EventTypeWarning, failedSynced, fmt.Sprintf(syncFailMessage, err))
-				}
-			}
 
 			if err = r.deleteRoleBindings(ctx, user); err != nil {
 				r.Recorder.Event(user, corev1.EventTypeWarning, failedSynced, fmt.Sprintf(syncFailMessage, err))
@@ -152,15 +141,6 @@ func (r *Reconciler) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 		// Our finalizer has finished, so the reconciler can do nothing.
 		return ctrl.Result{}, err
-	}
-
-	// we do not need to sync ldap info when ldapClient is nil
-	if r.LdapClient != nil {
-		// ignore errors if timeout
-		if err = r.waitForSyncToLDAP(user); err != nil {
-			// ignore timeout error
-			r.Recorder.Event(user, corev1.EventTypeWarning, failedSynced, fmt.Sprintf(syncFailMessage, err))
-		}
 	}
 
 	// update user status if not managed by kubefed
@@ -256,46 +236,6 @@ func (r *Reconciler) ensureNotControlledByKubefed(ctx context.Context, user *iam
 //	})
 //	return err
 //}
-
-func (r *Reconciler) waitForSyncToLDAP(user *iamv1alpha2.User) error {
-	if isEncrypted(user.Spec.EncryptedPassword) {
-		return nil
-	}
-	err := utilwait.PollImmediate(interval, timeout, func() (done bool, err error) {
-		_, err = r.LdapClient.Get(user.Name)
-		if err != nil {
-			if err == ldapclient.ErrUserNotExists {
-				err = r.LdapClient.Create(user)
-				if err != nil {
-					klog.Error(err)
-					return false, err
-				}
-				return true, nil
-			}
-			klog.Error(err)
-			return false, err
-		}
-		err = r.LdapClient.Update(user)
-		if err != nil {
-			klog.Error(err)
-			return false, err
-		}
-		return true, nil
-	})
-	return err
-}
-
-func (r *Reconciler) waitForDeleteFromLDAP(username string) error {
-	err := utilwait.PollImmediate(interval, timeout, func() (done bool, err error) {
-		err = r.LdapClient.Delete(username)
-		if err != nil && err != ldapclient.ErrUserNotExists {
-			klog.Error(err)
-			return false, err
-		}
-		return true, nil
-	})
-	return err
-}
 
 //func (r *Reconciler) deleteGroupBindings(ctx context.Context, user *iamv1alpha2.User) error {
 //	// groupBindings that created by kubeshpere will be deleted directly.

@@ -33,7 +33,6 @@ import (
 	"kubesphere.io/kubesphere/pkg/simple/client/cache"
 	"kubesphere.io/kubesphere/pkg/simple/client/events"
 	"kubesphere.io/kubesphere/pkg/simple/client/k8s"
-	"kubesphere.io/kubesphere/pkg/simple/client/ldap"
 	"kubesphere.io/kubesphere/pkg/simple/client/logging"
 	"kubesphere.io/kubesphere/pkg/simple/client/metering"
 	"kubesphere.io/kubesphere/pkg/simple/client/monitoring/prometheus"
@@ -137,7 +136,6 @@ func defaultConfig() *config {
 // Config defines everything needed for apiserver to deal with external services
 type Config struct {
 	KubernetesOptions     *k8s.KubernetesOptions  `json:"kubernetes,omitempty" yaml:"kubernetes,omitempty" mapstructure:"kubernetes"`
-	LdapOptions           *ldap.Options           `json:"-,omitempty" yaml:"ldap,omitempty" mapstructure:"ldap"`
 	RedisOptions          *cache.Options          `json:"redis,omitempty" yaml:"redis,omitempty" mapstructure:"redis"`
 	MonitoringOptions     *prometheus.Options     `json:"monitoring,omitempty" yaml:"monitoring,omitempty" mapstructure:"monitoring"`
 	LoggingOptions        *logging.Options        `json:"logging,omitempty" yaml:"logging,omitempty" mapstructure:"logging"`
@@ -153,7 +151,6 @@ type Config struct {
 func New() *Config {
 	return &Config{
 		KubernetesOptions:     k8s.NewKubernetesOptions(),
-		LdapOptions:           ldap.NewOptions(),
 		RedisOptions:          cache.NewRedisOptions(),
 		MonitoringOptions:     prometheus.NewPrometheusOptions(),
 		AlertingOptions:       alerting.NewAlertingOptions(),
@@ -214,10 +211,6 @@ func (conf *Config) stripEmptyOptions() {
 
 	if conf.MonitoringOptions != nil && conf.MonitoringOptions.Endpoint == "" {
 		conf.MonitoringOptions = nil
-	}
-
-	if conf.LdapOptions != nil && conf.LdapOptions.Host == "" {
-		conf.LdapOptions = nil
 	}
 
 	if conf.AlertingOptions != nil && conf.AlertingOptions.Endpoint == "" &&

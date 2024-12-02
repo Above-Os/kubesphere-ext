@@ -36,13 +36,11 @@ import (
 	"k8s.io/klog"
 
 	"kubesphere.io/kubesphere/pkg/simple/client/k8s"
-	ldapclient "kubesphere.io/kubesphere/pkg/simple/client/ldap"
 )
 
 type KubeSphereControllerManagerOptions struct {
 	KubernetesOptions     *k8s.KubernetesOptions
 	AuthenticationOptions *authentication.Options
-	LdapOptions           *ldapclient.Options
 	MonitoringOptions     *prometheus.Options
 	LeaderElect           bool
 	LeaderElection        *leaderelection.LeaderElectionConfig
@@ -65,7 +63,6 @@ type KubeSphereControllerManagerOptions struct {
 func NewKubeSphereControllerManagerOptions() *KubeSphereControllerManagerOptions {
 	s := &KubeSphereControllerManagerOptions{
 		KubernetesOptions:     k8s.NewKubernetesOptions(),
-		LdapOptions:           ldapclient.NewOptions(),
 		AuthenticationOptions: authentication.NewOptions(),
 		LeaderElection: &leaderelection.LeaderElectionConfig{
 			LeaseDuration: 30 * time.Second,
@@ -85,7 +82,6 @@ func (s *KubeSphereControllerManagerOptions) Flags(allControllerNameSelectors []
 
 	s.KubernetesOptions.AddFlags(fss.FlagSet("kubernetes"), s.KubernetesOptions)
 	s.AuthenticationOptions.AddFlags(fss.FlagSet("authentication"), s.AuthenticationOptions)
-	s.LdapOptions.AddFlags(fss.FlagSet("ldap"), s.LdapOptions)
 	fs := fss.FlagSet("leaderelection")
 	s.bindLeaderElectionFlags(s.LeaderElection, fs)
 
@@ -122,7 +118,6 @@ func (s *KubeSphereControllerManagerOptions) Flags(allControllerNameSelectors []
 func (o *KubeSphereControllerManagerOptions) Validate(allControllerNameSelectors []string) []error {
 	var errs []error
 	errs = append(errs, o.KubernetesOptions.Validate()...)
-	errs = append(errs, o.LdapOptions.Validate()...)
 
 	// genetic option: controllers, check all selectors are valid
 	allControllersNameSet := sets.NewString(allControllerNameSelectors...)
@@ -178,5 +173,4 @@ func (s *KubeSphereControllerManagerOptions) bindLeaderElectionFlags(l *leaderel
 func (s *KubeSphereControllerManagerOptions) MergeConfig(cfg *controllerconfig.Config) {
 	s.KubernetesOptions = cfg.KubernetesOptions
 	s.AuthenticationOptions = cfg.AuthenticationOptions
-	s.LdapOptions = cfg.LdapOptions
 }

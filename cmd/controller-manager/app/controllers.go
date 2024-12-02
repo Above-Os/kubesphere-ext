@@ -17,14 +17,12 @@ limitations under the License.
 package app
 
 import (
-	"fmt"
 	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/klog"
 	"kubesphere.io/kubesphere/cmd/controller-manager/app/options"
 	"kubesphere.io/kubesphere/pkg/controller/namespace"
 	"kubesphere.io/kubesphere/pkg/controller/user"
 	"kubesphere.io/kubesphere/pkg/models/kubeconfig"
-	ldapclient "kubesphere.io/kubesphere/pkg/simple/client/ldap"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
@@ -44,7 +42,6 @@ var allControllers = []string{
 func addAllControllers(mgr manager.Manager, client k8s.Client, informerFactory informers.InformerFactory,
 	cmOptions *options.KubeSphereControllerManagerOptions,
 	stopCh <-chan struct{}) error {
-	var err error
 
 	////////////////////////////////////
 	// begin init necessary informers
@@ -62,20 +59,6 @@ func addAllControllers(mgr manager.Manager, client k8s.Client, informerFactory i
 		informerFactory.KubernetesSharedInformerFactory().Core().V1().ConfigMaps().Lister(),
 		client.Config())
 
-	var ldapClient ldapclient.Interface
-	// when there is no ldapOption, we set ldapClient as nil, which means we don't need to sync user info into ldap.
-	if cmOptions.LdapOptions != nil && len(cmOptions.LdapOptions.Host) != 0 {
-		if cmOptions.LdapOptions.Host == ldapclient.FAKE_HOST { // for debug only
-			ldapClient = ldapclient.NewSimpleLdap()
-		} else {
-			ldapClient, err = ldapclient.NewLdapClient(cmOptions.LdapOptions, stopCh)
-			if err != nil {
-				return fmt.Errorf("failed to connect to ldap service, please check ldap status, error: %v", err)
-			}
-		}
-	} else {
-		klog.Warning("ks-controller-manager starts without ldap provided, it will not sync user into ldap")
-	}
 	////////////////////////////////////
 	// end init clients
 	////////////////////////////////////
@@ -88,7 +71,6 @@ func addAllControllers(mgr manager.Manager, client k8s.Client, informerFactory i
 	if cmOptions.IsControllerEnabled("user") {
 		userController := &user.Reconciler{
 			MaxConcurrentReconciles: 4,
-			LdapClient:              ldapClient,
 			KubeconfigClient:        kubeconfigClient,
 			AuthenticationOptions:   cmOptions.AuthenticationOptions,
 		}

@@ -39,8 +39,6 @@ import (
 
 	"kubesphere.io/kubesphere/pkg/apis"
 
-	ldapclient "kubesphere.io/kubesphere/pkg/simple/client/ldap"
-
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -65,31 +63,15 @@ func TestDoNothing(t *testing.T) {
 	authenticateOptions.AuthenticateRateLimiterDuration = 2 * time.Second
 	user := newUser("test")
 	loginRecords := make([]runtime.Object, 0)
-	for i := 0; i < authenticateOptions.AuthenticateRateLimiterMaxTries+1; i++ {
-		loginRecord := iamv1alpha2.LoginRecord{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:   fmt.Sprintf("%s-%d", user.Name, i),
-				Labels: map[string]string{iamv1alpha2.UserReferenceLabel: user.Name},
-				// Ensure that the failed login record created after the user status change to active,
-				// otherwise, the failed login attempts will not be counted.
-				CreationTimestamp: metav1.NewTime(time.Now().Add(time.Minute)),
-			},
-			Spec: iamv1alpha2.LoginRecordSpec{
-				Success: false,
-			},
-		}
-		loginRecords = append(loginRecords, &loginRecord)
-	}
+
 	sch := scheme.Scheme
 	if err := apis.AddToScheme(sch); err != nil {
 		t.Fatalf("unable add APIs to scheme: %v", err)
 	}
 
 	client := runtimefakeclient.NewClientBuilder().WithScheme(sch).WithRuntimeObjects(user).WithRuntimeObjects(loginRecords...).Build()
-	ldap := ldapclient.NewSimpleLdap()
 	c := &Reconciler{
 		Recorder:              &record.FakeRecorder{},
-		LdapClient:            ldap,
 		Logger:                ctrl.Log.WithName("controllers").WithName(controllerName),
 		Client:                client,
 		AuthenticationOptions: authenticateOptions,
