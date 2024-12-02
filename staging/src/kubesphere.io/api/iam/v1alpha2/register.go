@@ -19,7 +19,7 @@ limitations under the License.
 // Package v1alpha2 contains API Schema definitions for the iam v1alpha2 API group
 // +k8s:openapi-gen=true
 // +kubebuilder:object:generate=true
-// +groupName=iam.kubesphere.io
+// +groupName=iam.bytetrade.io
 package v1alpha2
 
 import (
@@ -30,7 +30,7 @@ import (
 
 var (
 	// SchemeGroupVersion is group version used to register these objects
-	SchemeGroupVersion = schema.GroupVersion{Group: "iam.kubesphere.io", Version: "v1alpha2"}
+	SchemeGroupVersion = schema.GroupVersion{Group: "iam.bytetrade.io", Version: "v1alpha2"}
 
 	// SchemeBuilder is used to add go types to the GroupVersionKind scheme
 	SchemeBuilder = runtime.NewSchemeBuilder(addKnownTypes)

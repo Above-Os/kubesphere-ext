@@ -6,17 +6,19 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: (devel)
   creationTimestamp: null
-  name: ipamhandles.network.kubesphere.io
+  name: rolebases.iam.bytetrade.io
 spec:
-  group: network.kubesphere.io
+  group: iam.bytetrade.io
   names:
-    kind: IPAMHandle
-    listKind: IPAMHandleList
-    plural: ipamhandles
-    singular: ipamhandle
+    categories:
+    - iam
+    kind: RoleBase
+    listKind: RoleBaseList
+    plural: rolebases
+    singular: rolebase
   scope: Cluster
   versions:
-  - name: v1alpha1
+  - name: v1alpha2
     schema:
       openAPIV3Schema:
         properties:
@@ -32,22 +34,12 @@ spec:
             type: string
           metadata:
             type: object
-          spec:
-            description: Specification of the IPAMHandle.
-            properties:
-              block:
-                additionalProperties:
-                  type: integer
-                type: object
-              deleted:
-                type: boolean
-              handleID:
-                type: string
-            required:
-            - block
-            - deleted
-            - handleID
+          role:
             type: object
+            x-kubernetes-embedded-resource: true
+            x-kubernetes-preserve-unknown-fields: true
+        required:
+        - role
         type: object
     served: true
     storage: true

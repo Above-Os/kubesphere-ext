@@ -6,9 +6,9 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: (devel)
   creationTimestamp: null
-  name: users.iam.kubesphere.io
+  name: users.iam.bytetrade.io
 spec:
-  group: iam.kubesphere.io
+  group: iam.bytetrade.io
   names:
     categories:
     - iam

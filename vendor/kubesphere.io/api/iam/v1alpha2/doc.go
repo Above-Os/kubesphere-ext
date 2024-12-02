@@ -19,5 +19,5 @@ limitations under the License.
 // +k8s:deepcopy-gen=package,register
 // +k8s:conversion-gen=kubesphere.io/api/iam
 // +k8s:defaulter-gen=TypeMeta
-// +groupName=iam.kubesphere.io
+// +groupName=iam.bytetrade.io
 package v1alpha2
