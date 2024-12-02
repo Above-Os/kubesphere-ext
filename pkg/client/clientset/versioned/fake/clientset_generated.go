@@ -27,8 +27,6 @@ import (
 	clientset "kubesphere.io/kubesphere/pkg/client/clientset/versioned"
 	iamv1alpha2 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/iam/v1alpha2"
 	fakeiamv1alpha2 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/iam/v1alpha2/fake"
-	networkv1alpha1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/network/v1alpha1"
-	fakenetworkv1alpha1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/network/v1alpha1/fake"
 )
 
 // NewSimpleClientset returns a clientset that will respond with the provided objects.
@@ -81,9 +79,4 @@ var _ clientset.Interface = &Clientset{}
 // IamV1alpha2 retrieves the IamV1alpha2Client
 func (c *Clientset) IamV1alpha2() iamv1alpha2.IamV1alpha2Interface {
 	return &fakeiamv1alpha2.FakeIamV1alpha2{Fake: &c.Fake}
-}
-
-// NetworkV1alpha1 retrieves the NetworkV1alpha1Client
-func (c *Clientset) NetworkV1alpha1() networkv1alpha1.NetworkV1alpha1Interface {
-	return &fakenetworkv1alpha1.FakeNetworkV1alpha1{Fake: &c.Fake}
 }

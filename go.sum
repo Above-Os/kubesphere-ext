@@ -113,8 +113,6 @@ github.com/containerd/containerd v1.3.0 h1:xjvXQWABwS2uiv3TWgQt5Uth60Gu86LTGZXMJ
 github.com/containerd/containerd v1.3.0/go.mod h1:bC6axHOhabU15QhwfG7w5PipXdVtMXFTttgp+kVtyUA=
 github.com/containerd/stargz-snapshotter/estargz v0.7.0 h1:1d/rydzTywc76lnjJb6qbPCiTiCwts49AzKps/Ecblw=
 github.com/containerd/stargz-snapshotter/estargz v0.7.0/go.mod h1:83VWDqHnurTKliEB0YvWMiCfLDwv4Cjj1X9Vk98GJZw=
-github.com/containernetworking/cni v0.8.0 h1:BT9lpgGoH4jw3lFC7Odz2prU5ruiYKcgAjMCbgybcKI=
-github.com/containernetworking/cni v0.8.0/go.mod h1:LGwApLUm2FpoOfxTDEeq8T9ipbpZ61X79hmU3w8FmsY=
 github.com/coreos/bbolt v1.3.3/go.mod h1:iRUV2dpdMOn7Bo10OQBFzIJO9kkE559Wcmn+qkEiiKk=
 github.com/coreos/etcd v3.3.17+incompatible/go.mod h1:uF7uidLiAD3TWHmW31ZFd/JWoc32PjwdhPthX9715RE=
 github.com/coreos/go-etcd v2.0.0+incompatible/go.mod h1:Jez6KQU2B/sWsbdaef3ED8NzMklzPG4d5KIOhIy30Tk=
@@ -411,7 +409,6 @@ github.com/jung-kurt/gofpdf v1.0.3-0.20190309125859-24315acbbda5/go.mod h1:7Id9E
 github.com/jwilder/encoding v0.0.0-20170811194829-b4e1701a28ef/go.mod h1:Ct9fl0F6iIOGgxJ5npU/IUOhOhqlVrGjyIZc8/MagT0=
 github.com/kardianos/osext v0.0.0-20170510131534-ae77be60afb1/go.mod h1:1NbS8ALrpOvjt0rHPNLyCIeMtbizbir8U//inJ+zuB8=
 github.com/karrick/godirwalk v1.10.3/go.mod h1:RoGL9dQei4vP9ilrpETWE8CLOZ1kiN0LhBygSwrAsHA=
-github.com/kelseyhightower/envconfig v1.4.0 h1:Im6hONhd3pLkfDFsbRgu68RDNkGF1r3dvMUtDTo2cv8=
 github.com/kelseyhightower/envconfig v1.4.0/go.mod h1:cccZRl6mQpaq41TPp5QxidR+Sa3axMbJDNb//FQX6Gg=
 github.com/kevinburke/ssh_config v0.0.0-20180830205328-81db2a75821e h1:RgQk53JHp/Cjunrr1WlsXSZpqXn+uREuHvUVcK82CV8=
 github.com/kevinburke/ssh_config v0.0.0-20180830205328-81db2a75821e/go.mod h1:CT57kijsi8u/K/BOFA39wgDQJ9CxiF4nAY/ojJ6r6mM=
@@ -561,13 +558,9 @@ github.com/posener/complete v1.1.1/go.mod h1:em0nMJCgc9GFtwrmVmEMR/ZL6WyhyjMBndr
 github.com/pquerna/cachecontrol v0.0.0-20171018203845-0dec1b30a021 h1:0XM1XL/OFFJjXsYXlG30spTkV/E9+gmd5GD1w2HE8xM=
 github.com/pquerna/cachecontrol v0.0.0-20171018203845-0dec1b30a021/go.mod h1:prYjPmNq4d1NPVmpShWobRqXY3q7Vp+80DqgxxUrUIA=
 github.com/pquerna/ffjson v0.0.0-20190813045741-dac163c6c0a9/go.mod h1:YARuvh7BUWHNhzDq2OM5tzR2RiCcN2D7sapiKyCel/M=
-github.com/projectcalico/go-json v0.0.0-20161128004156-6219dc7339ba h1:aaF2byUCZhzszHsfPEr2M3qcU4ibtD/yk/il2R7T1PU=
 github.com/projectcalico/go-json v0.0.0-20161128004156-6219dc7339ba/go.mod h1:q8EdCgBdMQzgiX/uk4GXLWLk+gIHd1a7mWUAamJKDb4=
-github.com/projectcalico/go-yaml v0.0.0-20161201183616-955bc3e451ef h1:Di9BaA9apb6DEstin8RdhKmlzQG76UMbmjPzjCVkMpc=
 github.com/projectcalico/go-yaml v0.0.0-20161201183616-955bc3e451ef/go.mod h1:1Ra2BftSa7Go38Gbq1q0bfmBFSSgUv+Cdc3SY8IL/C0=
-github.com/projectcalico/go-yaml-wrapper v0.0.0-20161127220527-598e54215bee h1:yVWsNSlAuYoJ0CznHsYRPiFgsotoj07k00k5rQvGlHM=
 github.com/projectcalico/go-yaml-wrapper v0.0.0-20161127220527-598e54215bee/go.mod h1:UgC0aTQ2KMDxlX3lU/stndk7DMUBJqzN40yFiILHgxc=
-github.com/projectcalico/libcalico-go v1.7.2-0.20191014160346-2382c6cdd056 h1:qs29Hus4cY8XlsmMLUsSAHT0metSTyqu2Tnpuwy5dkM=
 github.com/projectcalico/libcalico-go v1.7.2-0.20191014160346-2382c6cdd056/go.mod h1:tUt8rirmysRy7TR1S80XDriwBK1z2igwwX79lnUrSf4=
 github.com/prometheus-community/prom-label-proxy v0.2.0 h1:2cNKhNjbTmmEDvBTW/6WUsE2x7bh76rBMZVBn4ey6To=
 github.com/prometheus-community/prom-label-proxy v0.2.0/go.mod h1:XdjyZg7LCbCC5FADHtpgNp6kQ0W9beXVGfmcvndMj5Y=

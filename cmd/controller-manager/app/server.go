@@ -53,7 +53,6 @@ func NewControllerManagerCommand() *cobra.Command {
 			KubernetesOptions:     conf.KubernetesOptions,
 			AuthenticationOptions: conf.AuthenticationOptions,
 			LdapOptions:           conf.LdapOptions,
-			NetworkOptions:        conf.NetworkOptions,
 			MonitoringOptions:     conf.MonitoringOptions,
 			LeaderElection:        s.LeaderElection,
 			LeaderElect:           s.LeaderElect,

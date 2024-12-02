@@ -10,7 +10,6 @@ require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20190710193110-1eb035ffe2b6
 	github.com/MakeNowJust/heredoc v0.0.0-20171113091838-e9091a26100e // indirect
 	github.com/asaskevich/govalidator v0.0.0-20200428143746-21a406dcc535
-	github.com/containernetworking/cni v0.8.0
 	github.com/coreos/go-oidc v2.1.0+incompatible
 	github.com/davecgh/go-spew v1.1.1
 	github.com/deckarep/golang-set v1.7.1 // indirect
@@ -39,7 +38,6 @@ require (
 	github.com/hashicorp/golang-lru v0.5.4
 	github.com/json-iterator/go v1.1.11
 	github.com/jszwec/csvutil v1.5.0
-	github.com/kelseyhightower/envconfig v1.4.0 // indirect
 	github.com/kubernetes-csi/external-snapshotter/client/v4 v4.2.0
 	github.com/mitchellh/mapstructure v1.2.2
 	github.com/onsi/ginkgo v1.16.4
@@ -47,7 +45,6 @@ require (
 	github.com/open-policy-agent/opa v0.18.0
 	github.com/opencontainers/go-digest v1.0.0
 	github.com/pkg/errors v0.9.1
-	github.com/projectcalico/libcalico-go v1.7.2-0.20191014160346-2382c6cdd056
 	github.com/prometheus-community/prom-label-proxy v0.2.0
 	github.com/prometheus-operator/prometheus-operator v0.42.2-0.20200928114327-fbd01683839a
 	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.42.1

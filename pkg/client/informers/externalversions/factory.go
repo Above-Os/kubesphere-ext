@@ -30,7 +30,6 @@ import (
 	versioned "kubesphere.io/kubesphere/pkg/client/clientset/versioned"
 	iam "kubesphere.io/kubesphere/pkg/client/informers/externalversions/iam"
 	internalinterfaces "kubesphere.io/kubesphere/pkg/client/informers/externalversions/internalinterfaces"
-	network "kubesphere.io/kubesphere/pkg/client/informers/externalversions/network"
 )
 
 // SharedInformerOption defines the functional option type for SharedInformerFactory.
@@ -174,13 +173,8 @@ type SharedInformerFactory interface {
 	WaitForCacheSync(stopCh <-chan struct{}) map[reflect.Type]bool
 
 	Iam() iam.Interface
-	Network() network.Interface
 }
 
 func (f *sharedInformerFactory) Iam() iam.Interface {
 	return iam.New(f, f.namespace, f.tweakListOptions)
-}
-
-func (f *sharedInformerFactory) Network() network.Interface {
-	return network.New(f, f.namespace, f.tweakListOptions)
 }

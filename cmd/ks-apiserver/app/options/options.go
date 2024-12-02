@@ -76,7 +76,6 @@ func (s *ServerRunOptions) Flags() (fss cliflag.NamedFlagSets) {
 	s.AuthenticationOptions.AddFlags(fss.FlagSet("authentication"), s.AuthenticationOptions)
 	s.AuthorizationOptions.AddFlags(fss.FlagSet("authorization"), s.AuthorizationOptions)
 	s.RedisOptions.AddFlags(fss.FlagSet("redis"), s.RedisOptions)
-	s.NetworkOptions.AddFlags(fss.FlagSet("network"), s.NetworkOptions)
 	s.MonitoringOptions.AddFlags(fss.FlagSet("monitoring"), s.MonitoringOptions)
 	s.LoggingOptions.AddFlags(fss.FlagSet("logging"), s.LoggingOptions)
 	s.EventsOptions.AddFlags(fss.FlagSet("events"), s.EventsOptions)

@@ -40,7 +40,6 @@ import (
 	"kubesphere.io/kubesphere/pkg/informers"
 	alertingv2alpha1 "kubesphere.io/kubesphere/pkg/kapis/alerting/v2alpha1"
 	monitoringv1alpha3 "kubesphere.io/kubesphere/pkg/kapis/monitoring/v1alpha3"
-	networkv1alpha2 "kubesphere.io/kubesphere/pkg/kapis/network/v1alpha2"
 	"kubesphere.io/kubesphere/pkg/kapis/oauth"
 	operationsv1alpha2 "kubesphere.io/kubesphere/pkg/kapis/operations/v1alpha2"
 	resourcesv1alpha2 "kubesphere.io/kubesphere/pkg/kapis/resources/v1alpha2"
@@ -106,14 +105,17 @@ func generateSwaggerJson() []byte {
 
 	informerFactory := informers.NewNullInformerFactory()
 
-	urlruntime.Must(oauth.AddToContainer(container, nil, nil, nil, nil, nil, nil))
+	urlruntime.Must(oauth.AddToContainer(container, nil, nil, nil, nil, nil))
+
+	// TODO:hysyeah
 	//urlruntime.Must(iamv1alpha2.AddToContainer(container, nil, nil, group.New(informerFactory, clientsets.KubeSphere(), clientsets.Kubernetes()), nil))
+	// TODO:hysyeah
+
 	urlruntime.Must(monitoringv1alpha3.AddToContainer(container, clientsets.Kubernetes(), nil, nil, informerFactory, nil))
 	urlruntime.Must(operationsv1alpha2.AddToContainer(container, clientsets.Kubernetes()))
 	urlruntime.Must(resourcesv1alpha2.AddToContainer(container, clientsets.Kubernetes(), informerFactory, ""))
 	urlruntime.Must(resourcesv1alpha3.AddToContainer(container, informerFactory, nil))
 	urlruntime.Must(terminalv1alpha2.AddToContainer(container, clientsets.Kubernetes(), nil, nil, nil))
-	urlruntime.Must(networkv1alpha2.AddToContainer(container, ""))
 	alertingOptions := &alerting.Options{}
 	alertingClient, _ := alerting.NewRuleClient(alertingOptions)
 	urlruntime.Must(alertingv2alpha1.AddToContainer(container, informerFactory, promfake.NewSimpleClientset(), alertingClient, alertingOptions))

@@ -37,11 +37,6 @@ github.com/cespare/xxhash
 github.com/cespare/xxhash/v2
 # github.com/containerd/containerd v1.5.2 => github.com/containerd/containerd v1.3.0
 github.com/containerd/containerd/errdefs
-# github.com/containernetworking/cni v0.8.0 => github.com/containernetworking/cni v0.8.0
-## explicit
-github.com/containernetworking/cni/pkg/types
-github.com/containernetworking/cni/pkg/types/020
-github.com/containernetworking/cni/pkg/types/current
 # github.com/coreos/go-oidc v2.1.0+incompatible => github.com/coreos/go-oidc v2.1.0+incompatible
 ## explicit
 github.com/coreos/go-oidc
@@ -309,8 +304,6 @@ github.com/json-iterator/go
 # github.com/jszwec/csvutil v1.5.0 => github.com/jszwec/csvutil v1.5.0
 ## explicit
 github.com/jszwec/csvutil
-# github.com/kelseyhightower/envconfig v1.4.0 => github.com/kelseyhightower/envconfig v1.4.0
-## explicit
 # github.com/kevinburke/ssh_config v0.0.0-20180830205328-81db2a75821e => github.com/kevinburke/ssh_config v0.0.0-20180830205328-81db2a75821e
 github.com/kevinburke/ssh_config
 # github.com/konsorten/go-windows-terminal-sequences v1.0.2 => github.com/konsorten/go-windows-terminal-sequences v1.0.2
@@ -475,24 +468,6 @@ github.com/pmezard/go-difflib/difflib
 # github.com/pquerna/cachecontrol v0.0.0-20171018203845-0dec1b30a021 => github.com/pquerna/cachecontrol v0.0.0-20171018203845-0dec1b30a021
 github.com/pquerna/cachecontrol
 github.com/pquerna/cachecontrol/cacheobject
-# github.com/projectcalico/libcalico-go v1.7.2-0.20191014160346-2382c6cdd056 => github.com/projectcalico/libcalico-go v1.7.2-0.20191014160346-2382c6cdd056
-## explicit
-github.com/projectcalico/libcalico-go/lib/apis/v1
-github.com/projectcalico/libcalico-go/lib/apis/v1/unversioned
-github.com/projectcalico/libcalico-go/lib/apis/v3
-github.com/projectcalico/libcalico-go/lib/backend/encap
-github.com/projectcalico/libcalico-go/lib/backend/model
-github.com/projectcalico/libcalico-go/lib/errors
-github.com/projectcalico/libcalico-go/lib/hash
-github.com/projectcalico/libcalico-go/lib/names
-github.com/projectcalico/libcalico-go/lib/namespace
-github.com/projectcalico/libcalico-go/lib/net
-github.com/projectcalico/libcalico-go/lib/numorstring
-github.com/projectcalico/libcalico-go/lib/scope
-github.com/projectcalico/libcalico-go/lib/selector
-github.com/projectcalico/libcalico-go/lib/selector/parser
-github.com/projectcalico/libcalico-go/lib/selector/tokenizer
-github.com/projectcalico/libcalico-go/lib/set
 # github.com/prometheus-community/prom-label-proxy v0.2.0 => github.com/prometheus-community/prom-label-proxy v0.2.0
 ## explicit
 github.com/prometheus-community/prom-label-proxy/injectproxy
@@ -1674,9 +1649,6 @@ k8s.io/utils/trace
 # kubesphere.io/api v0.0.0 => ./staging/src/kubesphere.io/api
 ## explicit
 kubesphere.io/api/iam/v1alpha2
-kubesphere.io/api/network/calicov3
-kubesphere.io/api/network/crdinstall
-kubesphere.io/api/network/v1alpha1
 # kubesphere.io/monitoring-dashboard v0.2.2 => kubesphere.io/monitoring-dashboard v0.2.2
 ## explicit
 kubesphere.io/monitoring-dashboard/api/v1alpha1

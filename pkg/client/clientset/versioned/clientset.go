@@ -25,31 +25,23 @@ import (
 	rest "k8s.io/client-go/rest"
 	flowcontrol "k8s.io/client-go/util/flowcontrol"
 	iamv1alpha2 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/iam/v1alpha2"
-	networkv1alpha1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/network/v1alpha1"
 )
 
 type Interface interface {
 	Discovery() discovery.DiscoveryInterface
 	IamV1alpha2() iamv1alpha2.IamV1alpha2Interface
-	NetworkV1alpha1() networkv1alpha1.NetworkV1alpha1Interface
 }
 
 // Clientset contains the clients for groups. Each group has exactly one
 // version included in a Clientset.
 type Clientset struct {
 	*discovery.DiscoveryClient
-	iamV1alpha2     *iamv1alpha2.IamV1alpha2Client
-	networkV1alpha1 *networkv1alpha1.NetworkV1alpha1Client
+	iamV1alpha2 *iamv1alpha2.IamV1alpha2Client
 }
 
 // IamV1alpha2 retrieves the IamV1alpha2Client
 func (c *Clientset) IamV1alpha2() iamv1alpha2.IamV1alpha2Interface {
 	return c.iamV1alpha2
-}
-
-// NetworkV1alpha1 retrieves the NetworkV1alpha1Client
-func (c *Clientset) NetworkV1alpha1() networkv1alpha1.NetworkV1alpha1Interface {
-	return c.networkV1alpha1
 }
 
 // Discovery retrieves the DiscoveryClient
@@ -77,10 +69,6 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 	if err != nil {
 		return nil, err
 	}
-	cs.networkV1alpha1, err = networkv1alpha1.NewForConfig(&configShallowCopy)
-	if err != nil {
-		return nil, err
-	}
 
 	cs.DiscoveryClient, err = discovery.NewDiscoveryClientForConfig(&configShallowCopy)
 	if err != nil {
@@ -94,7 +82,6 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 func NewForConfigOrDie(c *rest.Config) *Clientset {
 	var cs Clientset
 	cs.iamV1alpha2 = iamv1alpha2.NewForConfigOrDie(c)
-	cs.networkV1alpha1 = networkv1alpha1.NewForConfigOrDie(c)
 
 	cs.DiscoveryClient = discovery.NewDiscoveryClientForConfigOrDie(c)
 	return &cs
@@ -104,7 +91,6 @@ func NewForConfigOrDie(c *rest.Config) *Clientset {
 func New(c rest.Interface) *Clientset {
 	var cs Clientset
 	cs.iamV1alpha2 = iamv1alpha2.New(c)
-	cs.networkV1alpha1 = networkv1alpha1.New(c)
 
 	cs.DiscoveryClient = discovery.NewDiscoveryClient(c)
 	return &cs

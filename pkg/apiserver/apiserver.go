@@ -64,7 +64,6 @@ import (
 	"kubesphere.io/kubesphere/pkg/kapis/crd"
 	meteringv1alpha1 "kubesphere.io/kubesphere/pkg/kapis/metering/v1alpha1"
 	monitoringv1alpha3 "kubesphere.io/kubesphere/pkg/kapis/monitoring/v1alpha3"
-	networkv1alpha2 "kubesphere.io/kubesphere/pkg/kapis/network/v1alpha2"
 	"kubesphere.io/kubesphere/pkg/kapis/oauth"
 
 	operationsv1alpha2 "kubesphere.io/kubesphere/pkg/kapis/operations/v1alpha2"
@@ -208,7 +207,6 @@ func (s *APIServer) installKubeSphereAPIs(stopCh <-chan struct{}) {
 		auth.NewPasswordAuthenticator(s.KubernetesClient.KubeSphere(), userLister, s.Config.AuthenticationOptions),
 		auth.NewOAuthAuthenticator(s.KubernetesClient.KubeSphere(), userLister, s.Config.AuthenticationOptions),
 		s.Config.AuthenticationOptions))
-	urlruntime.Must(networkv1alpha2.AddToContainer(s.container, s.Config.NetworkOptions.WeaveScopeHost))
 	urlruntime.Must(alertingv1.AddToContainer(s.container, s.Config.AlertingOptions.Endpoint))
 	urlruntime.Must(alertingv2alpha1.AddToContainer(s.container, s.InformerFactory,
 		s.KubernetesClient.Prometheus(), s.AlertingClient, s.Config.AlertingOptions))

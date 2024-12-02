@@ -33,9 +33,6 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
 	"k8s.io/kube-openapi/pkg/common"
-
-	networkinstall "kubesphere.io/api/network/crdinstall"
-	networkv1alpha1 "kubesphere.io/api/network/v1alpha1"
 )
 
 var output string
@@ -50,8 +47,6 @@ func main() {
 		Scheme = runtime.NewScheme()
 		Codecs = serializer.NewCodecFactory(Scheme)
 	)
-
-	networkinstall.Install(Scheme)
 
 	mapper := meta.NewDefaultRESTMapper(nil)
 
@@ -82,12 +77,12 @@ func main() {
 	//	devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourceSingularS2iBinary),
 	//	devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourcePluralS2iBinary), meta.RESTScopeRoot)
 
-	mapper.AddSpecific(networkv1alpha1.SchemeGroupVersion.WithKind(networkv1alpha1.ResourceKindNamespaceNetworkPolicy),
-		networkv1alpha1.SchemeGroupVersion.WithResource(networkv1alpha1.ResourcePluralNamespaceNetworkPolicy),
-		networkv1alpha1.SchemeGroupVersion.WithResource(networkv1alpha1.ResourceSingularNamespaceNetworkPolicy), meta.RESTScopeRoot)
-	mapper.AddSpecific(networkv1alpha1.SchemeGroupVersion.WithKind(networkv1alpha1.ResourceKindIPPool),
-		networkv1alpha1.SchemeGroupVersion.WithResource(networkv1alpha1.ResourcePluralIPPool),
-		networkv1alpha1.SchemeGroupVersion.WithResource(networkv1alpha1.ResourceSingularIPPool), meta.RESTScopeRoot)
+	//mapper.AddSpecific(networkv1alpha1.SchemeGroupVersion.WithKind(networkv1alpha1.ResourceKindNamespaceNetworkPolicy),
+	//	networkv1alpha1.SchemeGroupVersion.WithResource(networkv1alpha1.ResourcePluralNamespaceNetworkPolicy),
+	//	networkv1alpha1.SchemeGroupVersion.WithResource(networkv1alpha1.ResourceSingularNamespaceNetworkPolicy), meta.RESTScopeRoot)
+	//mapper.AddSpecific(networkv1alpha1.SchemeGroupVersion.WithKind(networkv1alpha1.ResourceKindIPPool),
+	//	networkv1alpha1.SchemeGroupVersion.WithResource(networkv1alpha1.ResourcePluralIPPool),
+	//	networkv1alpha1.SchemeGroupVersion.WithResource(networkv1alpha1.ResourceSingularIPPool), meta.RESTScopeRoot)
 
 	//mapper.AddSpecific(devopsv1alpha3.SchemeGroupVersion.WithKind(devopsv1alpha3.ResourceKindDevOpsProject),
 	//	devopsv1alpha3.SchemeGroupVersion.WithResource(devopsv1alpha3.ResourcePluralDevOpsProject),
@@ -118,7 +113,7 @@ func main() {
 		},
 		OpenAPIDefinitions: []common.GetOpenAPIDefinitions{
 			//tenantv1alpha1.GetOpenAPIDefinitions,
-			networkv1alpha1.GetOpenAPIDefinitions,
+			//networkv1alpha1.GetOpenAPIDefinitions,
 		},
 		Resources: []schema.GroupVersionResource{
 			//TODO（runzexia） At present, the document generation requires the openapi structure of the go language,
@@ -131,8 +126,8 @@ func main() {
 			//devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourcePluralS2iRun),
 			//devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourcePluralS2iBuilderTemplate),
 			//devopsv1alpha1.SchemeGroupVersion.WithResource(devopsv1alpha1.ResourcePluralS2iBuilder),
-			networkv1alpha1.SchemeGroupVersion.WithResource(networkv1alpha1.ResourcePluralNamespaceNetworkPolicy),
-			networkv1alpha1.SchemeGroupVersion.WithResource(networkv1alpha1.ResourcePluralIPPool),
+			//networkv1alpha1.SchemeGroupVersion.WithResource(networkv1alpha1.ResourcePluralNamespaceNetworkPolicy),
+			//networkv1alpha1.SchemeGroupVersion.WithResource(networkv1alpha1.ResourcePluralIPPool),
 			//devopsv1alpha3.SchemeGroupVersion.WithResource(devopsv1alpha3.ResourcePluralDevOpsProject),
 			//devopsv1alpha3.SchemeGroupVersion.WithResource(devopsv1alpha3.ResourcePluralPipeline),
 		},

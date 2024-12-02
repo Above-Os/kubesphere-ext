@@ -27,7 +27,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/cache"
 
 	iamv1alpha2 "kubesphere.io/api/iam/v1alpha2"
-	networkv1alpha1 "kubesphere.io/api/network/v1alpha1"
 	"kubesphere.io/kubesphere/pkg/api"
 	"kubesphere.io/kubesphere/pkg/apiserver/query"
 	"kubesphere.io/kubesphere/pkg/informers"
@@ -41,7 +40,6 @@ import (
 	"kubesphere.io/kubesphere/pkg/models/resources/v1alpha3/dashboard"
 	"kubesphere.io/kubesphere/pkg/models/resources/v1alpha3/deployment"
 	"kubesphere.io/kubesphere/pkg/models/resources/v1alpha3/ingress"
-	"kubesphere.io/kubesphere/pkg/models/resources/v1alpha3/ippool"
 	"kubesphere.io/kubesphere/pkg/models/resources/v1alpha3/job"
 	"kubesphere.io/kubesphere/pkg/models/resources/v1alpha3/namespace"
 	"kubesphere.io/kubesphere/pkg/models/resources/v1alpha3/networkpolicy"
@@ -89,7 +87,6 @@ func NewResourceGetter(factory informers.InformerFactory, cache cache.Cache) *Re
 	clusterResourceGetters[schema.GroupVersionResource{Group: "apiextensions.k8s.io", Version: "v1", Resource: "customresourcedefinitions"}] = customresourcedefinition.New(factory.ApiExtensionSharedInformerFactory())
 
 	// kubesphere resources
-	namespacedResourceGetters[networkv1alpha1.SchemeGroupVersion.WithResource(networkv1alpha1.ResourcePluralIPPool)] = ippool.New(factory.KubeSphereSharedInformerFactory(), factory.KubernetesSharedInformerFactory())
 	clusterResourceGetters[iamv1alpha2.SchemeGroupVersion.WithResource(iamv1alpha2.ResourcesPluralUser)] = user.New(factory.KubeSphereSharedInformerFactory(), factory.KubernetesSharedInformerFactory())
 	clusterResourceGetters[rbacv1.SchemeGroupVersion.WithResource(iamv1alpha2.ResourcesPluralClusterRole)] = clusterrole.New(factory.KubernetesSharedInformerFactory())
 	clusterResourceGetters[rbacv1.SchemeGroupVersion.WithResource(iamv1alpha2.ResourcesPluralClusterRoleBinding)] = clusterrolebinding.New(factory.KubernetesSharedInformerFactory())

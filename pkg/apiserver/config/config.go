@@ -26,22 +26,17 @@ import (
 	"github.com/spf13/viper"
 	"k8s.io/klog"
 
-	networkv1alpha1 "kubesphere.io/api/network/v1alpha1"
-
 	"kubesphere.io/kubesphere/pkg/apiserver/authentication"
 	"kubesphere.io/kubesphere/pkg/apiserver/authorization"
 	"kubesphere.io/kubesphere/pkg/models/terminal"
 	"kubesphere.io/kubesphere/pkg/simple/client/alerting"
 	"kubesphere.io/kubesphere/pkg/simple/client/cache"
 	"kubesphere.io/kubesphere/pkg/simple/client/events"
-	"kubesphere.io/kubesphere/pkg/simple/client/gpu"
 	"kubesphere.io/kubesphere/pkg/simple/client/k8s"
 	"kubesphere.io/kubesphere/pkg/simple/client/ldap"
 	"kubesphere.io/kubesphere/pkg/simple/client/logging"
 	"kubesphere.io/kubesphere/pkg/simple/client/metering"
 	"kubesphere.io/kubesphere/pkg/simple/client/monitoring/prometheus"
-	"kubesphere.io/kubesphere/pkg/simple/client/network"
-	"kubesphere.io/kubesphere/pkg/simple/client/notification"
 )
 
 // Package config saves configuration for running KubeSphere components
@@ -142,7 +137,6 @@ func defaultConfig() *config {
 // Config defines everything needed for apiserver to deal with external services
 type Config struct {
 	KubernetesOptions     *k8s.KubernetesOptions  `json:"kubernetes,omitempty" yaml:"kubernetes,omitempty" mapstructure:"kubernetes"`
-	NetworkOptions        *network.Options        `json:"network,omitempty" yaml:"network,omitempty" mapstructure:"network"`
 	LdapOptions           *ldap.Options           `json:"-,omitempty" yaml:"ldap,omitempty" mapstructure:"ldap"`
 	RedisOptions          *cache.Options          `json:"redis,omitempty" yaml:"redis,omitempty" mapstructure:"redis"`
 	MonitoringOptions     *prometheus.Options     `json:"monitoring,omitempty" yaml:"monitoring,omitempty" mapstructure:"monitoring"`
@@ -151,9 +145,7 @@ type Config struct {
 	AuthorizationOptions  *authorization.Options  `json:"authorization,omitempty" yaml:"authorization,omitempty" mapstructure:"authorization"`
 	EventsOptions         *events.Options         `json:"events,omitempty" yaml:"events,omitempty" mapstructure:"events"`
 	AlertingOptions       *alerting.Options       `json:"alerting,omitempty" yaml:"alerting,omitempty" mapstructure:"alerting"`
-	NotificationOptions   *notification.Options   `json:"notification,omitempty" yaml:"notification,omitempty" mapstructure:"notification"`
 	MeteringOptions       *metering.Options       `json:"metering,omitempty" yaml:"metering,omitempty" mapstructure:"metering"`
-	GPUOptions            *gpu.Options            `json:"gpu,omitempty" yaml:"gpu,omitempty" mapstructure:"gpu"`
 	TerminalOptions       *terminal.Options       `json:"terminal,omitempty" yaml:"terminal,omitempty" mapstructure:"terminal"`
 }
 
@@ -161,18 +153,15 @@ type Config struct {
 func New() *Config {
 	return &Config{
 		KubernetesOptions:     k8s.NewKubernetesOptions(),
-		NetworkOptions:        network.NewNetworkOptions(),
 		LdapOptions:           ldap.NewOptions(),
 		RedisOptions:          cache.NewRedisOptions(),
 		MonitoringOptions:     prometheus.NewPrometheusOptions(),
 		AlertingOptions:       alerting.NewAlertingOptions(),
-		NotificationOptions:   notification.NewNotificationOptions(),
 		LoggingOptions:        logging.NewLoggingOptions(),
 		AuthenticationOptions: authentication.NewOptions(),
 		AuthorizationOptions:  authorization.NewOptions(),
 		EventsOptions:         events.NewEventsOptions(),
 		MeteringOptions:       metering.NewMeteringOptions(),
-		GPUOptions:            gpu.NewGPUOptions(),
 		TerminalOptions:       terminal.NewTerminalOptions(),
 	}
 }
@@ -206,35 +195,6 @@ func (conf *Config) ToMap() map[string]bool {
 			continue
 		}
 
-		if name == "network" {
-			ippoolName := "network.ippool"
-			nsnpName := "network"
-			networkTopologyName := "network.topology"
-			if conf.NetworkOptions == nil {
-				result[nsnpName] = false
-				result[ippoolName] = false
-			} else {
-				if conf.NetworkOptions.EnableNetworkPolicy {
-					result[nsnpName] = true
-				} else {
-					result[nsnpName] = false
-				}
-
-				if conf.NetworkOptions.IPPoolType == networkv1alpha1.IPPoolTypeNone {
-					result[ippoolName] = false
-				} else {
-					result[ippoolName] = true
-				}
-
-				if conf.NetworkOptions.WeaveScopeHost == "" {
-					result[networkTopologyName] = false
-				} else {
-					result[networkTopologyName] = true
-				}
-			}
-			continue
-		}
-
 		if c.Field(i).IsNil() {
 			result[name] = false
 		} else {
@@ -260,10 +220,6 @@ func (conf *Config) stripEmptyOptions() {
 		conf.LdapOptions = nil
 	}
 
-	if conf.NetworkOptions != nil && conf.NetworkOptions.IsEmpty() {
-		conf.NetworkOptions = nil
-	}
-
 	if conf.AlertingOptions != nil && conf.AlertingOptions.Endpoint == "" &&
 		conf.AlertingOptions.PrometheusEndpoint == "" && conf.AlertingOptions.ThanosRulerEndpoint == "" {
 		conf.AlertingOptions = nil
@@ -273,15 +229,8 @@ func (conf *Config) stripEmptyOptions() {
 		conf.LoggingOptions = nil
 	}
 
-	if conf.NotificationOptions != nil && conf.NotificationOptions.Endpoint == "" {
-		conf.NotificationOptions = nil
-	}
-
 	if conf.EventsOptions != nil && conf.EventsOptions.Host == "" {
 		conf.EventsOptions = nil
 	}
 
-	if conf.GPUOptions != nil && len(conf.GPUOptions.Kinds) == 0 {
-		conf.GPUOptions = nil
-	}
 }

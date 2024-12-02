@@ -24,7 +24,6 @@ import (
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	cache "k8s.io/client-go/tools/cache"
 	v1alpha2 "kubesphere.io/api/iam/v1alpha2"
-	v1alpha1 "kubesphere.io/api/network/v1alpha1"
 )
 
 // GenericInformer is type of SharedIndexInformer which will locate and delegate to other
@@ -58,16 +57,6 @@ func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Iam().V1alpha2().RoleBases().Informer()}, nil
 	case v1alpha2.SchemeGroupVersion.WithResource("users"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Iam().V1alpha2().Users().Informer()}, nil
-
-		// Group=network.kubesphere.io, Version=v1alpha1
-	case v1alpha1.SchemeGroupVersion.WithResource("ipamblocks"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.Network().V1alpha1().IPAMBlocks().Informer()}, nil
-	case v1alpha1.SchemeGroupVersion.WithResource("ipamhandles"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.Network().V1alpha1().IPAMHandles().Informer()}, nil
-	case v1alpha1.SchemeGroupVersion.WithResource("ippools"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.Network().V1alpha1().IPPools().Informer()}, nil
-	case v1alpha1.SchemeGroupVersion.WithResource("namespacenetworkpolicies"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.Network().V1alpha1().NamespaceNetworkPolicies().Informer()}, nil
 
 	}
 

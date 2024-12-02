@@ -25,7 +25,6 @@ import (
 	serializer "k8s.io/apimachinery/pkg/runtime/serializer"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	iamv1alpha2 "kubesphere.io/api/iam/v1alpha2"
-	networkv1alpha1 "kubesphere.io/api/network/v1alpha1"
 )
 
 var scheme = runtime.NewScheme()
@@ -33,7 +32,6 @@ var codecs = serializer.NewCodecFactory(scheme)
 
 var localSchemeBuilder = runtime.SchemeBuilder{
 	iamv1alpha2.AddToScheme,
-	networkv1alpha1.AddToScheme,
 }
 
 // AddToScheme adds all types of this clientset into the given scheme. This allows composition
