@@ -33,12 +33,14 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	urlruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/sets"
+
 	unionauth "k8s.io/apiserver/pkg/authentication/request/union"
 	"k8s.io/apiserver/pkg/endpoints/handlers/responsewriters"
 	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/util/retry"
 	"k8s.io/klog"
 	iamv1alpha2 "kubesphere.io/api/iam/v1alpha2"
+	iamapi "kubesphere.io/kubesphere/pkg/kapis/iam/v1alpha2"
 	runtimecache "sigs.k8s.io/controller-runtime/pkg/cache"
 	runtimeclient "sigs.k8s.io/controller-runtime/pkg/client"
 
@@ -186,15 +188,8 @@ func (s *APIServer) installKubeSphereAPIs(stopCh <-chan struct{}) {
 	urlruntime.Must(meteringv1alpha1.AddToContainer(s.container, s.KubernetesClient.Kubernetes(), s.MonitoringClient, s.InformerFactory, s.RuntimeCache, s.Config.MeteringOptions, s.RuntimeClient))
 	urlruntime.Must(resourcesv1alpha2.AddToContainer(s.container, s.KubernetesClient.Kubernetes(), s.InformerFactory,
 		s.KubernetesClient.Master()))
-	//urlruntime.Must(tenantv1alpha2.AddToContainer(s.container, s.InformerFactory, s.KubernetesClient.Kubernetes(),
-	//	s.KubernetesClient.KubeSphere(), s.EventsClient, s.LoggingClient, s.AuditingClient, amOperator, imOperator, rbacAuthorizer, s.MonitoringClient, s.RuntimeCache, s.Config.MeteringOptions))
-	//urlruntime.Must(tenantv1alpha3.AddToContainer(s.container, s.InformerFactory, s.KubernetesClient.Kubernetes(),
-	//	s.KubernetesClient.KubeSphere(), s.EventsClient, s.LoggingClient, s.AuditingClient, amOperator, imOperator, rbacAuthorizer, s.MonitoringClient, s.RuntimeCache, s.Config.MeteringOptions))
 	urlruntime.Must(terminalv1alpha2.AddToContainer(s.container, s.KubernetesClient.Kubernetes(), rbacAuthorizer, s.KubernetesClient.Config(), s.Config.TerminalOptions))
-	// TODO:hysyeah
-	//urlruntime.Must(iamapi.AddToContainer(s.container, imOperator, amOperator,
-	//	group.New(s.InformerFactory, s.KubernetesClient.KubeSphere(), s.KubernetesClient.Kubernetes()),
-	//	rbacAuthorizer))
+	urlruntime.Must(iamapi.AddToContainer(s.container, imOperator, amOperator, rbacAuthorizer))
 
 	userLister := s.InformerFactory.KubeSphereSharedInformerFactory().Iam().V1alpha2().Users().Lister()
 	urlruntime.Must(oauth.AddToContainer(s.container, imOperator,
@@ -203,7 +198,6 @@ func (s *APIServer) installKubeSphereAPIs(stopCh <-chan struct{}) {
 		auth.NewOAuthAuthenticator(s.KubernetesClient.KubeSphere(), userLister, s.Config.AuthenticationOptions),
 		s.Config.AuthenticationOptions))
 	urlruntime.Must(version.AddToContainer(s.container, s.KubernetesClient.Kubernetes().Discovery()))
-	//urlruntime.Must(edgeruntimev1alpha1.AddToContainer(s.container, s.Config.EdgeRuntimeOptions.Endpoint))
 }
 
 // installCRDAPIs Install CRDs to the KAPIs with List and Get options
@@ -267,6 +261,8 @@ func (s *APIServer) buildHandlerChain(stopCh <-chan struct{}) {
 		authorizers = unionauthorizer.New(pathAuthorizer, rbac.NewRBACAuthorizer(amOperator))
 	}
 
+	// TODO:hysyeah,
+	// 这一步进行权限认证
 	handler = filters.WithAuthorization(handler, authorizers)
 
 	userLister := s.InformerFactory.KubeSphereSharedInformerFactory().Iam().V1alpha2().Users().Lister()
@@ -280,7 +276,10 @@ func (s *APIServer) buildHandlerChain(stopCh <-chan struct{}) {
 		bearertoken.New(jwt.NewTokenAuthenticator(
 			auth.NewTokenOperator(s.CacheClient, s.Issuer, s.Config.AuthenticationOptions),
 			userLister)))
+	// TODO:hysyeah
+	// 这一步进行身份认证
 	handler = filters.WithAuthentication(handler, authn)
+
 	handler = filters.WithRequestInfo(handler, requestInfoResolver)
 
 	s.Server.Handler = handler

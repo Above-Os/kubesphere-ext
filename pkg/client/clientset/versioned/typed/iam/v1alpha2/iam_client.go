@@ -30,7 +30,7 @@ type IamV1alpha2Interface interface {
 	UsersGetter
 }
 
-// IamV1alpha2Client is used to interact with features provided by the iam.kubesphere.io group.
+// IamV1alpha2Client is used to interact with features provided by the iam.bytetrade.io group.
 type IamV1alpha2Client struct {
 	restClient rest.Interface
 }

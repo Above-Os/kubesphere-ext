@@ -85,7 +85,7 @@ func AddToContainer(container *restful.Container, im im.IdentityManagementInterf
 		Doc("List all users.").
 		Returns(http.StatusOK, api.StatusOK, api.ListResult{Items: []interface{}{iamv1alpha2.User{}}}).
 		Metadata(restfulspec.KeyOpenAPITags, []string{constants.UserTag}))
-	 
+
 	// clustermembers
 	ws.Route(ws.POST("/clustermembers").
 		To(handler.CreateClusterMembers).
@@ -237,15 +237,6 @@ func AddToContainer(container *restful.Container, im im.IdentityManagementInterf
 		Param(ws.PathParameter("role", "role name")).
 		Returns(http.StatusOK, api.StatusOK, rbacv1.Role{}).
 		Metadata(restfulspec.KeyOpenAPITags, []string{constants.NamespaceRoleTag}))
-
-	// roles
-
-	ws.Route(ws.GET("/users/{user}/globalroles").
-		To(handler.RetrieveMemberRoleTemplates).
-		Doc("Retrieve user's global role templates.").
-		Param(ws.PathParameter("user", "username")).
-		Returns(http.StatusOK, api.StatusOK, api.ListResult{Items: []interface{}{iamv1alpha2.GlobalRole{}}}).
-		Metadata(restfulspec.KeyOpenAPITags, []string{constants.GlobalRoleTag}))
 
 	ws.Route(ws.GET("/namespaces/{namespace}/members/{member}/roles").
 		To(handler.RetrieveMemberRoleTemplates).

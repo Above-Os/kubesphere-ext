@@ -32,8 +32,6 @@ import (
 	"kubesphere.io/kubesphere/pkg/constants"
 	"kubesphere.io/kubesphere/pkg/informers"
 	"kubesphere.io/kubesphere/pkg/models"
-	registriesmodel "kubesphere.io/kubesphere/pkg/models/registries"
-	"kubesphere.io/kubesphere/pkg/server/errors"
 	"kubesphere.io/kubesphere/pkg/server/params"
 )
 
@@ -128,34 +126,6 @@ func AddToContainer(c *restful.Container, k8sClient kubernetes.Interface, factor
 		Returns(http.StatusOK, api.StatusOK, api.ResourceQuota{}).
 		Metadata(restfulspec.KeyOpenAPITags, []string{constants.NamespaceResourcesTag}).
 		To(handler.handleGetNamespaceQuotas))
-
-	webservice.Route(webservice.POST("registry/verify").
-		Deprecate().
-		To(handler.handleVerifyRegistryCredential).
-		Metadata(restfulspec.KeyOpenAPITags, []string{constants.RegistryTag}).
-		Doc("verify if a user has access to the docker registry").
-		Reads(api.RegistryCredential{}).
-		Returns(http.StatusOK, api.StatusOK, errors.Error{}))
-	webservice.Route(webservice.GET("/registry/blob").
-		Deprecate().
-		To(handler.handleGetRegistryEntry).
-		Param(webservice.QueryParameter("image", "query image, condition for filtering.").
-			Required(true).
-			DataFormat("image=%s")).
-		Param(webservice.QueryParameter("namespace", "namespace which secret in.").
-			Required(false).
-			DataFormat("namespace=%s")).
-		Param(webservice.QueryParameter("secret", "secret name").
-			Required(false).
-			DataFormat("secret=%s")).
-		Param(webservice.QueryParameter("insecure", "whether verify cert if using https repo").
-			Required(false).
-			DataFormat("insecure=%s")).
-		Metadata(restfulspec.KeyOpenAPITags, []string{constants.RegistryTag}).
-		Doc("Retrieve the blob from the registry identified").
-		Writes(registriesmodel.ImageDetails{}).
-		Returns(http.StatusOK, api.StatusOK, registriesmodel.ImageDetails{}),
-	)
 
 	webservice.Route(webservice.GET("/namespaces/{namespace}/daemonsets/{daemonset}/revisions/{revision}").
 		To(handler.handleGetDaemonSetRevision).
