@@ -264,7 +264,6 @@ github.com/google/gops/signal
 # github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 => github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
 github.com/google/shlex
 # github.com/google/uuid v1.1.2 => github.com/google/uuid v1.1.1
-## explicit
 github.com/google/uuid
 # github.com/googleapis/gnostic v0.5.5 => github.com/googleapis/gnostic v0.4.1
 github.com/googleapis/gnostic/compiler
@@ -334,10 +333,6 @@ github.com/kubernetes-csi/external-snapshotter/client/v4/informers/externalversi
 github.com/kubernetes-csi/external-snapshotter/client/v4/informers/externalversions/volumesnapshot/v1beta1
 github.com/kubernetes-csi/external-snapshotter/client/v4/listers/volumesnapshot/v1
 github.com/kubernetes-csi/external-snapshotter/client/v4/listers/volumesnapshot/v1beta1
-# github.com/kubesphere/pvc-autoresizer v0.1.1 => github.com/kubesphere/pvc-autoresizer v0.1.1
-## explicit
-github.com/kubesphere/pvc-autoresizer/metrics
-github.com/kubesphere/pvc-autoresizer/runners
 # github.com/liggitt/tabwriter v0.0.0-20181228230101-89fcab3d43de => github.com/liggitt/tabwriter v0.0.0-20181228230101-89fcab3d43de
 github.com/liggitt/tabwriter
 # github.com/magiconair/properties v1.8.0 => github.com/magiconair/properties v1.8.0
@@ -1682,8 +1677,6 @@ kubesphere.io/api/iam/v1alpha2
 kubesphere.io/api/network/calicov3
 kubesphere.io/api/network/crdinstall
 kubesphere.io/api/network/v1alpha1
-kubesphere.io/api/notification/v2beta1
-kubesphere.io/api/notification/v2beta2
 # kubesphere.io/monitoring-dashboard v0.2.2 => kubesphere.io/monitoring-dashboard v0.2.2
 ## explicit
 kubesphere.io/monitoring-dashboard/api/v1alpha1

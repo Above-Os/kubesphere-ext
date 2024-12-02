@@ -25,7 +25,6 @@ import (
 	cache "k8s.io/client-go/tools/cache"
 	v1alpha2 "kubesphere.io/api/iam/v1alpha2"
 	v1alpha1 "kubesphere.io/api/network/v1alpha1"
-	v2beta1 "kubesphere.io/api/notification/v2beta1"
 )
 
 // GenericInformer is type of SharedIndexInformer which will locate and delegate to other
@@ -69,12 +68,6 @@ func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Network().V1alpha1().IPPools().Informer()}, nil
 	case v1alpha1.SchemeGroupVersion.WithResource("namespacenetworkpolicies"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Network().V1alpha1().NamespaceNetworkPolicies().Informer()}, nil
-
-		// Group=notification.kubesphere.io, Version=v2beta1
-	case v2beta1.SchemeGroupVersion.WithResource("configs"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.Notification().V2beta1().Configs().Informer()}, nil
-	case v2beta1.SchemeGroupVersion.WithResource("receivers"):
-		return &genericInformer{resource: resource.GroupResource(), informer: f.Notification().V2beta1().Receivers().Informer()}, nil
 
 	}
 

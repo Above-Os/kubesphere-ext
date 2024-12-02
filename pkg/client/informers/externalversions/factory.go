@@ -31,7 +31,6 @@ import (
 	iam "kubesphere.io/kubesphere/pkg/client/informers/externalversions/iam"
 	internalinterfaces "kubesphere.io/kubesphere/pkg/client/informers/externalversions/internalinterfaces"
 	network "kubesphere.io/kubesphere/pkg/client/informers/externalversions/network"
-	notification "kubesphere.io/kubesphere/pkg/client/informers/externalversions/notification"
 )
 
 // SharedInformerOption defines the functional option type for SharedInformerFactory.
@@ -176,7 +175,6 @@ type SharedInformerFactory interface {
 
 	Iam() iam.Interface
 	Network() network.Interface
-	Notification() notification.Interface
 }
 
 func (f *sharedInformerFactory) Iam() iam.Interface {
@@ -185,8 +183,4 @@ func (f *sharedInformerFactory) Iam() iam.Interface {
 
 func (f *sharedInformerFactory) Network() network.Interface {
 	return network.New(f, f.namespace, f.tweakListOptions)
-}
-
-func (f *sharedInformerFactory) Notification() notification.Interface {
-	return notification.New(f, f.namespace, f.tweakListOptions)
 }

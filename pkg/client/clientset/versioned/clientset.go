@@ -26,23 +26,20 @@ import (
 	flowcontrol "k8s.io/client-go/util/flowcontrol"
 	iamv1alpha2 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/iam/v1alpha2"
 	networkv1alpha1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/network/v1alpha1"
-	notificationv2beta1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/notification/v2beta1"
 )
 
 type Interface interface {
 	Discovery() discovery.DiscoveryInterface
 	IamV1alpha2() iamv1alpha2.IamV1alpha2Interface
 	NetworkV1alpha1() networkv1alpha1.NetworkV1alpha1Interface
-	NotificationV2beta1() notificationv2beta1.NotificationV2beta1Interface
 }
 
 // Clientset contains the clients for groups. Each group has exactly one
 // version included in a Clientset.
 type Clientset struct {
 	*discovery.DiscoveryClient
-	iamV1alpha2         *iamv1alpha2.IamV1alpha2Client
-	networkV1alpha1     *networkv1alpha1.NetworkV1alpha1Client
-	notificationV2beta1 *notificationv2beta1.NotificationV2beta1Client
+	iamV1alpha2     *iamv1alpha2.IamV1alpha2Client
+	networkV1alpha1 *networkv1alpha1.NetworkV1alpha1Client
 }
 
 // IamV1alpha2 retrieves the IamV1alpha2Client
@@ -53,11 +50,6 @@ func (c *Clientset) IamV1alpha2() iamv1alpha2.IamV1alpha2Interface {
 // NetworkV1alpha1 retrieves the NetworkV1alpha1Client
 func (c *Clientset) NetworkV1alpha1() networkv1alpha1.NetworkV1alpha1Interface {
 	return c.networkV1alpha1
-}
-
-// NotificationV2beta1 retrieves the NotificationV2beta1Client
-func (c *Clientset) NotificationV2beta1() notificationv2beta1.NotificationV2beta1Interface {
-	return c.notificationV2beta1
 }
 
 // Discovery retrieves the DiscoveryClient
@@ -89,10 +81,6 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 	if err != nil {
 		return nil, err
 	}
-	cs.notificationV2beta1, err = notificationv2beta1.NewForConfig(&configShallowCopy)
-	if err != nil {
-		return nil, err
-	}
 
 	cs.DiscoveryClient, err = discovery.NewDiscoveryClientForConfig(&configShallowCopy)
 	if err != nil {
@@ -107,7 +95,6 @@ func NewForConfigOrDie(c *rest.Config) *Clientset {
 	var cs Clientset
 	cs.iamV1alpha2 = iamv1alpha2.NewForConfigOrDie(c)
 	cs.networkV1alpha1 = networkv1alpha1.NewForConfigOrDie(c)
-	cs.notificationV2beta1 = notificationv2beta1.NewForConfigOrDie(c)
 
 	cs.DiscoveryClient = discovery.NewDiscoveryClientForConfigOrDie(c)
 	return &cs
@@ -118,7 +105,6 @@ func New(c rest.Interface) *Clientset {
 	var cs Clientset
 	cs.iamV1alpha2 = iamv1alpha2.New(c)
 	cs.networkV1alpha1 = networkv1alpha1.New(c)
-	cs.notificationV2beta1 = notificationv2beta1.New(c)
 
 	cs.DiscoveryClient = discovery.NewDiscoveryClient(c)
 	return &cs

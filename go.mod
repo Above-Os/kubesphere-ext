@@ -34,7 +34,6 @@ require (
 	github.com/google/go-cmp v0.5.6
 	github.com/google/go-containerregistry v0.6.0
 	github.com/google/gops v0.3.23
-	github.com/google/uuid v1.1.2
 	github.com/gorilla/websocket v1.4.2
 	github.com/gregjones/httpcache v0.0.0-20181110185634-c63ab54fda8f // indirect
 	github.com/hashicorp/golang-lru v0.5.4
@@ -42,7 +41,6 @@ require (
 	github.com/jszwec/csvutil v1.5.0
 	github.com/kelseyhightower/envconfig v1.4.0 // indirect
 	github.com/kubernetes-csi/external-snapshotter/client/v4 v4.2.0
-	github.com/kubesphere/pvc-autoresizer v0.1.1
 	github.com/mitchellh/mapstructure v1.2.2
 	github.com/onsi/ginkgo v1.16.4
 	github.com/onsi/gomega v1.15.0

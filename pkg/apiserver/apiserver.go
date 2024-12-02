@@ -39,7 +39,6 @@ import (
 	"k8s.io/client-go/util/retry"
 	"k8s.io/klog"
 	iamv1alpha2 "kubesphere.io/api/iam/v1alpha2"
-	notificationv2beta1 "kubesphere.io/api/notification/v2beta1"
 	runtimecache "sigs.k8s.io/controller-runtime/pkg/cache"
 	runtimeclient "sigs.k8s.io/controller-runtime/pkg/client"
 
@@ -66,9 +65,6 @@ import (
 	meteringv1alpha1 "kubesphere.io/kubesphere/pkg/kapis/metering/v1alpha1"
 	monitoringv1alpha3 "kubesphere.io/kubesphere/pkg/kapis/monitoring/v1alpha3"
 	networkv1alpha2 "kubesphere.io/kubesphere/pkg/kapis/network/v1alpha2"
-	notificationv1 "kubesphere.io/kubesphere/pkg/kapis/notification/v1"
-	notificationkapisv2beta1 "kubesphere.io/kubesphere/pkg/kapis/notification/v2beta1"
-	notificationkapisv2beta2 "kubesphere.io/kubesphere/pkg/kapis/notification/v2beta2"
 	"kubesphere.io/kubesphere/pkg/kapis/oauth"
 
 	operationsv1alpha2 "kubesphere.io/kubesphere/pkg/kapis/operations/v1alpha2"
@@ -213,15 +209,11 @@ func (s *APIServer) installKubeSphereAPIs(stopCh <-chan struct{}) {
 		auth.NewOAuthAuthenticator(s.KubernetesClient.KubeSphere(), userLister, s.Config.AuthenticationOptions),
 		s.Config.AuthenticationOptions))
 	urlruntime.Must(networkv1alpha2.AddToContainer(s.container, s.Config.NetworkOptions.WeaveScopeHost))
-	urlruntime.Must(notificationv1.AddToContainer(s.container, s.Config.NotificationOptions.Endpoint))
 	urlruntime.Must(alertingv1.AddToContainer(s.container, s.Config.AlertingOptions.Endpoint))
 	urlruntime.Must(alertingv2alpha1.AddToContainer(s.container, s.InformerFactory,
 		s.KubernetesClient.Prometheus(), s.AlertingClient, s.Config.AlertingOptions))
 	urlruntime.Must(version.AddToContainer(s.container, s.KubernetesClient.Kubernetes().Discovery()))
 	//urlruntime.Must(edgeruntimev1alpha1.AddToContainer(s.container, s.Config.EdgeRuntimeOptions.Endpoint))
-	urlruntime.Must(notificationkapisv2beta1.AddToContainer(s.container, s.InformerFactory, s.KubernetesClient.Kubernetes(),
-		s.KubernetesClient.KubeSphere()))
-	urlruntime.Must(notificationkapisv2beta2.AddToContainer(s.container, s.Config.NotificationOptions))
 }
 
 // installCRDAPIs Install CRDs to the KAPIs with List and Get options
@@ -263,11 +255,6 @@ func (s *APIServer) buildHandlerChain(stopCh <-chan struct{}) {
 		GrouplessAPIPrefixes: sets.NewString("api", "kapi"),
 		GlobalResources: []schema.GroupResource{
 			iamv1alpha2.Resource(iamv1alpha2.ResourcesPluralUser),
-			iamv1alpha2.Resource(iamv1alpha2.ResourcesPluralGlobalRole),
-			iamv1alpha2.Resource(iamv1alpha2.ResourcesPluralGlobalRoleBinding),
-
-			notificationv2beta1.Resource(notificationv2beta1.ResourcesPluralConfig),
-			notificationv2beta1.Resource(notificationv2beta1.ResourcesPluralReceiver),
 		},
 	}
 
@@ -409,40 +396,13 @@ func (s *APIServer) waitForResourceSync(ctx context.Context) error {
 	}
 
 	ksGVRs := map[schema.GroupVersion][]string{
-		{Group: "tenant.kubesphere.io", Version: "v1alpha1"}: {
-			"workspaces",
-		},
-		{Group: "tenant.kubesphere.io", Version: "v1alpha2"}: {
-			"workspacetemplates",
-		},
+
 		{Group: "iam.kubesphere.io", Version: "v1alpha2"}: {
 			"users",
-			"globalroles",
-			"globalrolebindings",
-			"groups",
-			"groupbindings",
-			"workspaceroles",
-			"workspacerolebindings",
-			"loginrecords",
-		},
-		{Group: "cluster.kubesphere.io", Version: "v1alpha1"}: {
-			"clusters",
 		},
 		{Group: "network.kubesphere.io", Version: "v1alpha1"}: {
 			"ippools",
 		},
-		{Group: "notification.kubesphere.io", Version: "v2beta1"}: {
-			notificationv2beta1.ResourcesPluralConfig,
-			notificationv2beta1.ResourcesPluralReceiver,
-		},
-	}
-
-	// skip caching servicemesh resources if servicemesh not enabled
-	if s.KubernetesClient.Istio() != nil {
-		ksGVRs[schema.GroupVersion{Group: "servicemesh.kubesphere.io", Version: "v1alpha2"}] = []string{
-			"strategies",
-			"servicepolicies",
-		}
 	}
 
 	if err := waitForCacheSync(s.KubernetesClient.Kubernetes().Discovery(),
@@ -451,22 +411,6 @@ func (s *APIServer) waitForResourceSync(ctx context.Context) error {
 			return s.InformerFactory.KubeSphereSharedInformerFactory().ForResource(resource)
 		},
 		ksGVRs, stopCh); err != nil {
-		return err
-	}
-
-	snapshotGVRs := map[schema.GroupVersion][]string{
-		{Group: "snapshot.storage.k8s.io", Version: "v1"}: {
-			"volumesnapshots",
-			"volumesnapshotcontents",
-			"volumesnapshotclasses",
-		},
-	}
-
-	if err := waitForCacheSync(s.KubernetesClient.Kubernetes().Discovery(),
-		s.InformerFactory.SnapshotSharedInformerFactory(), func(resource schema.GroupVersionResource) (interface{}, error) {
-			return s.InformerFactory.SnapshotSharedInformerFactory().ForResource(resource)
-		},
-		snapshotGVRs, stopCh); err != nil {
 		return err
 	}
 

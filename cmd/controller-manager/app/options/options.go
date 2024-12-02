@@ -30,8 +30,6 @@ import (
 
 	"kubesphere.io/kubesphere/pkg/apiserver/authentication"
 
-	"k8s.io/apimachinery/pkg/labels"
-
 	"github.com/spf13/pflag"
 	"k8s.io/client-go/tools/leaderelection"
 	cliflag "k8s.io/component-base/cli/flag"
@@ -51,15 +49,6 @@ type KubeSphereControllerManagerOptions struct {
 	LeaderElect           bool
 	LeaderElection        *leaderelection.LeaderElectionConfig
 	WebhookCertDir        string
-
-	// KubeSphere is using sigs.k8s.io/application as fundamental object to implement Application Management.
-	// There are other projects also built on sigs.k8s.io/application, when KubeSphere installed along side
-	// them, conflicts happen. So we leave an option to only reconcile applications  matched with the given
-	// selector. Default will reconcile all applications.
-	//    For example
-	//      "kubesphere.io/creator=" means reconcile applications with this label key
-	//      "!kubesphere.io/creator" means exclude applications with this key
-	ApplicationSelector string
 
 	// ControllerGates is the list of controller gates to enable or disable controller.
 	// '*' means "all enabled by default controllers"
@@ -86,10 +75,9 @@ func NewKubeSphereControllerManagerOptions() *KubeSphereControllerManagerOptions
 			RenewDeadline: 15 * time.Second,
 			RetryPeriod:   5 * time.Second,
 		},
-		LeaderElect:         false,
-		WebhookCertDir:      "",
-		ApplicationSelector: "",
-		ControllerGates:     []string{"*"},
+		LeaderElect:     false,
+		WebhookCertDir:  "",
+		ControllerGates: []string{"*"},
 	}
 
 	return s
@@ -115,9 +103,6 @@ func (s *KubeSphereControllerManagerOptions) Flags(allControllerNameSelectors []
 		"{TempDir}/k8s-webhook-server/serving-certs")
 
 	gfs := fss.FlagSet("generic")
-	gfs.StringVar(&s.ApplicationSelector, "application-selector", s.ApplicationSelector, ""+
-		"Only reconcile application(sigs.k8s.io/application) objects match given selector, this could avoid conflicts with "+
-		"other projects built on top of sig-application. Default behavior is to reconcile all of application objects.")
 	gfs.StringSliceVar(&s.ControllerGates, "controllers", []string{"*"}, fmt.Sprintf(""+
 		"A list of controllers to enable. '*' enables all on-by-default controllers, 'foo' enables the controller "+
 		"named 'foo', '-foo' disables the controller named 'foo'.\nAll controllers: %s",
@@ -143,14 +128,6 @@ func (o *KubeSphereControllerManagerOptions) Validate(allControllerNameSelectors
 	errs = append(errs, o.KubernetesOptions.Validate()...)
 	errs = append(errs, o.NetworkOptions.Validate()...)
 	errs = append(errs, o.LdapOptions.Validate()...)
-
-	// genetic option: application-selector
-	if len(o.ApplicationSelector) != 0 {
-		_, err := labels.Parse(o.ApplicationSelector)
-		if err != nil {
-			errs = append(errs, err)
-		}
-	}
 
 	// genetic option: controllers, check all selectors are valid
 	allControllersNameSet := sets.NewString(allControllerNameSelectors...)
