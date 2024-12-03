@@ -22,6 +22,10 @@ package v1alpha2
 // RoleBaseLister.
 type RoleBaseListerExpansion interface{}
 
+// SyncListerExpansion allows custom methods to be added to
+// SyncLister.
+type SyncListerExpansion interface{}
+
 // UserListerExpansion allows custom methods to be added to
 // UserLister.
 type UserListerExpansion interface{}

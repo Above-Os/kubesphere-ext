@@ -27,6 +27,7 @@ import (
 type IamV1alpha2Interface interface {
 	RESTClient() rest.Interface
 	RoleBasesGetter
+	SyncsGetter
 	UsersGetter
 }
 
@@ -37,6 +38,10 @@ type IamV1alpha2Client struct {
 
 func (c *IamV1alpha2Client) RoleBases() RoleBaseInterface {
 	return newRoleBases(c)
+}
+
+func (c *IamV1alpha2Client) Syncs() SyncInterface {
+	return newSyncs(c)
 }
 
 func (c *IamV1alpha2Client) Users() UserInterface {

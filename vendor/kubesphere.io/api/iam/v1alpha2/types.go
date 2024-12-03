@@ -112,6 +112,7 @@ type FinalizerName string
 
 // UserSpec defines the desired state of User
 type UserSpec struct {
+	Name string `json:"name"`
 	// Unique email address(https://www.ietf.org/rfc/rfc5322.txt).
 	Email string `json:"email"`
 	// The preferred written or spoken language for the user.
@@ -156,6 +157,7 @@ type UserStatus struct {
 
 // +kubebuilder:object:root=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
 // UserList contains a list of User
 type UserList struct {
 	metav1.TypeMeta `json:",inline"`
@@ -170,6 +172,7 @@ type UserList struct {
 // +kubebuilder:object:root=true
 // +kubebuilder:resource:categories="iam",scope="Cluster"
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
 type RoleBase struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -180,6 +183,7 @@ type RoleBase struct {
 
 // +kubebuilder:object:root=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
 // RoleBaseList contains a list of RoleBase
 type RoleBaseList struct {
 	metav1.TypeMeta `json:",inline"`

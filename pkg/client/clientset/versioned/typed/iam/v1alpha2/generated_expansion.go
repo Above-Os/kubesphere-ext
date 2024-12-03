@@ -20,4 +20,6 @@ package v1alpha2
 
 type RoleBaseExpansion interface{}
 
+type SyncExpansion interface{}
+
 type UserExpansion interface{}

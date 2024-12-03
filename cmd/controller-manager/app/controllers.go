@@ -20,7 +20,6 @@ import (
 	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/klog"
 	"kubesphere.io/kubesphere/cmd/controller-manager/app/options"
-	"kubesphere.io/kubesphere/pkg/controller/namespace"
 	"kubesphere.io/kubesphere/pkg/controller/user"
 	"kubesphere.io/kubesphere/pkg/models/kubeconfig"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -33,9 +32,8 @@ import (
 
 var allControllers = []string{
 	"user",
-	"namespace",
+	"sync",
 	"clusterrolebinding",
-	"notification",
 }
 
 // setup all available controllers one by one
@@ -43,29 +41,20 @@ func addAllControllers(mgr manager.Manager, client k8s.Client, informerFactory i
 	cmOptions *options.KubeSphereControllerManagerOptions,
 	stopCh <-chan struct{}) error {
 
-	////////////////////////////////////
-	// begin init necessary informers
-	////////////////////////////////////
 	kubernetesInformer := informerFactory.KubernetesSharedInformerFactory()
 	kubesphereInformer := informerFactory.KubeSphereSharedInformerFactory()
-	////////////////////////////////////
-	// end informers
-	////////////////////////////////////
 
-	////////////////////////////////////
-	// begin init necessary clients
-	////////////////////////////////////
 	kubeconfigClient := kubeconfig.NewOperator(client.Kubernetes(),
 		informerFactory.KubernetesSharedInformerFactory().Core().V1().ConfigMaps().Lister(),
 		client.Config())
 
-	////////////////////////////////////
-	// end init clients
-	////////////////////////////////////
+	// ldap user sync controller
 
-	////////////////////////////////////////////////////////
-	// begin init controller and add to manager one by one
-	////////////////////////////////////////////////////////
+	userSyncController := &user.SyncReconciler{
+		MaxConcurrentReconciles: 1,
+		KubeconfigClient:        kubeconfigClient,
+	}
+	addControllerWithSetup(mgr, "user-sync", userSyncController)
 
 	// "user" controller
 	if cmOptions.IsControllerEnabled("user") {
@@ -74,12 +63,6 @@ func addAllControllers(mgr manager.Manager, client k8s.Client, informerFactory i
 			KubeconfigClient:        kubeconfigClient,
 		}
 		addControllerWithSetup(mgr, "user", userController)
-	}
-
-	// "namespace" controller
-	if cmOptions.IsControllerEnabled("namespace") {
-		namespaceReconciler := &namespace.Reconciler{}
-		addControllerWithSetup(mgr, "namespace", namespaceReconciler)
 	}
 
 	// "clusterrolebinding" controller

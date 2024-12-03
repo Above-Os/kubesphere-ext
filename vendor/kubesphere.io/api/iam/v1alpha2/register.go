@@ -51,6 +51,8 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 		&UserList{},
 		&RoleBase{},
 		&RoleBaseList{},
+		&Sync{},
+		&SyncList{},
 	)
 	metav1.AddToGroupVersion(scheme, SchemeGroupVersion)
 	return nil

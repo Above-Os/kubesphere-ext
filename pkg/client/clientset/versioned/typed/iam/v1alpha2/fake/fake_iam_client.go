@@ -32,6 +32,10 @@ func (c *FakeIamV1alpha2) RoleBases() v1alpha2.RoleBaseInterface {
 	return &FakeRoleBases{c}
 }
 
+func (c *FakeIamV1alpha2) Syncs() v1alpha2.SyncInterface {
+	return &FakeSyncs{c}
+}
+
 func (c *FakeIamV1alpha2) Users() v1alpha2.UserInterface {
 	return &FakeUsers{c}
 }

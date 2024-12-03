@@ -26,6 +26,8 @@ import (
 type Interface interface {
 	// RoleBases returns a RoleBaseInformer.
 	RoleBases() RoleBaseInformer
+	// Syncs returns a SyncInformer.
+	Syncs() SyncInformer
 	// Users returns a UserInformer.
 	Users() UserInformer
 }
@@ -44,6 +46,11 @@ func New(f internalinterfaces.SharedInformerFactory, namespace string, tweakList
 // RoleBases returns a RoleBaseInformer.
 func (v *version) RoleBases() RoleBaseInformer {
 	return &roleBaseInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
+}
+
+// Syncs returns a SyncInformer.
+func (v *version) Syncs() SyncInformer {
+	return &syncInformer{factory: v.factory, tweakListOptions: v.tweakListOptions}
 }
 
 // Users returns a UserInformer.
