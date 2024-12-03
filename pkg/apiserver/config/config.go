@@ -26,7 +26,6 @@ import (
 	"github.com/spf13/viper"
 	"k8s.io/klog"
 
-	"kubesphere.io/kubesphere/pkg/apiserver/authentication"
 	"kubesphere.io/kubesphere/pkg/apiserver/authorization"
 	"kubesphere.io/kubesphere/pkg/models/terminal"
 	"kubesphere.io/kubesphere/pkg/simple/client/alerting"
@@ -135,31 +134,29 @@ func defaultConfig() *config {
 
 // Config defines everything needed for apiserver to deal with external services
 type Config struct {
-	KubernetesOptions     *k8s.KubernetesOptions  `json:"kubernetes,omitempty" yaml:"kubernetes,omitempty" mapstructure:"kubernetes"`
-	RedisOptions          *cache.Options          `json:"redis,omitempty" yaml:"redis,omitempty" mapstructure:"redis"`
-	MonitoringOptions     *prometheus.Options     `json:"monitoring,omitempty" yaml:"monitoring,omitempty" mapstructure:"monitoring"`
-	LoggingOptions        *logging.Options        `json:"logging,omitempty" yaml:"logging,omitempty" mapstructure:"logging"`
-	AuthenticationOptions *authentication.Options `json:"authentication,omitempty" yaml:"authentication,omitempty" mapstructure:"authentication"`
-	AuthorizationOptions  *authorization.Options  `json:"authorization,omitempty" yaml:"authorization,omitempty" mapstructure:"authorization"`
-	EventsOptions         *events.Options         `json:"events,omitempty" yaml:"events,omitempty" mapstructure:"events"`
-	AlertingOptions       *alerting.Options       `json:"alerting,omitempty" yaml:"alerting,omitempty" mapstructure:"alerting"`
-	MeteringOptions       *metering.Options       `json:"metering,omitempty" yaml:"metering,omitempty" mapstructure:"metering"`
-	TerminalOptions       *terminal.Options       `json:"terminal,omitempty" yaml:"terminal,omitempty" mapstructure:"terminal"`
+	KubernetesOptions    *k8s.KubernetesOptions `json:"kubernetes,omitempty" yaml:"kubernetes,omitempty" mapstructure:"kubernetes"`
+	RedisOptions         *cache.Options         `json:"redis,omitempty" yaml:"redis,omitempty" mapstructure:"redis"`
+	MonitoringOptions    *prometheus.Options    `json:"monitoring,omitempty" yaml:"monitoring,omitempty" mapstructure:"monitoring"`
+	LoggingOptions       *logging.Options       `json:"logging,omitempty" yaml:"logging,omitempty" mapstructure:"logging"`
+	AuthorizationOptions *authorization.Options `json:"authorization,omitempty" yaml:"authorization,omitempty" mapstructure:"authorization"`
+	EventsOptions        *events.Options        `json:"events,omitempty" yaml:"events,omitempty" mapstructure:"events"`
+	AlertingOptions      *alerting.Options      `json:"alerting,omitempty" yaml:"alerting,omitempty" mapstructure:"alerting"`
+	MeteringOptions      *metering.Options      `json:"metering,omitempty" yaml:"metering,omitempty" mapstructure:"metering"`
+	TerminalOptions      *terminal.Options      `json:"terminal,omitempty" yaml:"terminal,omitempty" mapstructure:"terminal"`
 }
 
 // newConfig creates a default non-empty Config
 func New() *Config {
 	return &Config{
-		KubernetesOptions:     k8s.NewKubernetesOptions(),
-		RedisOptions:          cache.NewRedisOptions(),
-		MonitoringOptions:     prometheus.NewPrometheusOptions(),
-		AlertingOptions:       alerting.NewAlertingOptions(),
-		LoggingOptions:        logging.NewLoggingOptions(),
-		AuthenticationOptions: authentication.NewOptions(),
-		AuthorizationOptions:  authorization.NewOptions(),
-		EventsOptions:         events.NewEventsOptions(),
-		MeteringOptions:       metering.NewMeteringOptions(),
-		TerminalOptions:       terminal.NewTerminalOptions(),
+		KubernetesOptions:    k8s.NewKubernetesOptions(),
+		RedisOptions:         cache.NewRedisOptions(),
+		MonitoringOptions:    prometheus.NewPrometheusOptions(),
+		AlertingOptions:      alerting.NewAlertingOptions(),
+		LoggingOptions:       logging.NewLoggingOptions(),
+		AuthorizationOptions: authorization.NewOptions(),
+		EventsOptions:        events.NewEventsOptions(),
+		MeteringOptions:      metering.NewMeteringOptions(),
+		TerminalOptions:      terminal.NewTerminalOptions(),
 	}
 }
 

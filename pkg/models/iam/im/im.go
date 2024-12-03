@@ -19,8 +19,6 @@ import (
 	"context"
 	"time"
 
-	"kubesphere.io/kubesphere/pkg/apiserver/authentication"
-
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/klog"
 
@@ -29,7 +27,6 @@ import (
 	"kubesphere.io/kubesphere/pkg/api"
 	"kubesphere.io/kubesphere/pkg/apiserver/query"
 	kubesphere "kubesphere.io/kubesphere/pkg/client/clientset/versioned"
-	"kubesphere.io/kubesphere/pkg/models/auth"
 	resources "kubesphere.io/kubesphere/pkg/models/resources/v1alpha3"
 )
 
@@ -40,14 +37,12 @@ type IdentityManagementInterface interface {
 	UpdateUser(user *iamv1alpha2.User) (*iamv1alpha2.User, error)
 	DescribeUser(username string) (*iamv1alpha2.User, error)
 	ModifyPassword(username string, password string) error
-	PasswordVerify(username string, password string) error
 }
 
-func NewOperator(ksClient kubesphere.Interface, userGetter resources.Interface, options *authentication.Options) IdentityManagementInterface {
+func NewOperator(ksClient kubesphere.Interface, userGetter resources.Interface) IdentityManagementInterface {
 	im := &imOperator{
 		ksClient:   ksClient,
 		userGetter: userGetter,
-		options:    options,
 	}
 	return im
 }
@@ -55,7 +50,6 @@ func NewOperator(ksClient kubesphere.Interface, userGetter resources.Interface, 
 type imOperator struct {
 	ksClient   kubesphere.Interface
 	userGetter resources.Interface
-	options    *authentication.Options
 }
 
 // UpdateUser returns user information after update.
@@ -66,7 +60,6 @@ func (im *imOperator) UpdateUser(new *iamv1alpha2.User) (*iamv1alpha2.User, erro
 		return nil, err
 	}
 	// keep encrypted password and user status
-	new.Spec.EncryptedPassword = old.Spec.EncryptedPassword
 	status := old.Status
 	// only support enable or disable
 	if new.Status.State == iamv1alpha2.UserDisabled || new.Status.State == iamv1alpha2.UserActive {
@@ -98,7 +91,6 @@ func (im *imOperator) ModifyPassword(username string, password string) error {
 		klog.Error(err)
 		return err
 	}
-	user.Spec.EncryptedPassword = password
 	_, err = im.ksClient.IamV1alpha2().Users().Update(context.Background(), user, metav1.UpdateOptions{})
 	if err != nil {
 		klog.Error(err)
@@ -121,19 +113,6 @@ func (im *imOperator) ListUsers(query *query.Query) (result *api.ListResult, err
 	}
 	result.Items = items
 	return result, nil
-}
-
-func (im *imOperator) PasswordVerify(username string, password string) error {
-	obj, err := im.userGetter.Get("", username)
-	if err != nil {
-		klog.Error(err)
-		return err
-	}
-	user := obj.(*iamv1alpha2.User)
-	if err = auth.PasswordVerify(user.Spec.EncryptedPassword, password); err != nil {
-		return err
-	}
-	return nil
 }
 
 func (im *imOperator) DescribeUser(username string) (*iamv1alpha2.User, error) {
@@ -162,6 +141,5 @@ func (im *imOperator) CreateUser(user *iamv1alpha2.User) (*iamv1alpha2.User, err
 func ensurePasswordNotOutput(user *iamv1alpha2.User) *iamv1alpha2.User {
 	out := user.DeepCopy()
 	// ensure encrypted password will not be output
-	out.Spec.EncryptedPassword = ""
 	return out
 }

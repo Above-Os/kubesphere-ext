@@ -28,8 +28,6 @@ import (
 
 	"k8s.io/apimachinery/pkg/util/sets"
 
-	"kubesphere.io/kubesphere/pkg/apiserver/authentication"
-
 	"github.com/spf13/pflag"
 	"k8s.io/client-go/tools/leaderelection"
 	cliflag "k8s.io/component-base/cli/flag"
@@ -39,12 +37,11 @@ import (
 )
 
 type KubeSphereControllerManagerOptions struct {
-	KubernetesOptions     *k8s.KubernetesOptions
-	AuthenticationOptions *authentication.Options
-	MonitoringOptions     *prometheus.Options
-	LeaderElect           bool
-	LeaderElection        *leaderelection.LeaderElectionConfig
-	WebhookCertDir        string
+	KubernetesOptions *k8s.KubernetesOptions
+	MonitoringOptions *prometheus.Options
+	LeaderElect       bool
+	LeaderElection    *leaderelection.LeaderElectionConfig
+	WebhookCertDir    string
 
 	// ControllerGates is the list of controller gates to enable or disable controller.
 	// '*' means "all enabled by default controllers"
@@ -59,8 +56,7 @@ type KubeSphereControllerManagerOptions struct {
 
 func NewKubeSphereControllerManagerOptions() *KubeSphereControllerManagerOptions {
 	s := &KubeSphereControllerManagerOptions{
-		KubernetesOptions:     k8s.NewKubernetesOptions(),
-		AuthenticationOptions: authentication.NewOptions(),
+		KubernetesOptions: k8s.NewKubernetesOptions(),
 		LeaderElection: &leaderelection.LeaderElectionConfig{
 			LeaseDuration: 30 * time.Second,
 			RenewDeadline: 15 * time.Second,
@@ -78,7 +74,6 @@ func (s *KubeSphereControllerManagerOptions) Flags(allControllerNameSelectors []
 	fss := cliflag.NamedFlagSets{}
 
 	s.KubernetesOptions.AddFlags(fss.FlagSet("kubernetes"), s.KubernetesOptions)
-	s.AuthenticationOptions.AddFlags(fss.FlagSet("authentication"), s.AuthenticationOptions)
 	fs := fss.FlagSet("leaderelection")
 	s.bindLeaderElectionFlags(s.LeaderElection, fs)
 
@@ -166,5 +161,4 @@ func (s *KubeSphereControllerManagerOptions) bindLeaderElectionFlags(l *leaderel
 // When misconfigured, the app should just crash directly
 func (s *KubeSphereControllerManagerOptions) MergeConfig(cfg *controllerconfig.Config) {
 	s.KubernetesOptions = cfg.KubernetesOptions
-	s.AuthenticationOptions = cfg.AuthenticationOptions
 }

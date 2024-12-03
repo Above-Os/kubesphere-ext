@@ -40,7 +40,6 @@ import (
 	iamv1alpha2 "kubesphere.io/kubesphere/pkg/kapis/iam/v1alpha2"
 
 	monitoringv1alpha3 "kubesphere.io/kubesphere/pkg/kapis/monitoring/v1alpha3"
-	"kubesphere.io/kubesphere/pkg/kapis/oauth"
 	resourcesv1alpha2 "kubesphere.io/kubesphere/pkg/kapis/resources/v1alpha2"
 	resourcesv1alpha3 "kubesphere.io/kubesphere/pkg/kapis/resources/v1alpha3"
 	terminalv1alpha2 "kubesphere.io/kubesphere/pkg/kapis/terminal/v1alpha2"
@@ -102,8 +101,6 @@ func generateSwaggerJson() []byte {
 	clientsets := k8s.NewNullClient()
 
 	informerFactory := informers.NewNullInformerFactory()
-
-	urlruntime.Must(oauth.AddToContainer(container, nil, nil, nil, nil, nil))
 
 	urlruntime.Must(iamv1alpha2.AddToContainer(container, nil, nil, nil))
 

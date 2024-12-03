@@ -34,7 +34,6 @@ import (
 	urlruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/sets"
 
-	unionauth "k8s.io/apiserver/pkg/authentication/request/union"
 	"k8s.io/apiserver/pkg/endpoints/handlers/responsewriters"
 	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/util/retry"
@@ -44,12 +43,6 @@ import (
 	runtimecache "sigs.k8s.io/controller-runtime/pkg/cache"
 	runtimeclient "sigs.k8s.io/controller-runtime/pkg/client"
 
-	"kubesphere.io/kubesphere/pkg/apiserver/authentication/authenticators/basic"
-	"kubesphere.io/kubesphere/pkg/apiserver/authentication/authenticators/jwt"
-	"kubesphere.io/kubesphere/pkg/apiserver/authentication/request/anonymous"
-	"kubesphere.io/kubesphere/pkg/apiserver/authentication/request/basictoken"
-	"kubesphere.io/kubesphere/pkg/apiserver/authentication/request/bearertoken"
-	"kubesphere.io/kubesphere/pkg/apiserver/authentication/token"
 	"kubesphere.io/kubesphere/pkg/apiserver/authorization"
 	"kubesphere.io/kubesphere/pkg/apiserver/authorization/authorizer"
 	"kubesphere.io/kubesphere/pkg/apiserver/authorization/authorizerfactory"
@@ -63,13 +56,10 @@ import (
 	"kubesphere.io/kubesphere/pkg/kapis/crd"
 	meteringv1alpha1 "kubesphere.io/kubesphere/pkg/kapis/metering/v1alpha1"
 	monitoringv1alpha3 "kubesphere.io/kubesphere/pkg/kapis/monitoring/v1alpha3"
-	"kubesphere.io/kubesphere/pkg/kapis/oauth"
-
 	resourcesv1alpha2 "kubesphere.io/kubesphere/pkg/kapis/resources/v1alpha2"
 	resourcev1alpha3 "kubesphere.io/kubesphere/pkg/kapis/resources/v1alpha3"
 	terminalv1alpha2 "kubesphere.io/kubesphere/pkg/kapis/terminal/v1alpha2"
 	"kubesphere.io/kubesphere/pkg/kapis/version"
-	"kubesphere.io/kubesphere/pkg/models/auth"
 	"kubesphere.io/kubesphere/pkg/models/iam/am"
 	"kubesphere.io/kubesphere/pkg/models/iam/im"
 	"kubesphere.io/kubesphere/pkg/models/resources/v1alpha3/user"
@@ -121,8 +111,6 @@ type APIServer struct {
 	RuntimeCache runtimecache.Cache
 
 	// entity that issues tokens
-	Issuer token.Issuer
-
 	// controller-runtime client
 	RuntimeClient runtimeclient.Client
 
@@ -176,8 +164,7 @@ func (s *APIServer) installMetricsAPI() {
 func (s *APIServer) installKubeSphereAPIs(stopCh <-chan struct{}) {
 	imOperator := im.NewOperator(s.KubernetesClient.KubeSphere(),
 		user.New(s.InformerFactory.KubeSphereSharedInformerFactory(),
-			s.InformerFactory.KubernetesSharedInformerFactory()),
-		s.Config.AuthenticationOptions)
+			s.InformerFactory.KubernetesSharedInformerFactory()))
 	amOperator := am.NewOperator(s.KubernetesClient.KubeSphere(),
 		s.KubernetesClient.Kubernetes(),
 		s.InformerFactory)
@@ -191,12 +178,12 @@ func (s *APIServer) installKubeSphereAPIs(stopCh <-chan struct{}) {
 	urlruntime.Must(terminalv1alpha2.AddToContainer(s.container, s.KubernetesClient.Kubernetes(), rbacAuthorizer, s.KubernetesClient.Config(), s.Config.TerminalOptions))
 	urlruntime.Must(iamapi.AddToContainer(s.container, imOperator, amOperator, rbacAuthorizer))
 
-	userLister := s.InformerFactory.KubeSphereSharedInformerFactory().Iam().V1alpha2().Users().Lister()
-	urlruntime.Must(oauth.AddToContainer(s.container, imOperator,
-		auth.NewTokenOperator(s.CacheClient, s.Issuer, s.Config.AuthenticationOptions),
-		auth.NewPasswordAuthenticator(s.KubernetesClient.KubeSphere(), userLister, s.Config.AuthenticationOptions),
-		auth.NewOAuthAuthenticator(s.KubernetesClient.KubeSphere(), userLister, s.Config.AuthenticationOptions),
-		s.Config.AuthenticationOptions))
+	//userLister := s.InformerFactory.KubeSphereSharedInformerFactory().Iam().V1alpha2().Users().Lister()
+	//urlruntime.Must(oauth.AddToContainer(s.container, imOperator,
+	//	auth.NewTokenOperator(s.CacheClient, s.Issuer, s.Config.AuthenticationOptions),
+	//	auth.NewPasswordAuthenticator(s.KubernetesClient.KubeSphere(), userLister, s.Config.AuthenticationOptions),
+	//	auth.NewOAuthAuthenticator(s.KubernetesClient.KubeSphere(), userLister, s.Config.AuthenticationOptions),
+	//	s.Config.AuthenticationOptions))
 	urlruntime.Must(version.AddToContainer(s.container, s.KubernetesClient.Kubernetes().Discovery()))
 }
 
@@ -264,21 +251,6 @@ func (s *APIServer) buildHandlerChain(stopCh <-chan struct{}) {
 	// TODO:hysyeah,
 	// 这一步进行权限认证
 	handler = filters.WithAuthorization(handler, authorizers)
-
-	userLister := s.InformerFactory.KubeSphereSharedInformerFactory().Iam().V1alpha2().Users().Lister()
-
-	// authenticators are unordered
-	authn := unionauth.New(anonymous.NewAuthenticator(),
-		basictoken.New(basic.NewBasicAuthenticator(auth.NewPasswordAuthenticator(
-			s.KubernetesClient.KubeSphere(),
-			userLister,
-			s.Config.AuthenticationOptions))),
-		bearertoken.New(jwt.NewTokenAuthenticator(
-			auth.NewTokenOperator(s.CacheClient, s.Issuer, s.Config.AuthenticationOptions),
-			userLister)))
-	// TODO:hysyeah
-	// 这一步进行身份认证
-	handler = filters.WithAuthentication(handler, authn)
 
 	handler = filters.WithRequestInfo(handler, requestInfoResolver)
 

@@ -21,8 +21,6 @@ import (
 	"flag"
 	"fmt"
 
-	"kubesphere.io/kubesphere/pkg/apiserver/authentication/token"
-
 	"k8s.io/client-go/kubernetes/scheme"
 	cliflag "k8s.io/component-base/cli/flag"
 	"k8s.io/klog"
@@ -68,7 +66,6 @@ func (s *ServerRunOptions) Flags() (fss cliflag.NamedFlagSets) {
 	fs.BoolVar(&s.DebugMode, "debug", false, "Don't enable this if you don't know what it means.")
 	s.GenericServerRunOptions.AddFlags(fs, s.GenericServerRunOptions)
 	s.KubernetesOptions.AddFlags(fss.FlagSet("kubernetes"), s.KubernetesOptions)
-	s.AuthenticationOptions.AddFlags(fss.FlagSet("authentication"), s.AuthenticationOptions)
 	s.AuthorizationOptions.AddFlags(fss.FlagSet("authorization"), s.AuthorizationOptions)
 	s.RedisOptions.AddFlags(fss.FlagSet("redis"), s.RedisOptions)
 	s.MonitoringOptions.AddFlags(fss.FlagSet("monitoring"), s.MonitoringOptions)
@@ -171,11 +168,6 @@ func (s *ServerRunOptions) NewAPIServer(stopCh <-chan struct{}) (*apiserver.APIS
 	apiServer.RuntimeClient, err = runtimeclient.New(apiServer.KubernetesClient.Config(), runtimeclient.Options{Scheme: sch})
 	if err != nil {
 		klog.Fatalf("unable to create controller runtime client: %v", err)
-	}
-
-	apiServer.Issuer, err = token.NewIssuer(s.AuthenticationOptions)
-	if err != nil {
-		klog.Fatalf("unable to create issuer: %v", err)
 	}
 
 	apiServer.Server = server

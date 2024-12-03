@@ -67,13 +67,7 @@ func AddToContainer(container *restful.Container, im im.IdentityManagementInterf
 		Param(ws.PathParameter("user", "username")).
 		Returns(http.StatusOK, api.StatusOK, iamv1alpha2.User{}).
 		Metadata(restfulspec.KeyOpenAPITags, []string{constants.UserTag}))
-	ws.Route(ws.PUT("/users/{user}/password").
-		To(handler.ModifyPassword).
-		Doc("Reset password of the specified user.").
-		Reads(PasswordReset{}).
-		Param(ws.PathParameter("user", "username")).
-		Returns(http.StatusOK, api.StatusOK, errors.None).
-		Metadata(restfulspec.KeyOpenAPITags, []string{constants.UserTag}))
+
 	ws.Route(ws.GET("/users/{user}").
 		To(handler.DescribeUser).
 		Doc("Retrieve user details.").

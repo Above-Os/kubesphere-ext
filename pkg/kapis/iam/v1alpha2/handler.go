@@ -20,18 +20,15 @@ import (
 	"fmt"
 	"strings"
 
-	"kubesphere.io/kubesphere/pkg/apiserver/request"
-	"kubesphere.io/kubesphere/pkg/models/auth"
-
 	"github.com/emicklei/go-restful"
 	rbacv1 "k8s.io/api/rbac/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	iamv1alpha2 "kubesphere.io/api/iam/v1alpha2"
+	"kubesphere.io/kubesphere/pkg/apiserver/request"
 
 	"kubesphere.io/kubesphere/pkg/api"
 	"kubesphere.io/kubesphere/pkg/apiserver/authorization/authorizer"
 	"kubesphere.io/kubesphere/pkg/apiserver/query"
-	apirequest "kubesphere.io/kubesphere/pkg/apiserver/request"
 	"kubesphere.io/kubesphere/pkg/models/iam/am"
 	"kubesphere.io/kubesphere/pkg/models/iam/im"
 	servererr "kubesphere.io/kubesphere/pkg/server/errors"
@@ -291,9 +288,6 @@ func (h *iamHandler) CreateUser(req *restful.Request, resp *restful.Response) {
 		return
 	}
 
-	// ensure encrypted password will not be output
-	created.Spec.EncryptedPassword = ""
-
 	resp.WriteEntity(created)
 }
 
@@ -334,58 +328,6 @@ func (h *iamHandler) UpdateUser(request *restful.Request, response *restful.Resp
 	//}
 
 	response.WriteEntity(updated)
-}
-
-func (h *iamHandler) ModifyPassword(request *restful.Request, response *restful.Response) {
-	username := request.PathParameter("user")
-	var passwordReset PasswordReset
-	err := request.ReadEntity(&passwordReset)
-	if err != nil {
-		api.HandleBadRequest(response, request, err)
-		return
-	}
-
-	operator, ok := apirequest.UserFrom(request.Request.Context())
-
-	if !ok {
-		err = errors.NewInternalError(fmt.Errorf("cannot obtain user info"))
-		api.HandleInternalError(response, request, err)
-		return
-	}
-
-	userManagement := authorizer.AttributesRecord{
-		Resource:        "users/password",
-		Verb:            "update",
-		ResourceScope:   apirequest.GlobalScope,
-		ResourceRequest: true,
-		User:            operator,
-	}
-
-	decision, _, err := h.authorizer.Authorize(userManagement)
-	if err != nil {
-		api.HandleInternalError(response, request, err)
-		return
-	}
-
-	// only the user manager can modify the password without verifying the old password
-	// if old password is defined must be verified
-	if decision != authorizer.DecisionAllow || passwordReset.CurrentPassword != "" {
-		if err = h.im.PasswordVerify(username, passwordReset.CurrentPassword); err != nil {
-			if err == auth.IncorrectPasswordError {
-				err = errors.NewBadRequest("incorrect old password")
-			}
-			api.HandleError(response, request, err)
-			return
-		}
-	}
-
-	err = h.im.ModifyPassword(username, passwordReset.Password)
-	if err != nil {
-		api.HandleError(response, request, err)
-		return
-	}
-
-	response.WriteEntity(servererr.None)
 }
 
 func (h *iamHandler) DeleteUser(request *restful.Request, response *restful.Response) {

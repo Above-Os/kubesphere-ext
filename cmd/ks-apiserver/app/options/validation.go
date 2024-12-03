@@ -25,7 +25,6 @@ func (s *ServerRunOptions) Validate() []error {
 	errors = append(errors, s.KubernetesOptions.Validate()...)
 	errors = append(errors, s.MonitoringOptions.Validate()...)
 	errors = append(errors, s.LoggingOptions.Validate()...)
-	errors = append(errors, s.AuthenticationOptions.Validate()...)
 	errors = append(errors, s.AuthorizationOptions.Validate()...)
 	errors = append(errors, s.EventsOptions.Validate()...)
 	errors = append(errors, s.AlertingOptions.Validate()...)

@@ -72,7 +72,6 @@ func addAllControllers(mgr manager.Manager, client k8s.Client, informerFactory i
 		userController := &user.Reconciler{
 			MaxConcurrentReconciles: 4,
 			KubeconfigClient:        kubeconfigClient,
-			AuthenticationOptions:   cmOptions.AuthenticationOptions,
 		}
 		addControllerWithSetup(mgr, "user", userController)
 	}
@@ -90,7 +89,7 @@ func addAllControllers(mgr manager.Manager, client k8s.Client, informerFactory i
 			kubernetesInformer.Apps().V1().Deployments(),
 			kubernetesInformer.Core().V1().Pods(),
 			kubesphereInformer.Iam().V1alpha2().Users(),
-			cmOptions.AuthenticationOptions.KubectlImage)
+			"kubesphere/kubectl:v1.0.0")
 		addController(mgr, "clusterrolebinding", clusterRoleBindingController)
 	}
 
