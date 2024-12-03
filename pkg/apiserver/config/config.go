@@ -29,7 +29,6 @@ import (
 	"kubesphere.io/kubesphere/pkg/apiserver/authorization"
 	"kubesphere.io/kubesphere/pkg/models/terminal"
 	"kubesphere.io/kubesphere/pkg/simple/client/alerting"
-	"kubesphere.io/kubesphere/pkg/simple/client/cache"
 	"kubesphere.io/kubesphere/pkg/simple/client/events"
 	"kubesphere.io/kubesphere/pkg/simple/client/k8s"
 	"kubesphere.io/kubesphere/pkg/simple/client/logging"
@@ -135,7 +134,6 @@ func defaultConfig() *config {
 // Config defines everything needed for apiserver to deal with external services
 type Config struct {
 	KubernetesOptions    *k8s.KubernetesOptions `json:"kubernetes,omitempty" yaml:"kubernetes,omitempty" mapstructure:"kubernetes"`
-	RedisOptions         *cache.Options         `json:"redis,omitempty" yaml:"redis,omitempty" mapstructure:"redis"`
 	MonitoringOptions    *prometheus.Options    `json:"monitoring,omitempty" yaml:"monitoring,omitempty" mapstructure:"monitoring"`
 	LoggingOptions       *logging.Options       `json:"logging,omitempty" yaml:"logging,omitempty" mapstructure:"logging"`
 	AuthorizationOptions *authorization.Options `json:"authorization,omitempty" yaml:"authorization,omitempty" mapstructure:"authorization"`
@@ -149,7 +147,6 @@ type Config struct {
 func New() *Config {
 	return &Config{
 		KubernetesOptions:    k8s.NewKubernetesOptions(),
-		RedisOptions:         cache.NewRedisOptions(),
 		MonitoringOptions:    prometheus.NewPrometheusOptions(),
 		AlertingOptions:      alerting.NewAlertingOptions(),
 		LoggingOptions:       logging.NewLoggingOptions(),
@@ -201,11 +198,6 @@ func (conf *Config) ToMap() map[string]bool {
 
 // Remove invalid options before serializing to json or yaml
 func (conf *Config) stripEmptyOptions() {
-
-	if conf.RedisOptions != nil && conf.RedisOptions.Host == "" {
-		conf.RedisOptions = nil
-	}
-
 	if conf.MonitoringOptions != nil && conf.MonitoringOptions.Endpoint == "" {
 		conf.MonitoringOptions = nil
 	}

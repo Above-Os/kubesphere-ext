@@ -67,7 +67,6 @@ func (s *ServerRunOptions) Flags() (fss cliflag.NamedFlagSets) {
 	s.GenericServerRunOptions.AddFlags(fs, s.GenericServerRunOptions)
 	s.KubernetesOptions.AddFlags(fss.FlagSet("kubernetes"), s.KubernetesOptions)
 	s.AuthorizationOptions.AddFlags(fss.FlagSet("authorization"), s.AuthorizationOptions)
-	s.RedisOptions.AddFlags(fss.FlagSet("redis"), s.RedisOptions)
 	s.MonitoringOptions.AddFlags(fss.FlagSet("monitoring"), s.MonitoringOptions)
 	s.LoggingOptions.AddFlags(fss.FlagSet("logging"), s.LoggingOptions)
 	s.EventsOptions.AddFlags(fss.FlagSet("events"), s.EventsOptions)
@@ -114,22 +113,7 @@ func (s *ServerRunOptions) NewAPIServer(stopCh <-chan struct{}) (*apiserver.APIS
 
 	apiServer.MetricsClient = metricsserver.NewMetricsClient(kubernetesClient.Kubernetes(), s.KubernetesOptions)
 
-	var cacheClient cache.Interface
-	if s.RedisOptions != nil && len(s.RedisOptions.Host) != 0 {
-		if s.RedisOptions.Host == fakeInterface && s.DebugMode {
-			apiServer.CacheClient = cache.NewSimpleCache()
-		} else {
-			cacheClient, err = cache.NewRedisClient(s.RedisOptions, stopCh)
-			if err != nil {
-				return nil, fmt.Errorf("failed to connect to redis service, please check redis status, error: %v", err)
-			}
-			apiServer.CacheClient = cacheClient
-		}
-	} else {
-		klog.Warning("ks-apiserver starts without redis provided, it will use in memory cache. " +
-			"This may cause inconsistencies when running ks-apiserver with multiple replicas.")
-		apiServer.CacheClient = cache.NewSimpleCache()
-	}
+	apiServer.CacheClient = cache.NewSimpleCache()
 
 	if s.AlertingOptions != nil && (s.AlertingOptions.PrometheusEndpoint != "" || s.AlertingOptions.ThanosRulerEndpoint != "") {
 		alertingClient, err := alerting.NewRuleClient(s.AlertingOptions)

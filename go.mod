@@ -23,7 +23,6 @@ require (
 	github.com/go-openapi/spec v0.19.7
 	github.com/go-openapi/strfmt v0.19.5
 	github.com/go-openapi/validate v0.19.8
-	github.com/go-redis/redis v6.15.2+incompatible
 	github.com/go-resty/resty/v2 v2.0.0-00010101000000-000000000000
 	github.com/golang/example v0.0.0-20170904185048-46695d81d1fa
 	github.com/google/go-cmp v0.5.6
