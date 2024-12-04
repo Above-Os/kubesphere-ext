@@ -28,6 +28,14 @@ type FakeIamV1alpha2 struct {
 	*testing.Fake
 }
 
+func (c *FakeIamV1alpha2) GlobalRoles() v1alpha2.GlobalRoleInterface {
+	return &FakeGlobalRoles{c}
+}
+
+func (c *FakeIamV1alpha2) GlobalRoleBindings() v1alpha2.GlobalRoleBindingInterface {
+	return &FakeGlobalRoleBindings{c}
+}
+
 func (c *FakeIamV1alpha2) RoleBases() v1alpha2.RoleBaseInterface {
 	return &FakeRoleBases{c}
 }

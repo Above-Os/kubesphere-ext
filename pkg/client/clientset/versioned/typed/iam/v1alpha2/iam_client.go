@@ -26,6 +26,8 @@ import (
 
 type IamV1alpha2Interface interface {
 	RESTClient() rest.Interface
+	GlobalRolesGetter
+	GlobalRoleBindingsGetter
 	RoleBasesGetter
 	SyncsGetter
 	UsersGetter
@@ -34,6 +36,14 @@ type IamV1alpha2Interface interface {
 // IamV1alpha2Client is used to interact with features provided by the iam.bytetrade.io group.
 type IamV1alpha2Client struct {
 	restClient rest.Interface
+}
+
+func (c *IamV1alpha2Client) GlobalRoles() GlobalRoleInterface {
+	return newGlobalRoles(c)
+}
+
+func (c *IamV1alpha2Client) GlobalRoleBindings() GlobalRoleBindingInterface {
+	return newGlobalRoleBindings(c)
 }
 
 func (c *IamV1alpha2Client) RoleBases() RoleBaseInterface {

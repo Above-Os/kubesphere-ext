@@ -53,6 +53,10 @@ func (f *genericInformer) Lister() cache.GenericLister {
 func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource) (GenericInformer, error) {
 	switch resource {
 	// Group=iam.bytetrade.io, Version=v1alpha2
+	case v1alpha2.SchemeGroupVersion.WithResource("globalroles"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Iam().V1alpha2().GlobalRoles().Informer()}, nil
+	case v1alpha2.SchemeGroupVersion.WithResource("globalrolebindings"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Iam().V1alpha2().GlobalRoleBindings().Informer()}, nil
 	case v1alpha2.SchemeGroupVersion.WithResource("rolebases"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Iam().V1alpha2().RoleBases().Informer()}, nil
 	case v1alpha2.SchemeGroupVersion.WithResource("syncs"):

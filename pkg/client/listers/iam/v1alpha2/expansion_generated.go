@@ -18,6 +18,14 @@ limitations under the License.
 
 package v1alpha2
 
+// GlobalRoleListerExpansion allows custom methods to be added to
+// GlobalRoleLister.
+type GlobalRoleListerExpansion interface{}
+
+// GlobalRoleBindingListerExpansion allows custom methods to be added to
+// GlobalRoleBindingLister.
+type GlobalRoleBindingListerExpansion interface{}
+
 // RoleBaseListerExpansion allows custom methods to be added to
 // RoleBaseLister.
 type RoleBaseListerExpansion interface{}

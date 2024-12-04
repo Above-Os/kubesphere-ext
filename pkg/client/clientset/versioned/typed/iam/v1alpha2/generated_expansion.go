@@ -18,6 +18,10 @@ limitations under the License.
 
 package v1alpha2
 
+type GlobalRoleExpansion interface{}
+
+type GlobalRoleBindingExpansion interface{}
+
 type RoleBaseExpansion interface{}
 
 type SyncExpansion interface{}

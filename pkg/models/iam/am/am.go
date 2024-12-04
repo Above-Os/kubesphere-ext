@@ -19,6 +19,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"kubesphere.io/kubesphere/pkg/models/resources/v1alpha3/globalrole"
+	"kubesphere.io/kubesphere/pkg/models/resources/v1alpha3/globalrolebinding"
 
 	rbacv1 "k8s.io/api/rbac/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -64,6 +66,15 @@ type AccessManagementInterface interface {
 	PatchClusterRole(clusterRole *rbacv1.ClusterRole) (*rbacv1.ClusterRole, error)
 	CreateRoleBinding(namespace string, roleBinding *rbacv1.RoleBinding) (*rbacv1.RoleBinding, error)
 	DeleteRoleBinding(namespace, name string) error
+
+	GetGlobalRoleOfUser(username string) (*iamv1alpha2.GlobalRole, error)
+	ListGlobalRoles(query *query.Query) (*api.ListResult, error)
+	ListGlobalRoleBindings(username string) ([]*iamv1alpha2.GlobalRoleBinding, error)
+	GetGlobalRole(globalRole string) (*iamv1alpha2.GlobalRole, error)
+	CreateGlobalRoleBinding(username string, globalRole string) error
+	DeleteGlobalRole(name string) error
+	PatchGlobalRole(globalRole *iamv1alpha2.GlobalRole) (*iamv1alpha2.GlobalRole, error)
+	CreateOrUpdateGlobalRole(globalRole *iamv1alpha2.GlobalRole) (*iamv1alpha2.GlobalRole, error)
 }
 
 type amOperator struct {
@@ -75,6 +86,9 @@ type amOperator struct {
 	namespaceLister            listersv1.NamespaceLister
 	ksclient                   kubesphere.Interface
 	k8sclient                  kubernetes.Interface
+
+	globalRoleBindingGetter resourcev1alpha3.Interface
+	globalRoleGetter        resourcev1alpha3.Interface
 }
 
 func NewReadOnlyOperator(factory informers.InformerFactory) AccessManagementInterface {
@@ -84,6 +98,8 @@ func NewReadOnlyOperator(factory informers.InformerFactory) AccessManagementInte
 		clusterRoleGetter:        clusterrole.New(factory.KubernetesSharedInformerFactory()),
 		roleGetter:               role.New(factory.KubernetesSharedInformerFactory()),
 		namespaceLister:          factory.KubernetesSharedInformerFactory().Core().V1().Namespaces().Lister(),
+		globalRoleBindingGetter:  globalrolebinding.New(factory.KubeSphereSharedInformerFactory()),
+		globalRoleGetter:         globalrole.New(factory.KubeSphereSharedInformerFactory()),
 	}
 	// no more CRDs of devopsprojects if the DevOps module was disabled
 	return operator
@@ -94,6 +110,165 @@ func NewOperator(ksClient kubesphere.Interface, k8sClient kubernetes.Interface, 
 	amOperator.ksclient = ksClient
 	amOperator.k8sclient = k8sClient
 	return amOperator
+}
+
+func (am *amOperator) GetGlobalRoleOfUser(username string) (*iamv1alpha2.GlobalRole, error) {
+	globalRoleBindings, err := am.ListGlobalRoleBindings(username)
+	if len(globalRoleBindings) > 0 {
+		// Usually, only one globalRoleBinding will be found which is created from ks-console.
+		if len(globalRoleBindings) > 1 {
+			klog.Warningf("conflict global role binding, username: %s", username)
+		}
+		globalRole, err := am.GetGlobalRole(globalRoleBindings[0].RoleRef.Name)
+		if err != nil {
+			klog.Error(err)
+			return nil, err
+		}
+		return globalRole, nil
+	}
+
+	err = errors.NewNotFound(iamv1alpha2.Resource(iamv1alpha2.ResourcesSingularGlobalRoleBinding), username)
+	klog.V(4).Info(err)
+	return nil, err
+}
+
+func (am *amOperator) ListGlobalRoleBindings(username string) ([]*iamv1alpha2.GlobalRoleBinding, error) {
+	roleBindings, err := am.globalRoleBindingGetter.List("", query.New())
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]*iamv1alpha2.GlobalRoleBinding, 0)
+	for _, obj := range roleBindings.Items {
+		roleBinding := obj.(*iamv1alpha2.GlobalRoleBinding)
+		if contains(roleBinding.Subjects, username, nil) {
+			result = append(result, roleBinding)
+		}
+	}
+
+	return result, nil
+}
+
+func (am *amOperator) ListGlobalRoles(query *query.Query) (*api.ListResult, error) {
+	return am.globalRoleGetter.List("", query)
+}
+
+func (am *amOperator) GetGlobalRole(globalRole string) (*iamv1alpha2.GlobalRole, error) {
+	obj, err := am.globalRoleGetter.Get("", globalRole)
+	if err != nil {
+		klog.Error(err)
+		return nil, err
+	}
+	return obj.(*iamv1alpha2.GlobalRole), nil
+}
+
+func (am *amOperator) CreateGlobalRoleBinding(username string, role string) error {
+	_, err := am.GetGlobalRole(role)
+	if err != nil {
+		klog.Error(err)
+		return err
+	}
+
+	roleBindings, err := am.ListGlobalRoleBindings(username)
+	if err != nil {
+		klog.Error(err)
+		return err
+	}
+
+	for _, roleBinding := range roleBindings {
+		if role == roleBinding.RoleRef.Name {
+			return nil
+		}
+		err := am.ksclient.IamV1alpha2().GlobalRoleBindings().Delete(context.Background(), roleBinding.Name, *metav1.NewDeleteOptions(0))
+		if err != nil {
+			if errors.IsNotFound(err) {
+				continue
+			}
+			klog.Error(err)
+			return err
+		}
+	}
+
+	globalRoleBinding := iamv1alpha2.GlobalRoleBinding{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:   fmt.Sprintf("%s-%s", username, role),
+			Labels: map[string]string{iamv1alpha2.UserReferenceLabel: username},
+		},
+		Subjects: []rbacv1.Subject{
+			{
+				Kind:     rbacv1.UserKind,
+				APIGroup: rbacv1.SchemeGroupVersion.Group,
+				Name:     username,
+			},
+		},
+		RoleRef: rbacv1.RoleRef{
+			APIGroup: iamv1alpha2.SchemeGroupVersion.Group,
+			Kind:     iamv1alpha2.ResourceKindGlobalRole,
+			Name:     role,
+		},
+	}
+
+	if _, err := am.ksclient.IamV1alpha2().GlobalRoleBindings().Create(context.Background(), &globalRoleBinding, metav1.CreateOptions{}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (am *amOperator) PatchGlobalRole(globalRole *iamv1alpha2.GlobalRole) (*iamv1alpha2.GlobalRole, error) {
+	old, err := am.GetGlobalRole(globalRole.Name)
+	if err != nil {
+		klog.Error(err)
+		return nil, err
+	}
+
+	// rules cannot be override
+	globalRole.Rules = old.Rules
+	// aggregate roles if annotation has change
+	if aggregateRoles := am.getAggregateRoles(globalRole.ObjectMeta); aggregateRoles != nil {
+		globalRole.Rules = make([]rbacv1.PolicyRule, 0)
+		for _, roleName := range aggregateRoles {
+			aggregationRole, err := am.GetGlobalRole(roleName)
+			if err != nil {
+				klog.Error(err)
+				return nil, err
+			}
+			globalRole.Rules = append(globalRole.Rules, aggregationRole.Rules...)
+		}
+	}
+
+	data, err := json.Marshal(globalRole)
+	if err != nil {
+		return nil, err
+	}
+
+	return am.ksclient.IamV1alpha2().GlobalRoles().Patch(context.Background(), globalRole.Name, types.MergePatchType, data, metav1.PatchOptions{})
+}
+
+func (am *amOperator) CreateOrUpdateGlobalRole(globalRole *iamv1alpha2.GlobalRole) (*iamv1alpha2.GlobalRole, error) {
+	globalRole.Rules = make([]rbacv1.PolicyRule, 0)
+	if aggregateRoles := am.getAggregateRoles(globalRole.ObjectMeta); aggregateRoles != nil {
+		for _, roleName := range aggregateRoles {
+			aggregationRole, err := am.GetGlobalRole(roleName)
+			if err != nil {
+				klog.Error(err)
+				return nil, err
+			}
+			globalRole.Rules = append(globalRole.Rules, aggregationRole.Rules...)
+		}
+	}
+	var created *iamv1alpha2.GlobalRole
+	var err error
+	if globalRole.ResourceVersion != "" {
+		created, err = am.ksclient.IamV1alpha2().GlobalRoles().Update(context.Background(), globalRole, metav1.UpdateOptions{})
+	} else {
+		created, err = am.ksclient.IamV1alpha2().GlobalRoles().Create(context.Background(), globalRole, metav1.CreateOptions{})
+	}
+	return created, err
+}
+
+func (am *amOperator) DeleteGlobalRole(name string) error {
+	return am.ksclient.IamV1alpha2().GlobalRoles().Delete(context.Background(), name, *metav1.NewDeleteOptions(0))
 }
 
 func (am *amOperator) GetNamespaceRoleOfUser(username string, groups []string, namespace string) ([]*rbacv1.Role, error) {

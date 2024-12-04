@@ -17,6 +17,7 @@ limitations under the License.
 package v1alpha2
 
 import (
+	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
@@ -25,9 +26,6 @@ const (
 	ResourceKindUser                      = "User"
 	ResourcesSingularUser                 = "user"
 	ResourcesPluralUser                   = "users"
-	ResourceKindLoginRecord               = "LoginRecord"
-	ResourcesSingularLoginRecord          = "loginrecord"
-	ResourcesPluralLoginRecord            = "loginrecords"
 	ResourceKindGlobalRoleBinding         = "GlobalRoleBinding"
 	ResourcesSingularGlobalRoleBinding    = "globalrolebinding"
 	ResourcesPluralGlobalRoleBinding      = "globalrolebindings"
@@ -165,6 +163,65 @@ type UserList struct {
 	// +optional
 	metav1.ListMeta `json:"metadata,omitempty"`
 	Items           []User `json:"items"`
+}
+
+// +genclient
+// +genclient:nonNamespaced
+// +kubebuilder:object:root=true
+// +kubebuilder:resource:categories="iam",scope="Cluster"
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+type GlobalRole struct {
+	metav1.TypeMeta `json:",inline"`
+	// +optional
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	// Rules holds all the PolicyRules for this GlobalRole
+	// +optional
+	Rules []rbacv1.PolicyRule `json:"rules" protobuf:"bytes,2,rep,name=rules"`
+}
+
+// +kubebuilder:object:root=true
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// GlobalRoleList contains a list of GlobalRole
+type GlobalRoleList struct {
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata,omitempty"`
+	Items           []GlobalRole `json:"items"`
+}
+
+// +genclient
+// +genclient:nonNamespaced
+// +kubebuilder:object:root=true
+// +kubebuilder:resource:categories="iam",scope="Cluster"
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// GlobalRoleBinding is the Schema for the globalrolebindings API
+type GlobalRoleBinding struct {
+	metav1.TypeMeta `json:",inline"`
+	// +optional
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	// Subjects holds references to the objects the role applies to.
+	// +optional
+	Subjects []rbacv1.Subject `json:"subjects,omitempty" protobuf:"bytes,2,rep,name=subjects"`
+
+	// RoleRef can only reference a GlobalRole.
+	// If the RoleRef cannot be resolved, the Authorizer must return an error.
+	RoleRef rbacv1.RoleRef `json:"roleRef" protobuf:"bytes,3,opt,name=roleRef"`
+}
+
+// +kubebuilder:object:root=true
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+// GlobalRoleBindingList contains a list of GlobalRoleBinding
+type GlobalRoleBindingList struct {
+	metav1.TypeMeta `json:",inline"`
+	// Standard object's metadata.
+	// +optional
+	metav1.ListMeta `json:"metadata,omitempty"`
+	Items           []GlobalRoleBinding `json:"items"`
 }
 
 // +genclient
