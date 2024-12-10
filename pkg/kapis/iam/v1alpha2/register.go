@@ -79,75 +79,7 @@ func AddToContainer(container *restful.Container, im im.IdentityManagementInterf
 		Doc("List all users.").
 		Returns(http.StatusOK, api.StatusOK, api.ListResult{Items: []interface{}{iamv1alpha2.User{}}}).
 		Metadata(restfulspec.KeyOpenAPITags, []string{constants.UserTag}))
-
-	// clustermembers
-	ws.Route(ws.POST("/clustermembers").
-		To(handler.CreateClusterMembers).
-		Doc("Add members to current cluster in bulk.").
-		Reads([]Member{}).
-		Returns(http.StatusOK, api.StatusOK, []Member{}).
-		Metadata(restfulspec.KeyOpenAPITags, []string{constants.ClusterMemberTag}))
-	ws.Route(ws.DELETE("/clustermembers/{clustermember}").
-		To(handler.RemoveClusterMember).
-		Doc("Delete a member from current cluster.").
-		Param(ws.PathParameter("clustermember", "cluster member's username")).
-		Returns(http.StatusOK, api.StatusOK, errors.None).
-		Metadata(restfulspec.KeyOpenAPITags, []string{constants.ClusterMemberTag}))
-	ws.Route(ws.PUT("/clustermembers/{clustermember}").
-		To(handler.UpdateClusterMember).
-		Doc("Update the cluster role bind of the member.").
-		Reads(Member{}).
-		Returns(http.StatusOK, api.StatusOK, Member{}).
-		Param(ws.PathParameter("clustermember", "cluster member's username")).
-		Metadata(restfulspec.KeyOpenAPITags, []string{constants.ClusterMemberTag}))
-	ws.Route(ws.GET("/clustermembers/{clustermember}").
-		To(handler.DescribeClusterMember).
-		Doc("Retrieve the cluster role of the specified member.").
-		Param(ws.PathParameter("clustermember", "cluster member's username")).
-		Returns(http.StatusOK, api.StatusOK, iamv1alpha2.User{}).
-		Metadata(restfulspec.KeyOpenAPITags, []string{constants.ClusterMemberTag}))
-	ws.Route(ws.GET("/clustermembers").
-		To(handler.ListClusterMembers).
-		Doc("List all members in cluster.").
-		Returns(http.StatusOK, api.StatusOK, api.ListResult{Items: []interface{}{iamv1alpha2.User{}}}).
-		Metadata(restfulspec.KeyOpenAPITags, []string{constants.ClusterMemberTag}))
-
-	ws.Route(ws.GET("/namespaces/{namespace}/members").
-		To(handler.ListNamespaceMembers).
-		Doc("List all members in the specified namespace.").
-		Param(ws.PathParameter("namespace", "namespace")).
-		Returns(http.StatusOK, api.StatusOK, api.ListResult{Items: []interface{}{iamv1alpha2.User{}}}).
-		Metadata(restfulspec.KeyOpenAPITags, []string{constants.NamespaceMemberTag}))
-	ws.Route(ws.GET("/namespaces/{namespace}/members/{member}").
-		To(handler.DescribeNamespaceMember).
-		Doc("Retrieve the role of the specified member.").
-		Param(ws.PathParameter("namespace", "namespace")).
-		Param(ws.PathParameter("member", "namespace member's username")).
-		Returns(http.StatusOK, api.StatusOK, iamv1alpha2.User{}).
-		Metadata(restfulspec.KeyOpenAPITags, []string{constants.NamespaceMemberTag}))
-	ws.Route(ws.POST("/namespaces/{namespace}/members").
-		To(handler.CreateNamespaceMembers).
-		Doc("Add members to the namespace in bulk.").
-		Reads([]Member{}).
-		Returns(http.StatusOK, api.StatusOK, []Member{}).
-		Param(ws.PathParameter("namespace", "namespace")).
-		Metadata(restfulspec.KeyOpenAPITags, []string{constants.NamespaceMemberTag}))
-	ws.Route(ws.PUT("/namespaces/{namespace}/members/{member}").
-		To(handler.UpdateNamespaceMember).
-		Doc("Update the role bind of the member.").
-		Reads(Member{}).
-		Returns(http.StatusOK, api.StatusOK, Member{}).
-		Param(ws.PathParameter("namespace", "namespace")).
-		Param(ws.PathParameter("member", "namespace member's username")).
-		Metadata(restfulspec.KeyOpenAPITags, []string{constants.NamespaceMemberTag}))
-	ws.Route(ws.DELETE("/namespaces/{namespace}/members/{member}").
-		To(handler.RemoveNamespaceMember).
-		Doc("Delete a member from the namespace.").
-		Param(ws.PathParameter("namespace", "namespace")).
-		Param(ws.PathParameter("member", "namespace member's username")).
-		Returns(http.StatusOK, api.StatusOK, errors.None).
-		Metadata(restfulspec.KeyOpenAPITags, []string{constants.NamespaceMemberTag}))
-
+	
 	// clusterroles
 	ws.Route(ws.POST("/clusterroles").
 		To(handler.CreateClusterRole).

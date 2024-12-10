@@ -28,7 +28,6 @@ require (
 	github.com/google/go-cmp v0.5.6
 	github.com/gorilla/websocket v1.5.0
 	github.com/gregjones/httpcache v0.0.0-20181110185634-c63ab54fda8f // indirect
-	github.com/hashicorp/golang-lru v0.5.4
 	github.com/json-iterator/go v1.1.11
 	github.com/jszwec/csvutil v1.5.0
 	github.com/kubernetes-csi/external-snapshotter/client/v4 v4.2.0
