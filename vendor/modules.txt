@@ -1407,7 +1407,7 @@ k8s.io/utils/net
 k8s.io/utils/path
 k8s.io/utils/pointer
 k8s.io/utils/trace
-# kubesphere.io/api v0.0.0 => ./staging/src/kubesphere.io/api
+# kubesphere.io/api v0.0.0 => ./staging/src/bytetrade.io/api
 ## explicit
 kubesphere.io/api/iam/v1alpha2
 # kubesphere.io/monitoring-dashboard v0.2.2 => kubesphere.io/monitoring-dashboard v0.2.2
@@ -2244,8 +2244,8 @@ sigs.k8s.io/yaml
 # k8s.io/kubectl => k8s.io/kubectl v0.21.2
 # k8s.io/metrics => k8s.io/metrics v0.21.2
 # k8s.io/utils => k8s.io/utils v0.0.0-20200603063816-c1c6865ac451
-# kubesphere.io/api => ./staging/src/kubesphere.io/api
-# kubesphere.io/client-go => ./staging/src/kubesphere.io/client-go
+# kubesphere.io/api => ./staging/src/bytetrade.io/api
+# kubesphere.io/client-go => ./staging/src/bytetrade.io/client-go
 # kubesphere.io/monitoring-dashboard => kubesphere.io/monitoring-dashboard v0.2.2
 # rsc.io/binaryregexp => rsc.io/binaryregexp v0.2.0
 # rsc.io/letsencrypt => rsc.io/letsencrypt v0.0.1

@@ -750,8 +750,8 @@ replace (
 	k8s.io/kubectl => k8s.io/kubectl v0.21.2
 	k8s.io/metrics => k8s.io/metrics v0.21.2
 	k8s.io/utils => k8s.io/utils v0.0.0-20200603063816-c1c6865ac451
-	kubesphere.io/api => ./staging/src/kubesphere.io/api
-	kubesphere.io/client-go => ./staging/src/kubesphere.io/client-go
+	kubesphere.io/api => ./staging/src/bytetrade.io/api
+	kubesphere.io/client-go => ./staging/src/bytetrade.io/client-go
 	kubesphere.io/monitoring-dashboard => kubesphere.io/monitoring-dashboard v0.2.2
 	rsc.io/binaryregexp => rsc.io/binaryregexp v0.2.0
 	rsc.io/letsencrypt => rsc.io/letsencrypt v0.0.1
