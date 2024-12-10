@@ -77,7 +77,6 @@ func (r *SyncReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 						Name: u.Id,
 					},
 					Spec: iamv1alpha2.UserSpec{
-						Name:   u.Id,
 						Groups: u.GroupName,
 					},
 				}
@@ -140,7 +139,7 @@ func (r *SyncReconciler) pruneUsers(ctx context.Context, syncUsers []lldap.User,
 
 func (r *SyncReconciler) isUserFound(targetUser iamv1alpha2.User, users []lldap.User) bool {
 	for _, u := range users {
-		if targetUser.Spec.Name == u.Id {
+		if targetUser.Name == u.Id {
 			return true
 		}
 	}

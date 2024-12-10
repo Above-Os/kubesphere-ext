@@ -33,7 +33,7 @@ import (
 // WithAuthorization passes all authorized requests on to handler, and returns forbidden error otherwise.
 func WithAuthorization(handler http.Handler, authorizers authorizer.Authorizer) http.Handler {
 	if authorizers == nil {
-		klog.Warningf("Authorization is disabled")
+		klog.V(0).Infof("Authorization is disabled")
 		return handler
 	}
 
@@ -58,7 +58,7 @@ func WithAuthorization(handler http.Handler, authorizers authorizer.Authorizer) 
 			return
 		}
 
-		klog.V(4).Infof("Forbidden: %#v, Reason: %q", req.RequestURI, reason)
+		klog.V(0).Infof("Forbidden: %#v, Reason: %q", req.RequestURI, reason)
 		responsewriters.Forbidden(ctx, attributes, w, req, reason, defaultSerializer)
 	})
 }
@@ -81,15 +81,12 @@ func getAuthorizerAttributes(ctx context.Context) (authorizer.Attributes, error)
 	attribs.ResourceRequest = requestInfo.IsResourceRequest
 	attribs.Path = requestInfo.Path
 	attribs.Verb = requestInfo.Verb
-	attribs.Cluster = requestInfo.Cluster
-	attribs.Workspace = requestInfo.Workspace
 	attribs.KubernetesRequest = requestInfo.IsKubernetesRequest
 	attribs.APIGroup = requestInfo.APIGroup
 	attribs.APIVersion = requestInfo.APIVersion
 	attribs.Resource = requestInfo.Resource
 	attribs.Subresource = requestInfo.Subresource
 	attribs.Namespace = requestInfo.Namespace
-	attribs.DevOps = requestInfo.DevOps
 	attribs.Name = requestInfo.Name
 
 	return &attribs, nil

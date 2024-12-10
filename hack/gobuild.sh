@@ -36,8 +36,10 @@ OUTPUT_DIR=bin
 BUILDPATH=./${1:?"path to build"}
 OUT=${OUTPUT_DIR}/${1:?"output path"}
 
-BUILD_GOOS=${GOOS:-$(go env GOOS)}
-BUILD_GOARCH=${GOARCH:-$(go env GOARCH)}
+#BUILD_GOOS=${GOOS:-$(go env GOOS)}
+#BUILD_GOARCH=${GOARCH:-$(go env GOARCH)}
+BUILD_GOOS=linux
+BUILD_GOARCH=amd64
 GOBINARY=${GOBINARY:-go}
 LDFLAGS=$(kube::version::ldflags)
 

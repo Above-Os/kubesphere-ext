@@ -27,6 +27,7 @@ import (
 	runtimecache "sigs.k8s.io/controller-runtime/pkg/cache"
 	runtimeclient "sigs.k8s.io/controller-runtime/pkg/client"
 
+	extv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	"kubesphere.io/kubesphere/pkg/apis"
 	"kubesphere.io/kubesphere/pkg/apiserver"
 	apiserverconfig "kubesphere.io/kubesphere/pkg/apiserver/config"
@@ -142,6 +143,9 @@ func (s *ServerRunOptions) NewAPIServer(stopCh <-chan struct{}) (*apiserver.APIS
 	sch := scheme.Scheme
 	if err := apis.AddToScheme(sch); err != nil {
 		klog.Fatalf("unable add APIs to scheme: %v", err)
+	}
+	if err := extv1.AddToScheme(sch); err != nil {
+		klog.Fatalf("xxxunable add APIs to scheme: %v", err)
 	}
 
 	apiServer.RuntimeCache, err = runtimecache.New(apiServer.KubernetesClient.Config(), runtimecache.Options{Scheme: sch})

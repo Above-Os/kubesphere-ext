@@ -74,7 +74,7 @@ func (c *typedClient) Get(ctx context.Context, key client.ObjectKey, obj runtime
 	// {ksapi}/{resources}/{name}
 
 	return r.Get().
-		AbsPath("kapis", "resources.kubesphere.io", "v1alpha3").
+		AbsPath("kapis", "resources.bytetrade.io", "v1alpha3").
 		NamespaceIfScoped(key.Namespace, r.IsNamespaced()).
 		Resource(r.Resource()).
 		Name(key.Name).
@@ -95,7 +95,7 @@ func (c *typedClient) List(ctx context.Context, obj runtime.Object, opts ...clie
 	// {ksapi}/{resources}
 
 	return r.Get().
-		AbsPath("kapis", "resources.kubesphere.io", "v1alpha3").
+		AbsPath("kapis", "resources.bytetrade.io", "v1alpha3").
 		NamespaceIfScoped(listOpts.Namespace, r.IsNamespaced()).
 		Resource(r.Resource()).
 		VersionedParams(listOpts.AsListOptions(), c.paramCodec).

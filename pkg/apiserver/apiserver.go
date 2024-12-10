@@ -131,12 +131,12 @@ func (s *APIServer) PrepareRun(stopCh <-chan struct{}) error {
 	s.container.Filter(monitorRequest)
 
 	for _, ws := range s.container.RegisteredWebServices() {
-		klog.V(2).Infof("%s", ws.RootPath())
+		klog.V(0).Infof("%s", ws.RootPath())
 	}
 
 	s.Server.Handler = s.container
 
-	s.buildHandlerChain(stopCh)
+	s.buildHandlerChain()
 
 	return nil
 }
@@ -220,12 +220,14 @@ func (s *APIServer) Run(ctx context.Context) (err error) {
 	return err
 }
 
-func (s *APIServer) buildHandlerChain(stopCh <-chan struct{}) {
+func (s *APIServer) buildHandlerChain() {
 	requestInfoResolver := &request.RequestInfoFactory{
 		APIPrefixes:          sets.NewString("api", "apis", "kapis", "kapi"),
 		GrouplessAPIPrefixes: sets.NewString("api", "kapi"),
 		GlobalResources: []schema.GroupResource{
 			iamv1alpha2.Resource(iamv1alpha2.ResourcesPluralUser),
+			iamv1alpha2.Resource(iamv1alpha2.ResourcesPluralGlobalRole),
+			iamv1alpha2.Resource(iamv1alpha2.ResourcesPluralGlobalRoleBinding),
 		},
 	}
 
@@ -242,15 +244,17 @@ func (s *APIServer) buildHandlerChain(stopCh <-chan struct{}) {
 	default:
 		fallthrough
 	case authorization.RBAC:
-		excludedPaths := []string{"/oauth/*", "/kapis/config.kubesphere.io/*", "/kapis/version", "/kapis/metrics"}
+		excludedPaths := []string{"/oauth/*", "/kapis/config.bytetrade.io/*", "/kapis/version", "/kapis/metrics"}
 		pathAuthorizer, _ := path.NewAuthorizer(excludedPaths)
 		amOperator := am.NewReadOnlyOperator(s.InformerFactory)
 		authorizers = unionauthorizer.New(pathAuthorizer, rbac.NewRBACAuthorizer(amOperator))
 	}
+	_ = authorizers
 
 	// TODO:hysyeah,
 	// 这一步进行权限认证
-	handler = filters.WithAuthorization(handler, authorizers)
+
+	handler = filters.WithAuthorization(handler, nil)
 
 	handler = filters.WithRequestInfo(handler, requestInfoResolver)
 
@@ -358,11 +362,8 @@ func (s *APIServer) waitForResourceSync(ctx context.Context) error {
 
 	ksGVRs := map[schema.GroupVersion][]string{
 
-		{Group: "iam.kubesphere.io", Version: "v1alpha2"}: {
+		{Group: "iam.bytetrade.io", Version: "v1alpha2"}: {
 			"users",
-		},
-		{Group: "network.kubesphere.io", Version: "v1alpha1"}: {
-			"ippools",
 		},
 	}
 

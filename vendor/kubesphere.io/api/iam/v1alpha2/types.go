@@ -50,21 +50,21 @@ const (
 	ResourceKindRole                      = "Role"
 	ResourcesSingularRole                 = "role"
 	ResourcesPluralRole                   = "roles"
-	RegoOverrideAnnotation                = "iam.kubesphere.io/rego-override"
-	AggregationRolesAnnotation            = "iam.kubesphere.io/aggregation-roles"
-	GlobalRoleAnnotation                  = "iam.kubesphere.io/globalrole"
-	WorkspaceRoleAnnotation               = "iam.kubesphere.io/workspacerole"
-	ClusterRoleAnnotation                 = "iam.kubesphere.io/clusterrole"
-	GrantedClustersAnnotation             = "iam.kubesphere.io/granted-clusters"
-	UninitializedAnnotation               = "iam.kubesphere.io/uninitialized"
-	LastPasswordChangeTimeAnnotation      = "iam.kubesphere.io/last-password-change-time"
-	RoleAnnotation                        = "iam.kubesphere.io/role"
-	RoleTemplateLabel                     = "iam.kubesphere.io/role-template"
+	RegoOverrideAnnotation                = "iam.bytetrade.io/rego-override"
+	AggregationRolesAnnotation            = "iam.bytetrade.io/aggregation-roles"
+	GlobalRoleAnnotation                  = "iam.bytetrade.io/globalrole"
+	WorkspaceRoleAnnotation               = "iam.bytetrade.io/workspacerole"
+	ClusterRoleAnnotation                 = "iam.bytetrade.io/clusterrole"
+	GrantedClustersAnnotation             = "iam.bytetrade.io/granted-clusters"
+	UninitializedAnnotation               = "iam.bytetrade.io/uninitialized"
+	LastPasswordChangeTimeAnnotation      = "iam.bytetrade.io/last-password-change-time"
+	RoleAnnotation                        = "iam.bytetrade.io/role"
+	RoleTemplateLabel                     = "iam.bytetrade.io/role-template"
 	ScopeLabelFormat                      = "scope.kubesphere.io/%s"
-	UserReferenceLabel                    = "iam.kubesphere.io/user-ref"
-	IdentifyProviderLabel                 = "iam.kubesphere.io/identify-provider"
-	OriginUIDLabel                        = "iam.kubesphere.io/origin-uid"
-	ServiceAccountReferenceLabel          = "iam.kubesphere.io/serviceaccount-ref"
+	UserReferenceLabel                    = "iam.bytetrade.io/user-ref"
+	IdentifyProviderLabel                 = "iam.bytetrade.io/identify-provider"
+	OriginUIDLabel                        = "iam.bytetrade.io/origin-uid"
+	ServiceAccountReferenceLabel          = "iam.bytetrade.io/serviceaccount-ref"
 	FieldEmail                            = "email"
 	ExtraEmail                            = FieldEmail
 	ExtraIdentityProvider                 = "idp"
@@ -110,7 +110,6 @@ type FinalizerName string
 
 // UserSpec defines the desired state of User
 type UserSpec struct {
-	Name string `json:"name"`
 	// Unique email address(https://www.ietf.org/rfc/rfc5322.txt).
 	Email string `json:"email"`
 	// The preferred written or spoken language for the user.

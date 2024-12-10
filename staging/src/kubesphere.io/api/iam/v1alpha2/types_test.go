@@ -41,7 +41,7 @@ func TestStorageUser(t *testing.T) {
 	created := &User{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "User",
-			APIVersion: "iam.kubesphere.io/v1alpha2",
+			APIVersion: "iam.bytetrade.io/v1alpha2",
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name: "foo",

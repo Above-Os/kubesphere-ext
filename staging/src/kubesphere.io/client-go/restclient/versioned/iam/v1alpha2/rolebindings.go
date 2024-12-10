@@ -65,7 +65,7 @@ func (c *rolebindings) CreateRoleBinding(ctx context.Context, namespace, role, g
 		SetPathParams(map[string]string{
 			"namespace": namespace,
 		}).
-		Post("/kapis/iam.kubesphere.io/v1alpha2/namespaces/{namespace}/rolebindings")
+		Post("/kapis/iam.bytetrade.io/v1alpha2/namespaces/{namespace}/rolebindings")
 	return resp.String(), err
 }
 
@@ -81,7 +81,7 @@ func (c *rolebindings) CreateWorkspaceRoleBinding(ctx context.Context, workspace
 			},
 		},
 		"roleRef": map[string]interface{}{
-			"apiGroup": "iam.kubesphere.io/v1alpha2",
+			"apiGroup": "iam.bytetrade.io/v1alpha2",
 			"kind":     "WorkspaceRoleBinding",
 			"name":     role,
 		},
@@ -93,6 +93,6 @@ func (c *rolebindings) CreateWorkspaceRoleBinding(ctx context.Context, workspace
 		SetPathParams(map[string]string{
 			"workspace": workspace,
 		}).
-		Post("/kapis/iam.kubesphere.io/v1alpha2/workspaces/{workspace}/workspacerolebindings/")
+		Post("/kapis/iam.bytetrade.io/v1alpha2/workspaces/{workspace}/workspacerolebindings/")
 	return resp.String(), err
 }

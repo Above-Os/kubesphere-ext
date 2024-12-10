@@ -60,11 +60,8 @@ spec:
               lang:
                 description: The preferred written or spoken language for the user.
                 type: string
-              name:
-                type: string
             required:
             - email
-            - name
             type: object
           status:
             description: UserStatus defines the observed state of User
