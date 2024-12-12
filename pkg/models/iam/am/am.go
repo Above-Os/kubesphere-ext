@@ -720,7 +720,15 @@ func (am *amOperator) GetRoleReferenceRules(roleRef rbacv1.RoleRef, namespace st
 			return "", nil, err
 		}
 		return clusterRole.Annotations[iamv1alpha2.RegoOverrideAnnotation], clusterRole.Rules, nil
-
+	case iamv1alpha2.ResourceKindGlobalRole:
+		globalRole, err := am.GetGlobalRole(roleRef.Name)
+		if err != nil {
+			if errors.IsNotFound(err) {
+				return "", empty, nil
+			}
+			return "", nil, err
+		}
+		return globalRole.Annotations[iamv1alpha2.RegoOverrideAnnotation], globalRole.Rules, nil
 	default:
 		return "", nil, fmt.Errorf("unsupported role reference kind: %q", roleRef.Kind)
 	}

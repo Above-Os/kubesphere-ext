@@ -35,9 +35,9 @@ type FakeGlobalRoles struct {
 	Fake *FakeIamV1alpha2
 }
 
-var globalrolesResource = schema.GroupVersionResource{Group: "iam.bytetrade.io", Version: "v1alpha2", Resource: "globalroles"}
+var globalrolesResource = schema.GroupVersionResource{Group: "iam.kubesphere.io", Version: "v1alpha2", Resource: "globalroles"}
 
-var globalrolesKind = schema.GroupVersionKind{Group: "iam.bytetrade.io", Version: "v1alpha2", Kind: "GlobalRole"}
+var globalrolesKind = schema.GroupVersionKind{Group: "iam.kubesphere.io", Version: "v1alpha2", Kind: "GlobalRole"}
 
 // Get takes name of the globalRole, and returns the corresponding globalRole object, and an error if there is any.
 func (c *FakeGlobalRoles) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha2.GlobalRole, err error) {

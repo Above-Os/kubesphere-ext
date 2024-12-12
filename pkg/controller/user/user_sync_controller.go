@@ -21,7 +21,7 @@ import (
 	"time"
 )
 
-const userSyncProviderKey = "iam.bytetrade.io/user-provider"
+const userSyncProviderKey = "iam.kubesphere.io/user-provider"
 
 type SyncReconciler struct {
 	client.Client

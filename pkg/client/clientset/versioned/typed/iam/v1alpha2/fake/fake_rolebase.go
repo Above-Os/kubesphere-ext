@@ -35,9 +35,9 @@ type FakeRoleBases struct {
 	Fake *FakeIamV1alpha2
 }
 
-var rolebasesResource = schema.GroupVersionResource{Group: "iam.bytetrade.io", Version: "v1alpha2", Resource: "rolebases"}
+var rolebasesResource = schema.GroupVersionResource{Group: "iam.kubesphere.io", Version: "v1alpha2", Resource: "rolebases"}
 
-var rolebasesKind = schema.GroupVersionKind{Group: "iam.bytetrade.io", Version: "v1alpha2", Kind: "RoleBase"}
+var rolebasesKind = schema.GroupVersionKind{Group: "iam.kubesphere.io", Version: "v1alpha2", Kind: "RoleBase"}
 
 // Get takes name of the roleBase, and returns the corresponding roleBase object, and an error if there is any.
 func (c *FakeRoleBases) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha2.RoleBase, err error) {

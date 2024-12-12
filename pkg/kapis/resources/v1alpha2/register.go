@@ -35,7 +35,7 @@ import (
 )
 
 const (
-	GroupName = "resources.bytetrade.io"
+	GroupName = "resources.kubesphere.io"
 )
 
 var GroupVersion = schema.GroupVersion{Group: GroupName, Version: "v1alpha2"}

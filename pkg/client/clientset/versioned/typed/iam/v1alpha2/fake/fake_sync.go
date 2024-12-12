@@ -35,9 +35,9 @@ type FakeSyncs struct {
 	Fake *FakeIamV1alpha2
 }
 
-var syncsResource = schema.GroupVersionResource{Group: "iam.bytetrade.io", Version: "v1alpha2", Resource: "syncs"}
+var syncsResource = schema.GroupVersionResource{Group: "iam.kubesphere.io", Version: "v1alpha2", Resource: "syncs"}
 
-var syncsKind = schema.GroupVersionKind{Group: "iam.bytetrade.io", Version: "v1alpha2", Kind: "Sync"}
+var syncsKind = schema.GroupVersionKind{Group: "iam.kubesphere.io", Version: "v1alpha2", Kind: "Sync"}
 
 // Get takes name of the sync, and returns the corresponding sync object, and an error if there is any.
 func (c *FakeSyncs) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha2.Sync, err error) {

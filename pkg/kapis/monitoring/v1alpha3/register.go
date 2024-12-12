@@ -35,7 +35,7 @@ import (
 )
 
 const (
-	groupName = "monitoring.bytetrade.io"
+	groupName = "monitoring.kubesphere.io"
 	respOK    = "ok"
 )
 

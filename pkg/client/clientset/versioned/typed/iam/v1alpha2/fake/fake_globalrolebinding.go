@@ -35,9 +35,9 @@ type FakeGlobalRoleBindings struct {
 	Fake *FakeIamV1alpha2
 }
 
-var globalrolebindingsResource = schema.GroupVersionResource{Group: "iam.bytetrade.io", Version: "v1alpha2", Resource: "globalrolebindings"}
+var globalrolebindingsResource = schema.GroupVersionResource{Group: "iam.kubesphere.io", Version: "v1alpha2", Resource: "globalrolebindings"}
 
-var globalrolebindingsKind = schema.GroupVersionKind{Group: "iam.bytetrade.io", Version: "v1alpha2", Kind: "GlobalRoleBinding"}
+var globalrolebindingsKind = schema.GroupVersionKind{Group: "iam.kubesphere.io", Version: "v1alpha2", Kind: "GlobalRoleBinding"}
 
 // Get takes name of the globalRoleBinding, and returns the corresponding globalRoleBinding object, and an error if there is any.
 func (c *FakeGlobalRoleBindings) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha2.GlobalRoleBinding, err error) {

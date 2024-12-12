@@ -38,7 +38,7 @@ import (
 )
 
 const (
-	GroupName = "iam.bytetrade.io"
+	GroupName = "iam.kubesphere.io"
 )
 
 var GroupVersion = schema.GroupVersion{Group: GroupName, Version: "v1alpha2"}
@@ -79,7 +79,7 @@ func AddToContainer(container *restful.Container, im im.IdentityManagementInterf
 		Doc("List all users.").
 		Returns(http.StatusOK, api.StatusOK, api.ListResult{Items: []interface{}{iamv1alpha2.User{}}}).
 		Metadata(restfulspec.KeyOpenAPITags, []string{constants.UserTag}))
-	
+
 	// clusterroles
 	ws.Route(ws.POST("/clusterroles").
 		To(handler.CreateClusterRole).
@@ -118,6 +118,56 @@ func AddToContainer(container *restful.Container, im im.IdentityManagementInterf
 		Doc("Retrieve cluster role details.").
 		Returns(http.StatusOK, api.StatusOK, rbacv1.ClusterRole{}).
 		Metadata(restfulspec.KeyOpenAPITags, []string{constants.ClusterRoleTag}))
+
+	// globalroles
+	ws.Route(ws.POST("/globalroles").
+		To(handler.CreateGlobalRole).
+		Doc("Create global role.").
+		Reads(iamv1alpha2.GlobalRole{}).
+		Returns(http.StatusOK, api.StatusOK, iamv1alpha2.GlobalRole{}).
+		Metadata(restfulspec.KeyOpenAPITags, []string{constants.GlobalRoleTag}))
+
+	ws.Route(ws.DELETE("/globalroles/{globalrole}").
+		To(handler.DeleteGlobalRole).
+		Doc("Delete global role.").
+		Param(ws.PathParameter("globalrole", "global role name")).
+		Returns(http.StatusOK, api.StatusOK, errors.None).
+		Metadata(restfulspec.KeyOpenAPITags, []string{constants.GlobalRoleTag}))
+
+	ws.Route(ws.PUT("/globalroles/{globalrole}").
+		To(handler.UpdateGlobalRole).
+		Doc("Update global role.").
+		Param(ws.PathParameter("globalrole", "global role name")).
+		Reads(iamv1alpha2.GlobalRole{}).
+		Returns(http.StatusOK, api.StatusOK, iamv1alpha2.GlobalRole{}).
+		Metadata(restfulspec.KeyOpenAPITags, []string{constants.GlobalRoleTag}))
+	ws.Route(ws.PATCH("/globalroles/{globalrole}").
+		To(handler.PatchGlobalRole).
+		Doc("Patch global role.").
+		Param(ws.PathParameter("globalrole", "global role name")).
+		Reads(iamv1alpha2.GlobalRole{}).
+		Returns(http.StatusOK, api.StatusOK, iamv1alpha2.GlobalRole{}).
+		Metadata(restfulspec.KeyOpenAPITags, []string{constants.GlobalRoleTag}))
+
+	ws.Route(ws.GET("/globalroles").
+		To(handler.ListGlobalRoles).
+		Doc("List all global roles.").
+		Returns(http.StatusOK, api.StatusOK, api.ListResult{Items: []interface{}{iamv1alpha2.GlobalRole{}}}).
+		Metadata(restfulspec.KeyOpenAPITags, []string{constants.GlobalRoleTag}))
+
+	ws.Route(ws.GET("/globalroles/{globalrole}").
+		To(handler.DescribeGlobalRole).
+		Param(ws.PathParameter("globalrole", "global role name")).
+		Doc("Retrieve global role details.").
+		Returns(http.StatusOK, api.StatusOK, iamv1alpha2.GlobalRole{}).
+		Metadata(restfulspec.KeyOpenAPITags, []string{constants.GlobalRoleTag}))
+
+	ws.Route(ws.GET("/users/{user}/globalroles").
+		To(handler.RetrieveMemberRoleTemplates).
+		Doc("Retrieve user's global role templates.").
+		Param(ws.PathParameter("user", "username")).
+		Returns(http.StatusOK, api.StatusOK, api.ListResult{Items: []interface{}{iamv1alpha2.GlobalRole{}}}).
+		Metadata(restfulspec.KeyOpenAPITags, []string{constants.GlobalRoleTag}))
 
 	// roles
 	ws.Route(ws.POST("/namespaces/{namespace}/roles").

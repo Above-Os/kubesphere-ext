@@ -252,7 +252,7 @@ func TestHandleGetComponentStatus(t *testing.T) {
 	param := map[string]string{
 		"component": "ks-controller",
 	}
-	request, response, err := buildReqAndRes("GET", "/kapis/resources.bytetrade.io/v1alpha3/components/{component}", param, nil)
+	request, response, err := buildReqAndRes("GET", "/kapis/resources.kubesphere.io/v1alpha3/components/{component}", param, nil)
 	if err != nil {
 		t.Fatal("build res or req failed ")
 	}
@@ -270,7 +270,7 @@ func TestHandleGetComponentStatus(t *testing.T) {
 }
 
 func TestHandleGetComponents(t *testing.T) {
-	request, response, err := buildReqAndRes("GET", "/kapis/resources.bytetrade.io/v1alpha3/components", nil, nil)
+	request, response, err := buildReqAndRes("GET", "/kapis/resources.kubesphere.io/v1alpha3/components", nil, nil)
 	if err != nil {
 		t.Fatal("build res or req failed ")
 	}

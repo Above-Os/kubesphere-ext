@@ -50,7 +50,7 @@ const (
 	messageResourceSynced = "User synced successfully"
 	controllerName        = "user-controller"
 	// user finalizer
-	finalizer       = "finalizers.bytetrade.io/users"
+	finalizer       = "finalizers.kubesphere.io/users"
 	interval        = time.Second
 	timeout         = 15 * time.Second
 	syncFailMessage = "Failed to sync: %s"

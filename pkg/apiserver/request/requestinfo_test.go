@@ -116,7 +116,7 @@ func TestRequestInfoFactory_NewRequestInfo(t *testing.T) {
 		},
 		{
 			name:                      "list namespaces",
-			url:                       "/kapis/resources.bytetrade.io/v1alpha3/workspaces/workspace1/namespaces",
+			url:                       "/kapis/resources.kubesphere.io/v1alpha3/workspaces/workspace1/namespaces",
 			method:                    http.MethodGet,
 			expectedErr:               nil,
 			expectedVerb:              "list",
@@ -128,7 +128,7 @@ func TestRequestInfoFactory_NewRequestInfo(t *testing.T) {
 		},
 		{
 			name:                      "list namespaces of cluster gondor",
-			url:                       "/kapis/clusters/gondor/resources.bytetrade.io/v1alpha3/workspaces/workspace1/namespaces",
+			url:                       "/kapis/clusters/gondor/resources.kubesphere.io/v1alpha3/workspaces/workspace1/namespaces",
 			method:                    http.MethodGet,
 			expectedErr:               nil,
 			expectedVerb:              "list",

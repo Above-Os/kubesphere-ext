@@ -11,13 +11,17 @@ require (
 	github.com/Khan/genqlient v0.7.0
 	github.com/MakeNowJust/heredoc v0.0.0-20171113091838-e9091a26100e // indirect
 	github.com/asaskevich/govalidator v0.0.0-20200428143746-21a406dcc535
+	github.com/coreos/go-oidc v2.1.0+incompatible
 	github.com/davecgh/go-spew v1.1.1
 	github.com/deckarep/golang-set v1.7.1 // indirect
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/docker/docker v20.10.7+incompatible
 	github.com/elazarl/goproxy v0.0.0-20200315184450-1f3cb6622dad // indirect
 	github.com/emicklei/go-restful v2.14.3+incompatible
 	github.com/emicklei/go-restful-openapi v1.4.1
+	github.com/form3tech-oss/jwt-go v0.0.0-00010101000000-000000000000
 	github.com/fsnotify/fsnotify v1.4.9
+	github.com/go-ldap/ldap v0.0.0-00010101000000-000000000000
 	github.com/go-logr/logr v0.4.0
 	github.com/go-openapi/loads v0.19.5
 	github.com/go-openapi/spec v0.19.7
@@ -31,6 +35,7 @@ require (
 	github.com/json-iterator/go v1.1.11
 	github.com/jszwec/csvutil v1.5.0
 	github.com/kubernetes-csi/external-snapshotter/client/v4 v4.2.0
+	github.com/mitchellh/mapstructure v1.5.0
 	github.com/onsi/ginkgo v1.16.4
 	github.com/onsi/gomega v1.15.0
 	github.com/open-policy-agent/opa v0.18.0
@@ -49,9 +54,13 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/thoas/go-funk v0.9.3
 	github.com/xlab/treeprint v1.1.0 // indirect
-	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e // indirect
-	golang.org/x/oauth2 v0.0.0-20210514164344-f6687ab2804c // indirect
+	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e
+	golang.org/x/oauth2 v0.0.0-20210514164344-f6687ab2804c
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
+	gopkg.in/asn1-ber.v1 v1.0.0-00010101000000-000000000000 // indirect
+	gopkg.in/cas.v2 v2.0.0-00010101000000-000000000000
+	gopkg.in/square/go-jose.v2 v2.2.2
+	gopkg.in/yaml.v3 v3.0.1
 	gotest.tools v2.2.0+incompatible
 	istio.io/client-go v0.0.0-20201113183938-0734e976e785
 	istio.io/gogo-genproto v0.0.0-20201113182723-5b8563d8a012 // indirect
@@ -749,8 +758,8 @@ replace (
 	k8s.io/kubectl => k8s.io/kubectl v0.21.2
 	k8s.io/metrics => k8s.io/metrics v0.21.2
 	k8s.io/utils => k8s.io/utils v0.0.0-20200603063816-c1c6865ac451
-	kubesphere.io/api => ./staging/src/bytetrade.io/api
-	kubesphere.io/client-go => ./staging/src/bytetrade.io/client-go
+	kubesphere.io/api => ./staging/src/kubesphere.io/api
+	kubesphere.io/client-go => ./staging/src/kubesphere.io/client-go
 	kubesphere.io/monitoring-dashboard => kubesphere.io/monitoring-dashboard v0.2.2
 	rsc.io/binaryregexp => rsc.io/binaryregexp v0.2.0
 	rsc.io/letsencrypt => rsc.io/letsencrypt v0.0.1

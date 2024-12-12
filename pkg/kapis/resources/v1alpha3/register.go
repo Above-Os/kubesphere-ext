@@ -35,7 +35,7 @@ import (
 )
 
 const (
-	GroupName = "resources.bytetrade.io"
+	GroupName = "resources.kubesphere.io"
 
 	tagClusteredResource  = "Clustered Resource"
 	tagComponentStatus    = "Component Status"

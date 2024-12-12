@@ -25,6 +25,7 @@ limitations under the License.
 package union
 
 import (
+	"k8s.io/klog"
 	"strings"
 
 	"kubesphere.io/kubesphere/pkg/apiserver/authorization/authorizer"
@@ -49,7 +50,7 @@ func (authzHandler unionAuthzHandler) Authorize(a authorizer.Attributes) (author
 		errlist    []error
 		reasonlist []string
 	)
-
+	klog.V(0).Infof("enter union authorize")
 	for _, currAuthzHandler := range authzHandler {
 		decision, reason, err := currAuthzHandler.Authorize(a)
 

@@ -1130,7 +1130,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/clustermembers": {
+    "/kapis/iam.kubesphere.io/v1alpha2/clustermembers": {
       "get": {
         "produces": [
           "application/json"
@@ -1184,7 +1184,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/clustermembers/{clustermember}": {
+    "/kapis/iam.kubesphere.io/v1alpha2/clustermembers/{clustermember}": {
       "get": {
         "produces": [
           "application/json"
@@ -1275,7 +1275,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/clustermembers/{clustermember}/clusterroles": {
+    "/kapis/iam.kubesphere.io/v1alpha2/clustermembers/{clustermember}/clusterroles": {
       "get": {
         "produces": [
           "application/json"
@@ -1304,7 +1304,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/clusterroles": {
+    "/kapis/iam.kubesphere.io/v1alpha2/clusterroles": {
       "get": {
         "produces": [
           "application/json"
@@ -1352,7 +1352,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/clusterroles/{clusterrole}": {
+    "/kapis/iam.kubesphere.io/v1alpha2/clusterroles/{clusterrole}": {
       "get": {
         "produces": [
           "application/json"
@@ -1478,7 +1478,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/devops/{devops}/members": {
+    "/kapis/iam.kubesphere.io/v1alpha2/devops/{devops}/members": {
       "get": {
         "produces": [
           "application/json"
@@ -1548,7 +1548,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/devops/{devops}/members/{member}": {
+    "/kapis/iam.kubesphere.io/v1alpha2/devops/{devops}/members/{member}": {
       "get": {
         "produces": [
           "application/json"
@@ -1660,7 +1660,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/devops/{devops}/members/{member}/roles": {
+    "/kapis/iam.kubesphere.io/v1alpha2/devops/{devops}/members/{member}/roles": {
       "get": {
         "produces": [
           "application/json"
@@ -1696,7 +1696,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/devops/{devops}/roles": {
+    "/kapis/iam.kubesphere.io/v1alpha2/devops/{devops}/roles": {
       "get": {
         "produces": [
           "application/json"
@@ -1760,7 +1760,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/devops/{devops}/roles/{role}": {
+    "/kapis/iam.kubesphere.io/v1alpha2/devops/{devops}/roles/{role}": {
       "get": {
         "produces": [
           "application/json"
@@ -1914,7 +1914,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/globalroles": {
+    "/kapis/iam.kubesphere.io/v1alpha2/globalroles": {
       "get": {
         "produces": [
           "application/json"
@@ -1962,7 +1962,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/globalroles/{globalrole}": {
+    "/kapis/iam.kubesphere.io/v1alpha2/globalroles/{globalrole}": {
       "get": {
         "produces": [
           "application/json"
@@ -2088,7 +2088,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/login": {
+    "/kapis/iam.kubesphere.io/v1alpha2/login": {
       "post": {
         "consumes": [
           "application/json"
@@ -2122,7 +2122,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/namespaces/{namespace}/members": {
+    "/kapis/iam.kubesphere.io/v1alpha2/namespaces/{namespace}/members": {
       "get": {
         "produces": [
           "application/json"
@@ -2192,7 +2192,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/namespaces/{namespace}/members/{member}": {
+    "/kapis/iam.kubesphere.io/v1alpha2/namespaces/{namespace}/members/{member}": {
       "get": {
         "produces": [
           "application/json"
@@ -2304,7 +2304,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/namespaces/{namespace}/members/{member}/roles": {
+    "/kapis/iam.kubesphere.io/v1alpha2/namespaces/{namespace}/members/{member}/roles": {
       "get": {
         "produces": [
           "application/json"
@@ -2340,7 +2340,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/namespaces/{namespace}/rolebindings": {
+    "/kapis/iam.kubesphere.io/v1alpha2/namespaces/{namespace}/rolebindings": {
       "post": {
         "produces": [
           "application/json"
@@ -2383,7 +2383,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/namespaces/{namespace}/rolebindings/{rolebinding}": {
+    "/kapis/iam.kubesphere.io/v1alpha2/namespaces/{namespace}/rolebindings/{rolebinding}": {
       "delete": {
         "produces": [
           "application/json"
@@ -2426,7 +2426,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/namespaces/{namespace}/roles": {
+    "/kapis/iam.kubesphere.io/v1alpha2/namespaces/{namespace}/roles": {
       "get": {
         "produces": [
           "application/json"
@@ -2490,7 +2490,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/namespaces/{namespace}/roles/{role}": {
+    "/kapis/iam.kubesphere.io/v1alpha2/namespaces/{namespace}/roles/{role}": {
       "get": {
         "produces": [
           "application/json"
@@ -2644,7 +2644,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/users": {
+    "/kapis/iam.kubesphere.io/v1alpha2/users": {
       "get": {
         "produces": [
           "application/json"
@@ -2692,7 +2692,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/users/{user}": {
+    "/kapis/iam.kubesphere.io/v1alpha2/users/{user}": {
       "get": {
         "produces": [
           "application/json"
@@ -2783,7 +2783,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/users/{user}/globalroles": {
+    "/kapis/iam.kubesphere.io/v1alpha2/users/{user}/globalroles": {
       "get": {
         "produces": [
           "application/json"
@@ -2812,7 +2812,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/users/{user}/loginrecords": {
+    "/kapis/iam.kubesphere.io/v1alpha2/users/{user}/loginrecords": {
       "get": {
         "produces": [
           "application/json"
@@ -2841,7 +2841,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/users/{user}/password": {
+    "/kapis/iam.kubesphere.io/v1alpha2/users/{user}/password": {
       "put": {
         "produces": [
           "application/json"
@@ -2878,7 +2878,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/workspaces/{workspace}/groupbindings": {
+    "/kapis/iam.kubesphere.io/v1alpha2/workspaces/{workspace}/groupbindings": {
       "get": {
         "produces": [
           "application/json"
@@ -2952,7 +2952,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/workspaces/{workspace}/groupbindings/{groupbinding}": {
+    "/kapis/iam.kubesphere.io/v1alpha2/workspaces/{workspace}/groupbindings/{groupbinding}": {
       "delete": {
         "produces": [
           "application/json"
@@ -2988,7 +2988,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/workspaces/{workspace}/groups": {
+    "/kapis/iam.kubesphere.io/v1alpha2/workspaces/{workspace}/groups": {
       "get": {
         "produces": [
           "application/json"
@@ -3052,7 +3052,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/workspaces/{workspace}/groups/{group}": {
+    "/kapis/iam.kubesphere.io/v1alpha2/workspaces/{workspace}/groups/{group}": {
       "get": {
         "produces": [
           "application/json"
@@ -3199,7 +3199,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/workspaces/{workspace}/rolebindings": {
+    "/kapis/iam.kubesphere.io/v1alpha2/workspaces/{workspace}/rolebindings": {
       "get": {
         "produces": [
           "application/json"
@@ -3235,7 +3235,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/workspaces/{workspace}/workspacemembers": {
+    "/kapis/iam.kubesphere.io/v1alpha2/workspaces/{workspace}/workspacemembers": {
       "get": {
         "produces": [
           "application/json"
@@ -3305,7 +3305,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/workspaces/{workspace}/workspacemembers/{workspacemember}": {
+    "/kapis/iam.kubesphere.io/v1alpha2/workspaces/{workspace}/workspacemembers/{workspacemember}": {
       "get": {
         "produces": [
           "application/json"
@@ -3417,7 +3417,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/workspaces/{workspace}/workspacemembers/{workspacemember}/workspaceroles": {
+    "/kapis/iam.kubesphere.io/v1alpha2/workspaces/{workspace}/workspacemembers/{workspacemember}/workspaceroles": {
       "get": {
         "produces": [
           "application/json"
@@ -3453,7 +3453,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/workspaces/{workspace}/workspacerolebindings": {
+    "/kapis/iam.kubesphere.io/v1alpha2/workspaces/{workspace}/workspacerolebindings": {
       "get": {
         "produces": [
           "application/json"
@@ -3530,7 +3530,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/workspaces/{workspace}/workspacerolebindings/{rolebinding}": {
+    "/kapis/iam.kubesphere.io/v1alpha2/workspaces/{workspace}/workspacerolebindings/{rolebinding}": {
       "delete": {
         "produces": [
           "application/json"
@@ -3566,7 +3566,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/workspaces/{workspace}/workspaceroles": {
+    "/kapis/iam.kubesphere.io/v1alpha2/workspaces/{workspace}/workspaceroles": {
       "get": {
         "produces": [
           "application/json"
@@ -3630,7 +3630,7 @@
         }
       }
     },
-    "/kapis/iam.bytetrade.io/v1alpha2/workspaces/{workspace}/workspaceroles/{workspacerole}": {
+    "/kapis/iam.kubesphere.io/v1alpha2/workspaces/{workspace}/workspaceroles/{workspacerole}": {
       "get": {
         "produces": [
           "application/json"
@@ -3784,7 +3784,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/cluster": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/cluster": {
       "get": {
         "produces": [
           "application/json"
@@ -3837,7 +3837,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/clusterdashboards/{grafanaDashboardName}/template": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/clusterdashboards/{grafanaDashboardName}/template": {
       "post": {
         "produces": [
           "application/json"
@@ -3866,7 +3866,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/components/{component}": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/components/{component}": {
       "get": {
         "produces": [
           "application/json"
@@ -3926,7 +3926,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/kubesphere": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/kubesphere": {
       "get": {
         "produces": [
           "application/json"
@@ -3946,7 +3946,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/namespaces": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/namespaces": {
       "get": {
         "produces": [
           "application/json"
@@ -4031,7 +4031,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/namespaces/{namespace}": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/namespaces/{namespace}": {
       "get": {
         "produces": [
           "application/json"
@@ -4091,7 +4091,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/namespaces/{namespace}/dashboards/{grafanaDashboardName}/template": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/namespaces/{namespace}/dashboards/{grafanaDashboardName}/template": {
       "post": {
         "produces": [
           "application/json"
@@ -4127,7 +4127,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/namespaces/{namespace}/ingresses": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/namespaces/{namespace}/ingresses": {
       "get": {
         "produces": [
           "application/json"
@@ -4238,7 +4238,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/namespaces/{namespace}/ingresses/{ingress}": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/namespaces/{namespace}/ingresses/{ingress}": {
       "get": {
         "produces": [
           "application/json"
@@ -4324,7 +4324,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/namespaces/{namespace}/persistentvolumeclaims": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/namespaces/{namespace}/persistentvolumeclaims": {
       "get": {
         "produces": [
           "application/json"
@@ -4416,7 +4416,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/namespaces/{namespace}/persistentvolumeclaims/{pvc}": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/namespaces/{namespace}/persistentvolumeclaims/{pvc}": {
       "get": {
         "produces": [
           "application/json"
@@ -4483,7 +4483,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/namespaces/{namespace}/pods": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/namespaces/{namespace}/pods": {
       "get": {
         "produces": [
           "application/json"
@@ -4575,7 +4575,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/namespaces/{namespace}/pods/{pod}": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/namespaces/{namespace}/pods/{pod}": {
       "get": {
         "produces": [
           "application/json"
@@ -4642,7 +4642,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/namespaces/{namespace}/pods/{pod}/containers": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/namespaces/{namespace}/pods/{pod}/containers": {
       "get": {
         "produces": [
           "application/json"
@@ -4741,7 +4741,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/namespaces/{namespace}/pods/{pod}/containers/{container}": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/namespaces/{namespace}/pods/{pod}/containers/{container}": {
       "get": {
         "produces": [
           "application/json"
@@ -4815,7 +4815,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/namespaces/{namespace}/targets/labelsets": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/namespaces/{namespace}/targets/labelsets": {
       "get": {
         "produces": [
           "application/json"
@@ -4865,7 +4865,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/namespaces/{namespace}/targets/metadata": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/namespaces/{namespace}/targets/metadata": {
       "get": {
         "produces": [
           "application/json"
@@ -4894,7 +4894,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/namespaces/{namespace}/targets/query": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/namespaces/{namespace}/targets/query": {
       "get": {
         "produces": [
           "application/json"
@@ -4954,7 +4954,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/namespaces/{namespace}/workloads": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/namespaces/{namespace}/workloads": {
       "get": {
         "produces": [
           "application/json"
@@ -5046,7 +5046,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/namespaces/{namespace}/workloads/{kind}": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/namespaces/{namespace}/workloads/{kind}": {
       "get": {
         "produces": [
           "application/json"
@@ -5145,7 +5145,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/namespaces/{namespace}/workloads/{kind}/{workload}/pods": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/namespaces/{namespace}/workloads/{kind}/{workload}/pods": {
       "get": {
         "produces": [
           "application/json"
@@ -5251,7 +5251,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/nodes": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/nodes": {
       "get": {
         "produces": [
           "application/json"
@@ -5342,7 +5342,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/nodes/{node}": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/nodes/{node}": {
       "get": {
         "produces": [
           "application/json"
@@ -5402,7 +5402,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/nodes/{node}/pods": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/nodes/{node}/pods": {
       "get": {
         "produces": [
           "application/json"
@@ -5500,7 +5500,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/nodes/{node}/pods/{pod}": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/nodes/{node}/pods/{pod}": {
       "get": {
         "produces": [
           "application/json"
@@ -5568,7 +5568,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/pods": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/pods": {
       "get": {
         "produces": [
           "application/json"
@@ -5653,7 +5653,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/storageclasses/{storageclass}/persistentvolumeclaims": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/storageclasses/{storageclass}/persistentvolumeclaims": {
       "get": {
         "produces": [
           "application/json"
@@ -5745,7 +5745,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/targets/labelsets": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/targets/labelsets": {
       "get": {
         "produces": [
           "application/json"
@@ -5788,7 +5788,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/targets/metadata": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/targets/metadata": {
       "get": {
         "produces": [
           "application/json"
@@ -5808,7 +5808,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/targets/query": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/targets/query": {
       "get": {
         "produces": [
           "application/json"
@@ -5861,7 +5861,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/workspaces": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/workspaces": {
       "get": {
         "produces": [
           "application/json"
@@ -5946,7 +5946,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/workspaces/{workspace}": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/workspaces/{workspace}": {
       "get": {
         "produces": [
           "application/json"
@@ -6012,7 +6012,7 @@
         }
       }
     },
-    "/kapis/monitoring.bytetrade.io/v1alpha3/workspaces/{workspace}/namespaces": {
+    "/kapis/monitoring.kubesphere.io/v1alpha3/workspaces/{workspace}/namespaces": {
       "get": {
         "produces": [
           "application/json"
@@ -9843,7 +9843,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha2/abnormalworkloads": {
+    "/kapis/resources.kubesphere.io/v1alpha2/abnormalworkloads": {
       "get": {
         "produces": [
           "application/json"
@@ -9863,7 +9863,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha2/componenthealth": {
+    "/kapis/resources.kubesphere.io/v1alpha2/componenthealth": {
       "get": {
         "produces": [
           "application/json"
@@ -9883,7 +9883,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha2/components": {
+    "/kapis/resources.kubesphere.io/v1alpha2/components": {
       "get": {
         "produces": [
           "application/json"
@@ -9906,7 +9906,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha2/components/{component}": {
+    "/kapis/resources.kubesphere.io/v1alpha2/components/{component}": {
       "get": {
         "produces": [
           "application/json"
@@ -9935,7 +9935,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha2/git/verify": {
+    "/kapis/resources.kubesphere.io/v1alpha2/git/verify": {
       "post": {
         "produces": [
           "application/json"
@@ -9965,7 +9965,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha2/namespaces/{namespace}/abnormalworkloads": {
+    "/kapis/resources.kubesphere.io/v1alpha2/namespaces/{namespace}/abnormalworkloads": {
       "get": {
         "produces": [
           "application/json"
@@ -9994,7 +9994,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha2/namespaces/{namespace}/daemonsets/{daemonset}/revisions/{revision}": {
+    "/kapis/resources.kubesphere.io/v1alpha2/namespaces/{namespace}/daemonsets/{daemonset}/revisions/{revision}": {
       "get": {
         "produces": [
           "application/json"
@@ -10037,7 +10037,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha2/namespaces/{namespace}/deployments/{deployment}/revisions/{revision}": {
+    "/kapis/resources.kubesphere.io/v1alpha2/namespaces/{namespace}/deployments/{deployment}/revisions/{revision}": {
       "get": {
         "produces": [
           "application/json"
@@ -10080,7 +10080,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha2/namespaces/{namespace}/quotas": {
+    "/kapis/resources.kubesphere.io/v1alpha2/namespaces/{namespace}/quotas": {
       "get": {
         "produces": [
           "application/json"
@@ -10109,7 +10109,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha2/namespaces/{namespace}/router": {
+    "/kapis/resources.kubesphere.io/v1alpha2/namespaces/{namespace}/router": {
       "get": {
         "produces": [
           "application/json"
@@ -10223,7 +10223,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha2/namespaces/{namespace}/statefulsets/{statefulset}/revisions/{revision}": {
+    "/kapis/resources.kubesphere.io/v1alpha2/namespaces/{namespace}/statefulsets/{statefulset}/revisions/{revision}": {
       "get": {
         "produces": [
           "application/json"
@@ -10266,7 +10266,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha2/namespaces/{namespace}/{resources}": {
+    "/kapis/resources.kubesphere.io/v1alpha2/namespaces/{namespace}/{resources}": {
       "get": {
         "produces": [
           "application/json"
@@ -10330,7 +10330,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha2/quotas": {
+    "/kapis/resources.kubesphere.io/v1alpha2/quotas": {
       "get": {
         "produces": [
           "application/json"
@@ -10350,7 +10350,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha2/registry/blob": {
+    "/kapis/resources.kubesphere.io/v1alpha2/registry/blob": {
       "get": {
         "produces": [
           "application/json"
@@ -10402,7 +10402,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha2/registry/verify": {
+    "/kapis/resources.kubesphere.io/v1alpha2/registry/verify": {
       "post": {
         "produces": [
           "application/json"
@@ -10433,7 +10433,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha2/users/{user}/kubeconfig": {
+    "/kapis/resources.kubesphere.io/v1alpha2/users/{user}/kubeconfig": {
       "get": {
         "produces": [
           "text/plain",
@@ -10463,7 +10463,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha2/users/{user}/kubectl": {
+    "/kapis/resources.kubesphere.io/v1alpha2/users/{user}/kubectl": {
       "get": {
         "produces": [
           "application/json"
@@ -10492,7 +10492,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha2/{resources}": {
+    "/kapis/resources.kubesphere.io/v1alpha2/{resources}": {
       "get": {
         "produces": [
           "application/json"
@@ -10549,7 +10549,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha3/componenthealth": {
+    "/kapis/resources.kubesphere.io/v1alpha3/componenthealth": {
       "get": {
         "produces": [
           "application/json"
@@ -10569,7 +10569,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha3/components": {
+    "/kapis/resources.kubesphere.io/v1alpha3/components": {
       "get": {
         "produces": [
           "application/json"
@@ -10592,7 +10592,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha3/components/{component}": {
+    "/kapis/resources.kubesphere.io/v1alpha3/components/{component}": {
       "get": {
         "produces": [
           "application/json"
@@ -10621,7 +10621,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha3/namespaces/{namespace}/imageconfig": {
+    "/kapis/resources.kubesphere.io/v1alpha3/namespaces/{namespace}/imageconfig": {
       "get": {
         "produces": [
           "application/json"
@@ -10663,7 +10663,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha3/namespaces/{namespace}/registrysecrets/{secret}/verify": {
+    "/kapis/resources.kubesphere.io/v1alpha3/namespaces/{namespace}/registrysecrets/{secret}/verify": {
       "post": {
         "produces": [
           "application/json"
@@ -10713,7 +10713,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha3/namespaces/{namespace}/repositorytags": {
+    "/kapis/resources.kubesphere.io/v1alpha3/namespaces/{namespace}/repositorytags": {
       "get": {
         "produces": [
           "application/json"
@@ -10755,7 +10755,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha3/namespaces/{namespace}/{resources}": {
+    "/kapis/resources.kubesphere.io/v1alpha3/namespaces/{namespace}/{resources}": {
       "get": {
         "produces": [
           "application/json"
@@ -10824,7 +10824,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha3/namespaces/{namespace}/{resources}/{name}": {
+    "/kapis/resources.kubesphere.io/v1alpha3/namespaces/{namespace}/{resources}/{name}": {
       "get": {
         "produces": [
           "application/json"
@@ -10867,7 +10867,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha3/{resources}": {
+    "/kapis/resources.kubesphere.io/v1alpha3/{resources}": {
       "get": {
         "produces": [
           "application/json"
@@ -10929,7 +10929,7 @@
         }
       }
     },
-    "/kapis/resources.bytetrade.io/v1alpha3/{resources}/{name}": {
+    "/kapis/resources.kubesphere.io/v1alpha3/{resources}/{name}": {
       "get": {
         "produces": [
           "application/json"

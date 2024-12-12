@@ -20,6 +20,8 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"kubesphere.io/kubesphere/pkg/apiserver/authentication/request/anonymous"
+	"kubesphere.io/kubesphere/pkg/apiserver/authentication/request/lldap"
 	"net/http"
 	rt "runtime"
 	"strconv"
@@ -27,6 +29,9 @@ import (
 	"time"
 
 	"github.com/emicklei/go-restful"
+	unionauth "k8s.io/apiserver/pkg/authentication/request/union"
+	lldap_jwt "kubesphere.io/kubesphere/pkg/apiserver/authentication/authenticators/lldap"
+
 	extv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -244,18 +249,20 @@ func (s *APIServer) buildHandlerChain() {
 	default:
 		fallthrough
 	case authorization.RBAC:
-		excludedPaths := []string{"/oauth/*", "/kapis/config.bytetrade.io/*", "/kapis/version", "/kapis/metrics"}
+		excludedPaths := []string{"/oauth/*", "/kapis/config.kubesphere.io/*", "/kapis/version", "/kapis/metrics"}
 		pathAuthorizer, _ := path.NewAuthorizer(excludedPaths)
 		amOperator := am.NewReadOnlyOperator(s.InformerFactory)
 		authorizers = unionauthorizer.New(pathAuthorizer, rbac.NewRBACAuthorizer(amOperator))
 	}
-	_ = authorizers
 
-	// TODO:hysyeah,
-	// 这一步进行权限认证
+	secretLister := s.InformerFactory.KubernetesSharedInformerFactory().Core().V1().Secrets().Lister()
+	handler = filters.WithAuthorization(handler, authorizers)
 
-	handler = filters.WithAuthorization(handler, nil)
+	authn := unionauth.New(anonymous.NewAuthenticator(),
+		lldap.New(lldap_jwt.NewJwtAuthenticator(secretLister)),
+	)
 
+	handler = filters.WithAuthentication(handler, authn)
 	handler = filters.WithRequestInfo(handler, requestInfoResolver)
 
 	s.Server.Handler = handler
@@ -362,8 +369,10 @@ func (s *APIServer) waitForResourceSync(ctx context.Context) error {
 
 	ksGVRs := map[schema.GroupVersion][]string{
 
-		{Group: "iam.bytetrade.io", Version: "v1alpha2"}: {
+		{Group: "iam.kubesphere.io", Version: "v1alpha2"}: {
 			"users",
+			"globalroles",
+			"globalrolebindings",
 		},
 	}
 

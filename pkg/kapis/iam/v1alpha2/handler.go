@@ -18,6 +18,7 @@ package v1alpha2
 
 import (
 	"fmt"
+	"k8s.io/klog"
 	"strings"
 
 	"github.com/emicklei/go-restful"
@@ -76,7 +77,33 @@ func (h *iamHandler) DescribeUser(request *restful.Request, response *restful.Re
 }
 
 func (h *iamHandler) RetrieveMemberRoleTemplates(request *restful.Request, response *restful.Response) {
+	if strings.HasSuffix(request.Request.URL.Path, iamv1alpha2.ResourcesPluralGlobalRole) {
+		username := request.PathParameter("user")
 
+		globalRole, err := h.am.GetGlobalRoleOfUser(username)
+		if err != nil {
+			// if role binding not exist return empty list
+			if errors.IsNotFound(err) {
+				response.WriteEntity([]interface{}{})
+				return
+			}
+			api.HandleInternalError(response, request, err)
+			return
+		}
+
+		result, err := h.am.ListGlobalRoles(&query.Query{
+			Pagination: query.NoPagination,
+			SortBy:     "",
+			Ascending:  false,
+			Filters:    map[query.Field]query.Value{iamv1alpha2.AggregateTo: query.Value(globalRole.Name)},
+		})
+		if err != nil {
+			api.HandleInternalError(response, request, err)
+			return
+		}
+		response.WriteEntity(result.Items)
+		return
+	}
 	if strings.HasSuffix(request.Request.URL.Path, iamv1alpha2.ResourcesPluralClusterRole) {
 		username := request.PathParameter("clustermember")
 		clusterRole, err := h.am.GetClusterRoleOfUser(username)
@@ -112,6 +139,7 @@ func (h *iamHandler) RetrieveMemberRoleTemplates(request *restful.Request, respo
 			api.HandleInternalError(response, request, err)
 			return
 		}
+		klog.Infof("username....: %s", username)
 
 		user, err := h.im.DescribeUser(username)
 		if err != nil {
@@ -536,4 +564,98 @@ func (h *iamHandler) DeleteRoleBinding(request *restful.Request, response *restf
 	}
 
 	response.WriteEntity(servererr.None)
+}
+
+func (h *iamHandler) ListGlobalRoles(req *restful.Request, resp *restful.Response) {
+	queryParam := query.ParseQueryParameter(req)
+	result, err := h.am.ListGlobalRoles(queryParam)
+	if err != nil {
+		api.HandleInternalError(resp, req, err)
+		return
+	}
+	resp.WriteEntity(result)
+}
+
+func (h *iamHandler) CreateGlobalRole(request *restful.Request, response *restful.Response) {
+
+	var globalRole iamv1alpha2.GlobalRole
+	err := request.ReadEntity(&globalRole)
+	if err != nil {
+		api.HandleBadRequest(response, request, err)
+		return
+	}
+
+	created, err := h.am.CreateOrUpdateGlobalRole(&globalRole)
+	if err != nil {
+		api.HandleError(response, request, err)
+		return
+	}
+
+	response.WriteEntity(created)
+}
+
+func (h *iamHandler) DeleteGlobalRole(request *restful.Request, response *restful.Response) {
+	globalRole := request.PathParameter("globalrole")
+	err := h.am.DeleteGlobalRole(globalRole)
+	if err != nil {
+		api.HandleError(response, request, err)
+		return
+	}
+
+	response.WriteEntity(servererr.None)
+}
+
+func (h *iamHandler) UpdateGlobalRole(request *restful.Request, response *restful.Response) {
+	globalRoleName := request.PathParameter("globalrole")
+
+	var globalRole iamv1alpha2.GlobalRole
+	err := request.ReadEntity(&globalRole)
+	if err != nil {
+		api.HandleBadRequest(response, request, err)
+		return
+	}
+
+	if globalRoleName != globalRole.Name {
+		err := fmt.Errorf("the name of the object (%s) does not match the name on the URL (%s)", globalRole.Name, globalRoleName)
+		api.HandleBadRequest(response, request, err)
+		return
+	}
+
+	updated, err := h.am.CreateOrUpdateGlobalRole(&globalRole)
+	if err != nil {
+		api.HandleError(response, request, err)
+		return
+	}
+
+	response.WriteEntity(updated)
+}
+
+func (h *iamHandler) DescribeGlobalRole(request *restful.Request, response *restful.Response) {
+	globalRoleName := request.PathParameter("globalrole")
+	globalRole, err := h.am.GetGlobalRole(globalRoleName)
+	if err != nil {
+		api.HandleError(response, request, err)
+		return
+	}
+	response.WriteEntity(globalRole)
+}
+
+func (h *iamHandler) PatchGlobalRole(request *restful.Request, response *restful.Response) {
+	globalRoleName := request.PathParameter("globalrole")
+
+	var globalRole iamv1alpha2.GlobalRole
+	err := request.ReadEntity(&globalRole)
+	if err != nil {
+		api.HandleBadRequest(response, request, err)
+		return
+	}
+
+	globalRole.Name = globalRoleName
+	patched, err := h.am.PatchGlobalRole(&globalRole)
+	if err != nil {
+		api.HandleError(response, request, err)
+		return
+	}
+
+	response.WriteEntity(patched)
 }

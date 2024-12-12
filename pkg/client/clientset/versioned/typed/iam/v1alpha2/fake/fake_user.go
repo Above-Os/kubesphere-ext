@@ -35,9 +35,9 @@ type FakeUsers struct {
 	Fake *FakeIamV1alpha2
 }
 
-var usersResource = schema.GroupVersionResource{Group: "iam.bytetrade.io", Version: "v1alpha2", Resource: "users"}
+var usersResource = schema.GroupVersionResource{Group: "iam.kubesphere.io", Version: "v1alpha2", Resource: "users"}
 
-var usersKind = schema.GroupVersionKind{Group: "iam.bytetrade.io", Version: "v1alpha2", Kind: "User"}
+var usersKind = schema.GroupVersionKind{Group: "iam.kubesphere.io", Version: "v1alpha2", Kind: "User"}
 
 // Get takes name of the user, and returns the corresponding user object, and an error if there is any.
 func (c *FakeUsers) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha2.User, err error) {
