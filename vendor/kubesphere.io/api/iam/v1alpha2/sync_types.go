@@ -12,19 +12,21 @@ type SyncSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	Providers []Provider `json:"providers"`
+	LLdap *LLdapProvider `json:"lldap"`
 }
 
-type Provider struct {
-	Name          string `json:"name"`
-	*ProviderType `json:",inline"`
-}
+//
+//type Provider struct {
+//	Name          string `json:"name"`
+//	*ProviderType `json:",inline"`
+//}
+//
+//type ProviderType struct {
+//	LLdap *LdapProvider `json:"ldap"`
+//}
 
-type ProviderType struct {
-	Ldap *LdapProvider `json:"ldap"`
-}
-
-type LdapProvider struct {
+type LLdapProvider struct {
+	Name              string     `json:"name"`
 	URL               string     `json:"url"`
 	CredentialsSecret *ObjectRef `json:"credentialsSecret"`
 	GroupWhitelist    []string   `json:"groupWhitelist,omitempty"`

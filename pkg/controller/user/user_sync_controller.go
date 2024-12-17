@@ -44,65 +44,57 @@ func (r *SyncReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.
 		return ctrl.Result{}, err
 	}
 
-	userSyncManager, err := lldap.GetUserSync(obj, r.Client)
-	ctrl.Log.Info("get userSyncManager:", "err", err)
+	syncHandler := lldap.NewLLdap(r.Client, obj, obj.Spec.LLdap)
+
+	errs := make([]error, 0)
+
+	users, err := syncHandler.Sync()
 
 	if err != nil {
 		return ctrl.Result{}, err
 	}
+	fmt.Println("users:", users)
 
-	errs := make([]error, 0)
-	klog.Infof("userSyncManager.UserSyncers:%#v", userSyncManager.UserSyncers)
-	for _, userSync := range userSyncManager.UserSyncers {
-		ctrl.Log.Info("userSync: ", "user", userSync)
-		klog.Infof("usersyncxxxx:%v", userSync)
-		users, err := userSync.Sync()
+	for _, u := range users {
+		userObj := &iamv1alpha2.User{}
+		err = r.Get(ctx, types.NamespacedName{Name: u.Id, Namespace: ""}, userObj)
+		if apierrors.IsNotFound(err) {
+			userObj = &iamv1alpha2.User{
+				TypeMeta: metav1.TypeMeta{
+					Kind:       "Sync",
+					APIVersion: iamv1alpha2.SchemeGroupVersion.String(),
+				},
+				ObjectMeta: metav1.ObjectMeta{
+					Name: u.Id,
+				},
+				Spec: iamv1alpha2.UserSpec{
+					Email:  u.Email,
+					Groups: u.Groups,
+				},
+				Status: iamv1alpha2.UserStatus{
+					State: iamv1alpha2.UserActive,
+				},
+			}
+		} else if err != nil {
+			errs = append(errs, err)
+			continue
+		}
+		userObj.SetLabels(map[string]string{userSyncProviderKey: syncHandler.GetProviderName()})
 
+		err = r.CreateOrUpdateResource(ctx, "", userObj)
 		if err != nil {
 			errs = append(errs, err)
 			continue
 		}
-		fmt.Println("users:", users)
 
-		for _, u := range users {
-			userObj := &iamv1alpha2.User{}
-			err = r.Get(ctx, types.NamespacedName{Name: u.Id, Namespace: ""}, userObj)
-			if apierrors.IsNotFound(err) {
-				userObj = &iamv1alpha2.User{
-					TypeMeta: metav1.TypeMeta{
-						Kind:       "Sync",
-						APIVersion: iamv1alpha2.SchemeGroupVersion.String(),
-					},
-					ObjectMeta: metav1.ObjectMeta{
-						Name: u.Id,
-					},
-					Spec: iamv1alpha2.UserSpec{
-						Groups: u.GroupName,
-					},
-				}
-			} else if err != nil {
-				errs = append(errs, err)
-				continue
-			}
-			klog.Infof("providerName:%v", userSync.GetProviderName())
-			userObj.SetLabels(map[string]string{userSyncProviderKey: userSync.GetProviderName()})
+	}
+	err = r.pruneUsers(ctx, users, syncHandler.GetProviderName())
+	if err != nil {
+		errs = append(errs, err)
+	}
 
-			err = r.CreateOrUpdateResource(ctx, "", userObj)
-			if err != nil {
-				errs = append(errs, err)
-				continue
-			}
-			// TODO: rolebinding
-
-		}
-		err = r.pruneUsers(ctx, users, userSync.GetProviderName())
-		if err != nil {
-			errs = append(errs, err)
-		}
-
-		if len(errs) > 0 {
-			return ctrl.Result{}, utilerrors.NewAggregate(errs)
-		}
+	if len(errs) > 0 {
+		return ctrl.Result{}, utilerrors.NewAggregate(errs)
 	}
 
 	return ctrl.Result{
@@ -122,7 +114,14 @@ func (r *SyncReconciler) pruneUsers(ctx context.Context, syncUsers []lldap.User,
 	if err != nil {
 		return err
 	}
-	klog.Infof("userList: %#v", userList)
+	// userlist in crd
+	userInCrd := make([]string, 0)
+
+	for _, u := range userList.Items {
+		userInCrd = append(userInCrd, u.Name)
+	}
+	klog.Infof("userList: %#v", userInCrd)
+	klog.Infof("syncUsers: %v", syncUsers)
 
 	for _, u := range userList.Items {
 		userFound := r.isUserFound(u, syncUsers)

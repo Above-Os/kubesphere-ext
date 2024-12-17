@@ -19,6 +19,8 @@ package user
 import (
 	"context"
 	"fmt"
+	"k8s.io/apimachinery/pkg/types"
+	"kubesphere.io/kubesphere/pkg/simple/client/lldap"
 	"time"
 
 	"github.com/go-logr/logr"
@@ -134,10 +136,35 @@ func (r *Reconciler) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		return ctrl.Result{}, err
 	}
 
-	if err = r.syncUserStatus(ctx, user); err != nil {
-		klog.Error(err)
-		r.Recorder.Event(user, corev1.EventTypeWarning, failedSynced, fmt.Sprintf(syncFailMessage, err))
-		return ctrl.Result{}, err
+	// sync user with label "iam.kubesphere.io/sync-to-lldap": true and "iam.kubesphere.io/synced-to-lldap": false
+	ana := user.Annotations
+	isNeedSyncToLLDap := ana["iam.kubesphere.io/sync-to-lldap"] == "true"
+	synced := ana["iam.kubesphere.io/synced-to-lldap"] == "true"
+	klog.V(0).Infof("isNeedSyncToLLDap: %v,synced: %v", isNeedSyncToLLDap, synced)
+	if isNeedSyncToLLDap && !synced {
+		klog.V(0).Infof("sync user from ks to lldap")
+		var sync iamv1alpha2.Sync
+		key := types.NamespacedName{Name: "lldap"}
+		err = r.Get(ctx, key, &sync)
+		klog.V(0).Infof("sync user to lldap: %v", err)
+		if err == nil {
+			op := lldap.New(sync.Spec.LLdap)
+			op.Client = r.Client
+			err = op.CreateUser(user.Name, user.Spec.Email, user.Name, user.Spec.InitialPassword, 1)
+			if err != nil {
+				klog.V(0).Infof("create user: %v", err)
+				return ctrl.Result{}, err
+			}
+			user.Annotations["iam.kubesphere.io/synced-to-lldap"] = "true"
+			user.Labels = make(map[string]string)
+			user.Labels["iam.kubesphere.io/user-provider"] = "lldap"
+			err = r.Update(ctx, user, &client.UpdateOptions{})
+			if err != nil {
+				klog.V(0).Infof("update user....: %v", err)
+				return ctrl.Result{}, err
+			}
+			klog.V(0).Infof("successed to sync user %d to lldap", user.Name)
+		}
 	}
 
 	if r.KubeconfigClient != nil {
@@ -168,33 +195,6 @@ func (r *Reconciler) ensureNotControlledByKubefed(ctx context.Context, user *iam
 	}
 	return nil
 }
-
-//func (r *Reconciler) waitForAssignDevOpsAdminRole(user *iamv1alpha2.User) error {
-//	err := utilwait.PollImmediate(interval, timeout, func() (done bool, err error) {
-//		if err := r.DevopsClient.AssignGlobalRole(modelsdevops.JenkinsAdminRoleName, user.Name); err != nil {
-//			klog.Error(err)
-//			return false, err
-//		}
-//		return true, nil
-//	})
-//	return err
-//}
-
-//func (r *Reconciler) waitForUnassignDevOpsAdminRole(user *iamv1alpha2.User) error {
-//	err := utilwait.PollImmediate(interval, timeout, func() (done bool, err error) {
-//		if err := r.DevopsClient.UnAssignGlobalRole(modelsdevops.JenkinsAdminRoleName, user.Name); err != nil {
-//			return false, err
-//		}
-//		return true, nil
-//	})
-//	return err
-//}
-
-//func (r *Reconciler) deleteGroupBindings(ctx context.Context, user *iamv1alpha2.User) error {
-//	// groupBindings that created by kubeshpere will be deleted directly.
-//	groupBindings := &iamv1alpha2.GroupBinding{}
-//	return r.Client.DeleteAllOf(ctx, groupBindings, client.MatchingLabels{iamv1alpha2.UserReferenceLabel: user.Name})
-//}
 
 func (r *Reconciler) deleteRoleBindings(ctx context.Context, user *iamv1alpha2.User) error {
 	if len(user.Name) > validation.LabelValueMaxLength {

@@ -2,7 +2,9 @@ package lldap
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/go-resty/resty/v2"
@@ -14,8 +16,8 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	Token        string `json:"token"`        // 假设返回一个 token
-	RefreshToken string `json:"refreshToken"` // 假设返回一个 message
+	Token        string `json:"token"`
+	RefreshToken string `json:"refreshToken"`
 }
 
 func login(url, username, password string) (*LoginResponse, error) {
@@ -30,6 +32,9 @@ func login(url, username, password string) (*LoginResponse, error) {
 		SetBody(creds).Post(url)
 	if err != nil {
 		return nil, err
+	}
+	if resp.StatusCode() != http.StatusOK {
+		return nil, errors.New(resp.String())
 	}
 	var response LoginResponse
 	err = json.Unmarshal(resp.Body(), &response)

@@ -50,47 +50,40 @@ spec:
           spec:
             description: SyncSpec defines the desired state of Sync
             properties:
-              providers:
-                items:
-                  properties:
-                    ldap:
-                      properties:
-                        credentialsSecret:
-                          properties:
-                            kind:
-                              type: string
-                            name:
-                              type: string
-                            namespace:
-                              type: string
-                          required:
-                          - kind
-                          - name
-                          - namespace
-                          type: object
-                        groupWhitelist:
-                          items:
-                            type: string
-                          type: array
-                        url:
-                          type: string
-                        userBlacklist:
-                          items:
-                            type: string
-                          type: array
-                      required:
-                      - credentialsSecret
-                      - url
-                      type: object
-                    name:
+              lldap:
+                properties:
+                  credentialsSecret:
+                    properties:
+                      kind:
+                        type: string
+                      name:
+                        type: string
+                      namespace:
+                        type: string
+                    required:
+                    - kind
+                    - name
+                    - namespace
+                    type: object
+                  groupWhitelist:
+                    items:
                       type: string
-                  required:
-                  - ldap
-                  - name
-                  type: object
-                type: array
+                    type: array
+                  name:
+                    type: string
+                  url:
+                    type: string
+                  userBlacklist:
+                    items:
+                      type: string
+                    type: array
+                required:
+                - credentialsSecret
+                - name
+                - url
+                type: object
             required:
-            - providers
+            - lldap
             type: object
         type: object
     served: true

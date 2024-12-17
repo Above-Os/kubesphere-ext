@@ -57,6 +57,10 @@ spec:
                 items:
                   type: string
                 type: array
+              initialPassword:
+                description: InitialPassword only for the first user that need sync
+                  from here to lldap
+                type: string
               lang:
                 description: The preferred written or spoken language for the user.
                 type: string

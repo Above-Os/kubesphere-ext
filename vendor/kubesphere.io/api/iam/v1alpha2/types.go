@@ -112,6 +112,9 @@ type FinalizerName string
 type UserSpec struct {
 	// Unique email address(https://www.ietf.org/rfc/rfc5322.txt).
 	Email string `json:"email"`
+	// InitialPassword only for the first user that need sync from here to lldap
+	// +optional
+	InitialPassword string `json:"initialPassword,omitempty"`
 	// The preferred written or spoken language for the user.
 	// +optional
 	Lang string `json:"lang,omitempty"`

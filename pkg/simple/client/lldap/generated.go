@@ -381,6 +381,7 @@ func (v *GetGroupListGroupsGroup) GetUsers() []GetGroupListGroupsGroupUsersUser 
 type GetGroupListGroupsGroupUsersUser struct {
 	Id          string `json:"id"`
 	DisplayName string `json:"displayName"`
+	Email       string `json:"email"`
 }
 
 // GetId returns GetGroupListGroupsGroupUsersUser.Id, and is useful for accessing the field via an interface.
@@ -388,6 +389,9 @@ func (v *GetGroupListGroupsGroupUsersUser) GetId() string { return v.Id }
 
 // GetDisplayName returns GetGroupListGroupsGroupUsersUser.DisplayName, and is useful for accessing the field via an interface.
 func (v *GetGroupListGroupsGroupUsersUser) GetDisplayName() string { return v.DisplayName }
+
+// GetEmail returns GetGroupListGroupsGroupUsersUser.Email, and is useful for accessing the field via an interface.
+func (v *GetGroupListGroupsGroupUsersUser) GetEmail() string { return v.Email }
 
 // GetGroupListResponse is returned by GetGroupList on success.
 type GetGroupListResponse struct {
@@ -1262,6 +1266,7 @@ query GetGroupList {
 		users {
 			id
 			displayName
+			email
 		}
 	}
 }
@@ -1421,10 +1426,6 @@ query ListUsersQuery ($filters: RequestFilter) {
 		firstName
 		lastName
 		creationDate
-		groups {
-			id
-			displayName
-		}
 	}
 }
 `
@@ -1434,10 +1435,23 @@ func ListUsersQuery(
 	client_ graphql.Client,
 	filters *RequestFilter,
 ) (*ListUsersQueryResponse, error) {
-	req_ := &graphql.Request{
+	var req_ *graphql.Request
+	if filters == nil {
+	req_ = &graphql.Request{
 		OpName: "ListUsersQuery",
 		Query:  ListUsersQuery_Operation,
+
 	}
+	} else {
+		req_ = &graphql.Request{
+			OpName: "ListUsersQuery",
+			Query:  ListUsersQuery_Operation,
+			Variables: &__ListUsersQueryInput{
+				Filters: *filters,
+			},
+		}
+	}
+
 	var err_ error
 
 	var data_ ListUsersQueryResponse
