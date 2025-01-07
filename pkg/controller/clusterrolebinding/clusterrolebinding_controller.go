@@ -234,5 +234,5 @@ func (c *Controller) reconcile(key string) error {
 }
 
 func (c *Controller) Start(ctx context.Context) error {
-	return c.Run(4, ctx.Done())
+	return c.Run(1, ctx.Done())
 }

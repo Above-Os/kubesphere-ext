@@ -32,7 +32,7 @@ import (
 
 var allControllers = []string{
 	"user",
-	"sync",
+	"user-sync",
 	"clusterrolebinding",
 }
 
@@ -49,12 +49,13 @@ func addAllControllers(mgr manager.Manager, client k8s.Client, informerFactory i
 		client.Config())
 
 	// ldap user sync controller
-
-	userSyncController := &user.SyncReconciler{
-		MaxConcurrentReconciles: 1,
-		KubeconfigClient:        kubeconfigClient,
+	if cmOptions.IsControllerEnabled("user-sync") {
+		userSyncController := &user.SyncReconciler{
+			MaxConcurrentReconciles: 1,
+			//KubeconfigClient:        kubeconfigClient,
+		}
+		addControllerWithSetup(mgr, "user-sync", userSyncController)
 	}
-	addControllerWithSetup(mgr, "user-sync", userSyncController)
 
 	// "user" controller
 	if cmOptions.IsControllerEnabled("user") {

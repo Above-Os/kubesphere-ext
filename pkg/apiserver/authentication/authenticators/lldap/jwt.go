@@ -36,8 +36,8 @@ func (j *jwtAuthenticator) AuthenticateToken(ctx context.Context, tokenString st
 		}
 		jwtSecretKey := secert.Data["lldap-jwt-secret"]
 		klog.V(0).Infof("jwtSecretKey: %s", string(jwtSecretKey))
-
-		return []byte("REPLACE_WITH_RANDOM"), nil
+		return jwtSecretKey, nil
+		//return []byte("REPLACE_WITH_RANDOM"), nil
 	})
 
 	if err != nil {

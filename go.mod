@@ -11,6 +11,7 @@ require (
 	github.com/Khan/genqlient v0.7.0
 	github.com/MakeNowJust/heredoc v0.0.0-20171113091838-e9091a26100e // indirect
 	github.com/asaskevich/govalidator v0.0.0-20200428143746-21a406dcc535
+	github.com/beclab/lldap-client v0.0.3
 	github.com/coreos/go-oidc v2.1.0+incompatible
 	github.com/davecgh/go-spew v1.1.1
 	github.com/deckarep/golang-set v1.7.1 // indirect
@@ -19,20 +20,20 @@ require (
 	github.com/elazarl/goproxy v0.0.0-20200315184450-1f3cb6622dad // indirect
 	github.com/emicklei/go-restful v2.14.3+incompatible
 	github.com/emicklei/go-restful-openapi v1.4.1
-	github.com/form3tech-oss/jwt-go v0.0.0-00010101000000-000000000000
+	github.com/form3tech-oss/jwt-go v3.2.2+incompatible
 	github.com/fsnotify/fsnotify v1.4.9
-	github.com/go-ldap/ldap v0.0.0-00010101000000-000000000000
-	github.com/go-logr/logr v0.4.0
+	github.com/go-ldap/ldap v3.0.3+incompatible
+	github.com/go-logr/logr v1.4.1
 	github.com/go-openapi/loads v0.19.5
 	github.com/go-openapi/spec v0.19.7
 	github.com/go-openapi/strfmt v0.19.5
 	github.com/go-openapi/validate v0.19.8
-	github.com/go-resty/resty/v2 v2.0.0-00010101000000-000000000000
+	github.com/go-resty/resty/v2 v2.16.2
 	github.com/golang/example v0.0.0-20170904185048-46695d81d1fa
-	github.com/google/go-cmp v0.5.6
+	github.com/google/go-cmp v0.6.0
 	github.com/gorilla/websocket v1.5.0
 	github.com/gregjones/httpcache v0.0.0-20181110185634-c63ab54fda8f // indirect
-	github.com/json-iterator/go v1.1.11
+	github.com/json-iterator/go v1.1.12
 	github.com/jszwec/csvutil v1.5.0
 	github.com/kubernetes-csi/external-snapshotter/client/v4 v4.2.0
 	github.com/mitchellh/mapstructure v1.5.0
@@ -51,33 +52,33 @@ require (
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.8.1
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.10.0
 	github.com/thoas/go-funk v0.9.3
 	github.com/xlab/treeprint v1.1.0 // indirect
 	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e
-	golang.org/x/oauth2 v0.0.0-20210514164344-f6687ab2804c
+	golang.org/x/oauth2 v0.24.0
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-	gopkg.in/asn1-ber.v1 v1.0.0-00010101000000-000000000000 // indirect
-	gopkg.in/cas.v2 v2.0.0-00010101000000-000000000000
+	gopkg.in/asn1-ber.v1 v1.0.0-20181015200546-f715ec2f112d // indirect
+	gopkg.in/cas.v2 v2.2.0
 	gopkg.in/square/go-jose.v2 v2.2.2
 	gopkg.in/yaml.v3 v3.0.1
 	gotest.tools v2.2.0+incompatible
 	istio.io/client-go v0.0.0-20201113183938-0734e976e785
 	istio.io/gogo-genproto v0.0.0-20201113182723-5b8563d8a012 // indirect
-	k8s.io/api v0.22.1
+	k8s.io/api v0.26.2
 	k8s.io/apiextensions-apiserver v0.21.4
-	k8s.io/apimachinery v0.22.1
+	k8s.io/apimachinery v0.26.2
 	k8s.io/apiserver v0.21.2
 	k8s.io/cli-runtime v0.21.2
 	k8s.io/client-go v12.0.0+incompatible
 	k8s.io/code-generator v0.21.2
 	k8s.io/component-base v0.21.4
 	k8s.io/klog v1.0.0
-	k8s.io/klog/v2 v2.9.0
+	k8s.io/klog/v2 v2.130.1
 	k8s.io/kube-openapi v0.0.0-20210421082810-95288971da7e
 	k8s.io/kubectl v0.21.2
 	k8s.io/metrics v0.21.2
-	k8s.io/utils v0.0.0-20210802155522-efc7438f0176
+	k8s.io/utils v0.0.0-20221107191617-1a15be271d1d
 	kubesphere.io/api v0.0.0
 	kubesphere.io/monitoring-dashboard v0.2.2
 	sigs.k8s.io/application v0.8.4-0.20201016185654-c8e2959e57a0
@@ -88,6 +89,7 @@ require (
 
 replace (
 	bitbucket.org/liamstask/goose => bitbucket.org/liamstask/goose v0.0.0-20150115234039-8488cc47d90c
+	//bytetrade.io/web3os/lldap-client => github.com/beclab/lldap-client v0.0.2
 	cloud.google.com/go => cloud.google.com/go v0.56.0
 	cloud.google.com/go/bigquery => cloud.google.com/go/bigquery v1.4.0
 	cloud.google.com/go/bigtable => cloud.google.com/go/bigtable v1.2.0

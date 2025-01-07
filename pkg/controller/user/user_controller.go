@@ -19,29 +19,30 @@ package user
 import (
 	"context"
 	"fmt"
-	"k8s.io/apimachinery/pkg/types"
-	"kubesphere.io/kubesphere/pkg/simple/client/lldap"
-	"time"
-
+	"github.com/beclab/lldap-client/pkg/cache/memory"
+	lconfig "github.com/beclab/lldap-client/pkg/config"
+	lapierrors "github.com/beclab/lldap-client/pkg/errors"
+	"github.com/beclab/lldap-client/pkg/generated"
 	"github.com/go-logr/logr"
-	rbacv1 "k8s.io/api/rbac/v1"
-	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/controller"
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
-
-	"k8s.io/apimachinery/pkg/util/validation"
-
 	corev1 "k8s.io/api/core/v1"
+	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/util/validation"
 	"k8s.io/client-go/tools/record"
 	"k8s.io/klog"
 	iamv1alpha2 "kubesphere.io/api/iam/v1alpha2"
-
 	"kubesphere.io/kubesphere/pkg/constants"
 	"kubesphere.io/kubesphere/pkg/models/kubeconfig"
 	"kubesphere.io/kubesphere/pkg/utils/sliceutil"
+	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
+	"time"
+
+	lclient "github.com/beclab/lldap-client/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/controller"
 )
 
 const (
@@ -61,6 +62,7 @@ const (
 // Reconciler reconciles a User object
 type Reconciler struct {
 	client.Client
+	LLdapClient             *lclient.Client
 	KubeconfigClient        kubeconfig.Interface
 	Logger                  logr.Logger
 	Scheme                  *runtime.Scheme
@@ -72,6 +74,7 @@ func (r *Reconciler) SetupWithManager(mgr ctrl.Manager) error {
 	if r.Client == nil {
 		r.Client = mgr.GetClient()
 	}
+
 	if r.Logger == nil {
 		r.Logger = ctrl.Log.WithName("controllers").WithName(controllerName)
 	}
@@ -100,12 +103,14 @@ func (r *Reconciler) Reconcile(ctx context.Context, req reconcile.Request) (reco
 	if err != nil {
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
-
+	klog.V(0).Infof("name=%s, user1: %v", user.Name, user.Spec.InitialPassword)
 	if user.ObjectMeta.DeletionTimestamp.IsZero() {
 		// The object is not being deleted, so if it does not have our finalizer,
 		// then lets add the finalizer and update the object.
 		if !sliceutil.HasString(user.Finalizers, finalizer) {
 			user.ObjectMeta.Finalizers = append(user.ObjectMeta.Finalizers, finalizer)
+			klog.V(0).Infof("name=%s,user2: %v", user.Name, user.Spec.InitialPassword)
+
 			if err = r.Update(ctx, user, &client.UpdateOptions{}); err != nil {
 				logger.Error(err, "failed to update user")
 				return ctrl.Result{}, err
@@ -124,6 +129,7 @@ func (r *Reconciler) Reconcile(ctx context.Context, req reconcile.Request) (reco
 			user.Finalizers = sliceutil.RemoveString(user.ObjectMeta.Finalizers, func(item string) bool {
 				return item == finalizer
 			})
+			klog.V(0).Infof("name=%s,user3: %v", user.Name, user.Spec.InitialPassword)
 
 			if err = r.Update(ctx, user, &client.UpdateOptions{}); err != nil {
 				klog.Error(err)
@@ -134,6 +140,27 @@ func (r *Reconciler) Reconcile(ctx context.Context, req reconcile.Request) (reco
 
 		// Our finalizer has finished, so the reconciler can do nothing.
 		return ctrl.Result{}, err
+	}
+	if r.LLdapClient == nil {
+		bindUsername, err := r.getCredentialVal(ctx, "lldap-ldap-user-dn")
+		if err != nil {
+			return ctrl.Result{}, err
+		}
+		bindPassword, err := r.getCredentialVal(ctx, "lldap-ldap-user-pass")
+		if err != nil {
+			return ctrl.Result{}, err
+		}
+
+		lldapClient, err := lclient.New(&lconfig.Config{
+			Host:       "http://lldap-service.os-system:17170",
+			Username:   bindUsername,
+			Password:   bindPassword,
+			TokenCache: memory.New(),
+		})
+		if err != nil {
+			return ctrl.Result{}, err
+		}
+		r.LLdapClient = lldapClient
 	}
 
 	// sync user with label "iam.kubesphere.io/sync-to-lldap": true and "iam.kubesphere.io/synced-to-lldap": false
@@ -148,13 +175,36 @@ func (r *Reconciler) Reconcile(ctx context.Context, req reconcile.Request) (reco
 		err = r.Get(ctx, key, &sync)
 		klog.V(0).Infof("sync user to lldap: %v", err)
 		if err == nil {
-			op := lldap.New(sync.Spec.LLdap)
-			op.Client = r.Client
-			err = op.CreateUser(user.Name, user.Spec.Email, user.Name, user.Spec.InitialPassword, 1)
-			if err != nil {
-				klog.V(0).Infof("create user: %v", err)
-				return ctrl.Result{}, err
+			//op := lldap.New(sync.Spec.LLdap)
+			//op.Client = r.Client
+			//err = op.CreateUser(user.Name, user.Spec.Email, user.Name, user.Spec.InitialPassword, 1)
+			u := generated.CreateUserInput{
+				Id:          user.Name,
+				Email:       user.Spec.Email,
+				DisplayName: user.Name,
 			}
+			klog.V(0).Infof("create username:%s,password:%s", user.Name, user.Spec.InitialPassword)
+			_, err = r.LLdapClient.Users().Create(ctx, &u, user.Spec.InitialPassword)
+			if err != nil {
+				if lapierrors.IsAlreadyExists(err) {
+					klog.V(0).Infof("", err)
+				} else {
+					return ctrl.Result{}, err
+				}
+			}
+			err = r.LLdapClient.Groups().AddUser(ctx, user.Name, 1)
+			if err != nil {
+				if lapierrors.IsAlreadyExists(err) {
+					klog.V(0).Infof("", err)
+				} else {
+					return ctrl.Result{}, err
+				}
+			}
+
+			//if err != nil {
+			//	klog.V(0).Infof("create user: %v", err)
+			//	return ctrl.Result{}, err
+			//}
 			user.Annotations["iam.kubesphere.io/synced-to-lldap"] = "true"
 			user.Labels = make(map[string]string)
 			user.Labels["iam.kubesphere.io/user-provider"] = "lldap"
@@ -235,4 +285,18 @@ func (r *Reconciler) syncUserStatus(ctx context.Context, user *iamv1alpha2.User)
 	}
 
 	return nil
+}
+
+func (r *Reconciler) getCredentialVal(ctx context.Context, key string) (string, error) {
+	var secret corev1.Secret
+	k := types.NamespacedName{Name: "lldap-credentials", Namespace: "os-system"}
+	err := r.Client.Get(ctx, k, &secret)
+	if err != nil {
+		return "", err
+	}
+	if value, ok := secret.Data[key]; ok {
+		return string(value), nil
+	}
+	return "", fmt.Errorf("can not find credentialval for key %s", key)
+
 }
